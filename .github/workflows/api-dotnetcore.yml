@@ -127,14 +127,14 @@ jobs:
         uses: highbyte/sonarscan-dotnet@2.0
         if: github.event_name == 'push' 
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: f5f11ab3c73f7376b6ee039c1a3fba2db58de0a5
         with:
           dotnetBuildArguments: ${{env.working-directory}}
           dotnetTestArguments: ${{env.working-directory}} --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
           # Optional extra command arguments the the SonarScanner 'begin' command
           sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx" -d:sonar.qualitygate.wait=true
           # The key of the SonarQube project
-          sonarProjectKey: ${{secrets.PROJECT_KEY_API}}
+          sonarProjectKey: PIMS-API
           # The name of the SonarQube project
           sonarProjectName: PIMS-API
           # The SonarQube server URL. For SonarCloud, skip this setting.

@@ -68,9 +68,9 @@ jobs:
         uses: sonarsource/sonarqube-scan-action@master
         if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: c819584484e14c28b3078806a036ede69eed6998
           SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
-          PROJECT_KEY: ${{secrets.PROJECT_KEY_APP}}
+          PROJECT_KEY: PIMS-APP
           PROJECT_NAME: PIMS-APP
         with:
           projectBaseDir: ${{env.working-directory}}
