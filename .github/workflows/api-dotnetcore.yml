@@ -266,7 +266,7 @@ jobs:
           
          # Use Docker `latest` tag convention
 
-          [ "$VERSION" == "master" &&  ] && VERSION="${RELEASE_VERSION}_master"
+          [ "$VERSION" == "master" ] && VERSION="${RELEASE_VERSION}_master"
           
           echo VERSION=$VERSION
           
