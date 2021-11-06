@@ -257,17 +257,12 @@ jobs:
         if: success() && github.event_name == 'push' # if nothing failed
         run: |
           # Change all uppercase to lowercase
-          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]') 
-          
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')        
           # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          
-          RELEASE_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
-          
-         # Use Docker `latest` tag convention
-
-          [ "$VERSION" == "master" ] && VERSION="${RELEASE_VERSION}_master"
-          
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')       
+          RELEASE_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)        
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION="${RELEASE_VERSION}_master" ;          
           echo VERSION=$VERSION
           
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
