@@ -1,6 +1,6 @@
-# PIMS Sonarqube server
+# Sonarqube server
 
-PIMS uses sonarqube for static analysis and for live vulnerability testing on the deployed pims DEV instance. This Readme covers the Openshift setup of the server component of SonarQube. For instructions on how to use the scanner portion, see the Pipeline documentation.
+Sonarqube is used for static analysis and for live vulnerability testing on the deployed pims DEV instance. This Readme covers the Openshift setup of the server component of SonarQube. For instructions on how to use the scanner portion, see the Pipeline documentation.
 
 In OCP 4.0 the sonarqube image and the postgresql image is no longer maintained by the devexchange devops group, so you'll need the following:
 

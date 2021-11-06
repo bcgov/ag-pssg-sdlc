@@ -305,7 +305,7 @@ objects:
             from:
               kind: ImageStreamTag
               name: 'postgresql-96:latest'
-              namespace: 354028-tools
+              namespace: 5b7aa5-tools
           type: ImageChange
         - type: ConfigChange
   - apiVersion: v1

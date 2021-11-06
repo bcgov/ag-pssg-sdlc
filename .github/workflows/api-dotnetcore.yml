@@ -12,9 +12,14 @@ jobs:
     env:
       working-directory: ./backend
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      output-filename: api.txt
+      IMAGE_NAME: pims-api
+      IMAGE_ID: ${{secrets.OPENSHIFT_REGISTRY}}/${{env.OPENSHIFT_NAMESPACE}}/pims-api
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          repository: bcgov/PSP
 
       - name: Extract Branch Name
         shell: bash
@@ -30,7 +35,7 @@ jobs:
         uses: redhat-actions/oc-login@v1
         env:
           OPENSHIFT_USER: ${{secrets.OC_USERNAME_SA}}
-          OPENSHIFT_NAMESPACE: 3cd915-tools
+          OPENSHIFT_NAMESPACE: 5b7aa5-tools
           SERVER_URL: ${{secrets.OPENSHIFT_SERVER}}
           OPENSHIFT_REGISTRY: ${{secrets.OPENSHIFT_REGISTRY}} 
 
@@ -177,18 +182,112 @@ jobs:
             [1]: ${{env.SONAR_HOST_URL}}/dashboard?id=${{env.PROJECT_KEY}}
           edit-mode: replace
           reactions: eyes
+          
       - name: containarize app
-        if: success()
+        if: !failure()
         run: |
-            docker build . -t pims-app
+            docker build . -t $IMAGE_NAME
+        working-directory: ${{env.working-directory}}
       - name: Scan for Vulnerability
         id: scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'pims-app'
+          image-ref: '$IMAGE_NAME'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
           output: ${{env.output-filename}}
+      - if: failure() && steps.scan.outcome == 'failure'
+        name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{env.image-name}}_scan_report
+          path: ./${{env.output-filename}}
+          retention-days: 3
+      - name: Get comment body
+        id: get-comment-body
+        if: steps.artifact.outcome == 'success'
+        run: |
+          if [ -s ${{env.output-filename}} ]; then
+          body="$(cat ${{env.output-filename}})" 
+          body="${body//'%'/'%25'}"
+          body="${body//$'\n'/'%0A'}"
+          body="${body//$'\r'/'%0D'}" 
+          echo "::set-output name=body::$body" 
+          fi            
+      - name: Find Comment
+        if: github.event_name == 'pull_request'
+        uses: peter-evans/find-comment@v1
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: ${{secrets.OPENSHIFT_REGISTRY}}/${{env.image-name}}:${{env.tag}} vulnerability report 
+      - name: Comment on PR
+        if: steps.fc.outputs.comment-id == ''  && steps.get-comment-body.outcome != 'failure'
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        run: |
+          if [ -s ${{env.output-filename}} ]; then
+          commentPR () {
+            gh pr comment $PRNUM -b "${1}"
+          }
+          PRNUM=${{ github.event.pull_request.number }}
+          PRBODY=$(cat ${{env.output-filename}})
+          INDENTED='## ${{secrets.OPENSHIFT_REGISTRY}}/${{env.image-name}}:${{env.tag}} vulnerability report
+          ```'${PRBODY}'```';
+            commentPR "$INDENTED"
+          else
+            echo "No vulnerability detected in this image"
+          fi  
+      - name: Update PR Comment
+        if: github.event_name == 'pull_request' && steps.fc.outputs.comment-id != ''
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## ${{secrets.OPENSHIFT_REGISTRY}}/${{env.image-name}}:${{env.tag}} vulnerability report
+            ``` echo "${{ steps.get-comment-body.outputs.body }}"```
+          edit-mode: replace
+          reactions: confused  
+      - name: push to container registry   
+        if: !failure() && github.event_name == 'push' # if nothing failed
+        run: |
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]') 
+          
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          
+          RELEASE_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
+          
+         # Use Docker `latest` tag convention
+
+          [ "$VERSION" == "master" &&  ] && VERSION="${RELEASE_VERSION}_master"
+          
+          echo VERSION=$VERSION
+          
+          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
+          
+      - name: Notify dedicated teams channel
+        if: success() && github.event_name == 'push'
+        uses: jdcargile/ms-teams-notification@v1.3
+        with:
+          github-token: ${{ github.token }} # this will use the runner's token.
+          ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
+          notification-summary: A new pims-api image is publish
+          notification-color: 28a745 
+          timezone: America/Denver
+      - name: Notify dedicated teams channel
+        if: failure() && github.event_name == 'push'
+        uses: jdcargile/ms-teams-notification@v1.3
+        with:
+          github-token: ${{ github.token }} # this will use the runner's token.
+          ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
+          notification-summary: pims-api CI failed 
+          notification-color: dc3545 
+          timezone: America/Denver    
