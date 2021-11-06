@@ -14,7 +14,7 @@ jobs:
       working-directory: ./frontend
       output-filename: pims-app.txt
       IMAGE_NAME: pims-app
-      IMAGE_ID: ${{secrets.OPENSHIFT_REGISTRY}}/${{env.OPENSHIFT_NAMESPACE}}/pims-app
+      IMAGE_ID: ${{secrets.OPENSHIFT_REGISTRY}}/5b7aa5-tools/pims-app
 
     strategy:
       matrix:
