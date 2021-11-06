@@ -144,7 +144,7 @@ jobs:
 
 
       - name: containarize app
-        if: !failure()
+        if: success()
         run: |
             docker build . -t $IMAGE_NAME
         working-directory: ${{env.working-directory}}
