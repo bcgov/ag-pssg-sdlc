@@ -20,6 +20,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repository: bcgov/PSP
+          ref: master
 
       - name: Extract Branch Name
         shell: bash
@@ -186,13 +187,13 @@ jobs:
       - name: containarize app
         if: success()
         run: |
-            docker build . -t $IMAGE_NAME
+            docker build . -t ${{ env.IMAGE_NAME }}
         working-directory: ${{env.working-directory}}
       - name: Scan for Vulnerability
         id: scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '$IMAGE_NAME'
+          image-ref: '${{ env.IMAGE_NAME }}'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
