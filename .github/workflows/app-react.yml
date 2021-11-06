@@ -63,7 +63,7 @@ jobs:
           fail_ci_if_error: true
 
       - name: SonarQube Scan
-        id: scan
+        id: sonar
         uses: sonarsource/sonarqube-scan-action@master
         if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
         env:
@@ -79,9 +79,9 @@ jobs:
             -Dsonar.qualitygate.wait=true
       
       - name: Find Comment
-        if: failure() && steps.scan.outcome == 'failure' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        if: failure() && steps.sonar.outcome == 'failure' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         uses: peter-evans/find-comment@v1
-        id: fc
+        id: fcs
         with:
           token: ${{secrets.GITHUB_TOKEN}}
           issue-number: ${{ github.event.pull_request.number }}
@@ -90,7 +90,7 @@ jobs:
        
       - name: Check Quality Gate and Create Comment
         uses: peter-evans/create-or-update-comment@v1
-        if: failure() && steps.scan.outcome == 'failure' && github.event_name == 'pull_request' && steps.fc.outputs.comment-id == '' && github.event.pull_request.head.repo.full_name == github.repository
+        if: failure() && steps.sonar.outcome == 'failure' && github.event_name == 'pull_request' && steps.fcs.outputs.comment-id == '' && github.event.pull_request.head.repo.full_name == github.repository
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
@@ -105,14 +105,14 @@ jobs:
             [1]: ${{env.SONAR_HOST_URL}}/dashboard?id=${{env.PROJECT_KEY}}
           reactions: confused
       - name: Check Quality Gate and Update Comment
-        if: failure() && steps.scan.outcome == 'failure' && github.event_name == 'pull_request' && steps.fc.outputs.comment-id != '' && github.event.pull_request.head.repo.full_name == github.repository
+        if: failure() && steps.sonar.outcome == 'failure' && github.event_name == 'pull_request' && steps.fcs.outputs.comment-id != '' && github.event.pull_request.head.repo.full_name == github.repository
         uses: peter-evans/create-or-update-comment@v1
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
           PROJECT_KEY: ${{secrets.PROJECT_KEY_APP}}
         with:
-          comment-id: ${{ steps.fc.outputs.comment-id }}
+          comment-id: ${{ steps.fcs.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             QUALITY GATE STATUS FOR APP-REACT: FAILED.
