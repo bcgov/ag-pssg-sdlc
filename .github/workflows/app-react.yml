@@ -76,6 +76,8 @@ jobs:
           projectBaseDir: ${{env.working-directory}}
           args: >
             -Dsonar.projectKey=${{env.PROJECT_KEY}}
+            -Dsonar.login=83c8083f22204c5844077eb9022080cad6f7c20f
+            -Dsonar.host.url=https://sonarqube-5b7aa5-tools.apps.silver.devops.gov.bc.ca
             -Dsonar.projectName=${{env.PROJECT_NAME}}
             -Dsonar.qualitygate.wait=true
       
