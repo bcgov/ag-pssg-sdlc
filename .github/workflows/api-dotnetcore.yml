@@ -254,7 +254,7 @@ jobs:
           edit-mode: replace
           reactions: confused  
       - name: push to container registry   
-        if: !failure() && github.event_name == 'push' # if nothing failed
+        if: success() && github.event_name == 'push' # if nothing failed
         run: |
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]') 
