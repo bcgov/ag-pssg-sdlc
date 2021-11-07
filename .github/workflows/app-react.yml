@@ -195,7 +195,7 @@ jobs:
       - if: always() && steps.fc.outputs.comment-id == ''  && steps.get-comment-body.outcome != 'failure'
         name: Comment on PR
         env:
-          GITHUB_TOKEN: "${{secrets.DEPLOY_KEY}}" 
+          GITHUB_TOKEN: "${{secrets.PAT}}" 
         run: |
           if [ -s ${{env.output-filename}} ]; then
           commentPR () {
