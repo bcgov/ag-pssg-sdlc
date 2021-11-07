@@ -2,9 +2,9 @@ name: APP (React)
 
 on:
   push:
-    branches: [master, dev, test]
+    branches: [master, dev, test, feature3, feature1]
   pull_request:
-    branches: [master, dev, test]
+    branches: [master, dev, test, feature3, feature1]
 
 jobs:
   build:
@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-           repository: bcgov/PSP
+           repository: sookeke/PSP
            ref: master
 
       - name: Extract Branch Name
@@ -118,7 +118,7 @@ jobs:
           comment-id: ${{ steps.fcs.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            QUALITY GATE STATUS FOR APP-REACT: FAILED.
+            QUALITY GATE STATUS FOR ${{ env.IMAGE_NAME }}: FAILED
             
             [View and resolve details on][1]
             
@@ -164,14 +164,16 @@ jobs:
           output: ${{env.output-filename}}
       - if: failure() && steps.scan.outcome == 'failure'
         name: Upload artifact
+        id: artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{env.image-name}}_scan_report
+          name: ${{env.IMAGE_NAME}}_scan_report
           path: ./${{env.output-filename}}
-          retention-days: 3
-      - name: Get comment body
+          retention-days: 4
+
+      - if: always() && steps.scan.outcome == 'failure'
+        name: Get comment body
         id: get-comment-body
-        if: steps.artifact.outcome == 'success'
         run: |
           if [ -s ${{env.output-filename}} ]; then
           body="$(cat ${{env.output-filename}})" 
@@ -179,19 +181,21 @@ jobs:
           body="${body//$'\n'/'%0A'}"
           body="${body//$'\r'/'%0D'}" 
           echo "::set-output name=body::$body" 
-          fi            
-      - name: Find Comment
-        if: github.event_name == 'pull_request'
-        uses: peter-evans/find-comment@v1
+          fi  
+               
+      - if: always() && github.event_name == 'pull_request'
+        name: Find Comment 
         id: fc
+        uses: peter-evans/find-comment@v1
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
-          body-includes: ${{secrets.OPENSHIFT_REGISTRY}}/${{env.image-name}}:${{env.tag}} vulnerability report 
-      - name: Comment on PR
-        if: steps.fc.outputs.comment-id == ''  && steps.get-comment-body.outcome != 'failure'
+          body-includes: ${{secrets.OPENSHIFT_REGISTRY}}/${{env.IMAGE_NAME}} vulnerability report 
+
+      - if: always() && steps.fc.outputs.comment-id == ''  && steps.get-comment-body.outcome != 'failure'
+        name: Comment on PR
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: "${{secrets.PAT}}" 
         run: |
           if [ -s ${{env.output-filename}} ]; then
           commentPR () {
@@ -199,7 +203,7 @@ jobs:
           }
           PRNUM=${{ github.event.pull_request.number }}
           PRBODY=$(cat ${{env.output-filename}})
-          INDENTED='## ${{secrets.OPENSHIFT_REGISTRY}}/${{env.image-name}}:${{env.tag}} vulnerability report
+          INDENTED='## ${{secrets.OPENSHIFT_REGISTRY}}/${{env.IMAGE_NAME}} vulnerability report
           ```'${PRBODY}'```';
             commentPR "$INDENTED"
           else
@@ -237,15 +241,15 @@ jobs:
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: A new pims-api image is publish
+          notification-summary: "A new ${{ env.IMAGE_NAME }} image published"
           notification-color: 28a745 
-          timezone: America/Denver
+          timezone: America/Los_Angeles
       - name: Notify dedicated teams channel
         if: failure() && github.event_name == 'push'
         uses: jdcargile/ms-teams-notification@v1.3
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: pims-api CI failed 
+          notification-summary: "${{ env.IMAGE_NAME }} CI failing" 
           notification-color: dc3545 
-          timezone: America/Denver 
+          timezone: America/Los_Angeles 

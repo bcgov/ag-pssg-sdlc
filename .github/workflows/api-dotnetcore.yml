@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          repository: bcgov/PSP
+          repository: sookeke/PSP
           ref: master
 
       - name: Extract Branch Name
@@ -204,12 +204,12 @@ jobs:
         name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{env.image-name}}_scan_report
+          name: ${{env.IMAGE_NAME}}_scan_report
           path: ./${{env.output-filename}}
           retention-days: 3
-      - name: Get comment body
+      - if: steps.scan.outcome == 'failure'
+        name: Get comment body
         id: get-comment-body
-        if: steps.artifact.outcome == 'success'
         run: |
           if [ -s ${{env.output-filename}} ]; then
           body="$(cat ${{env.output-filename}})" 
@@ -219,7 +219,7 @@ jobs:
           echo "::set-output name=body::$body" 
           fi            
       - name: Find Comment
-        if: github.event_name == 'pull_request'
+        if: always() && github.event_name == 'pull_request'
         uses: peter-evans/find-comment@v1
         id: fc
         with:
