@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          repository: bcgov/PSP
+          repository: sookeke/PSP
           ref: master
 
       - name: Extract Branch Name

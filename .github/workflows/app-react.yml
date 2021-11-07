@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-           repository: bcgov/PSP
+           repository: sookeke/PSP
            ref: master
 
       - name: Extract Branch Name
@@ -118,7 +118,7 @@ jobs:
           comment-id: ${{ steps.fcs.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            QUALITY GATE STATUS FOR APP-REACT: FAILED.
+            QUALITY GATE STATUS FOR ${{ env.IMAGE_NAME }}: FAILED
             
             [View and resolve details on][1]
             
@@ -169,10 +169,11 @@ jobs:
         with:
           name: ${{env.IMAGE_NAME}}_scan_report
           path: ./${{env.output-filename}}
-          retention-days: 3
-      - name: Get comment body
+          retention-days: 4
+
+      - if: always() && steps.scan.outcome == 'failure'
+        name: Get comment body
         id: get-comment-body
-        if: steps.scan.outcome == 'failure'
         run: |
           if [ -s ${{env.output-filename}} ]; then
           body="$(cat ${{env.output-filename}})" 
@@ -189,12 +190,12 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
-          body-includes: ${{secrets.OPENSHIFT_REGISTRY}}/${{env.image-name}}:${{env.tag}} vulnerability report 
+          body-includes: ${{secrets.OPENSHIFT_REGISTRY}}/${{env.IMAGE_NAME}} vulnerability report 
 
-      - if: steps.fc.outputs.comment-id == ''  && steps.get-comment-body.outcome != 'failure'
+      - if: always() && steps.fc.outputs.comment-id == ''  && steps.get-comment-body.outcome != 'failure'
         name: Comment on PR
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: "${{secrets.PAT}}" 
         run: |
           if [ -s ${{env.output-filename}} ]; then
           commentPR () {
@@ -202,7 +203,7 @@ jobs:
           }
           PRNUM=${{ github.event.pull_request.number }}
           PRBODY=$(cat ${{env.output-filename}})
-          INDENTED='## ${{secrets.OPENSHIFT_REGISTRY}}/${{env.image-name}}:${{env.tag}} vulnerability report
+          INDENTED='## ${{secrets.OPENSHIFT_REGISTRY}}/${{env.IMAGE_NAME}} vulnerability report
           ```'${PRBODY}'```';
             commentPR "$INDENTED"
           else
@@ -240,15 +241,15 @@ jobs:
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: A new pims-api image is publish
+          notification-summary: "A new ${{ env.IMAGE_NAME }} image published"
           notification-color: 28a745 
-          timezone: America/Denver
+          timezone: America/Los_Angeles
       - name: Notify dedicated teams channel
         if: failure() && github.event_name == 'push'
         uses: jdcargile/ms-teams-notification@v1.3
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: pims-api CI failed 
+          notification-summary: "${{ env.IMAGE_NAME }} CI failing" 
           notification-color: dc3545 
-          timezone: America/Denver 
+          timezone: America/Los_Angeles 
