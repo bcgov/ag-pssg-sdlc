@@ -1,4 +1,4 @@
-import { AxiosRequestConfig } from 'axios';
+import { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import CustomAxios from 'customAxios';
 import { hideLoading, showLoading } from 'react-redux-loading-bar';
 import { logError, logRequest, logSuccess } from 'store/slices/network/networkSlice';
@@ -42,14 +42,14 @@ const download = (config: IDownloadConfig) => (dispatch: Function) => {
   dispatch(logRequest(options.actionType));
   dispatch(showLoading());
   return CustomAxios()
-    .request<BlobPart>({
+    .request({
       url: options.url,
       headers: options.headers,
       method: options.method ?? 'get',
       responseType: options.responseType ?? 'blob',
       data: options.data,
     })
-    .then(response => {
+    .then((response: AxiosResponse) => {
       dispatch(logSuccess({ name: options.actionType }));
 
       const uri = window.URL.createObjectURL(new Blob([response.data]));
@@ -59,7 +59,7 @@ const download = (config: IDownloadConfig) => (dispatch: Function) => {
       document.body.appendChild(link);
       link.click();
     })
-    .catch(axiosError =>
+    .catch((axiosError: AxiosError) =>
       dispatch(
         logError({
           name: options.actionType,

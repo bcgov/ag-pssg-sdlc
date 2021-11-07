@@ -1,4 +1,4 @@
-export interface ILeaseFilter {
+export interface ILeaseAndLicenseFilter {
   pidOrPin: string;
   lFileNo: string;
   searchBy: string;

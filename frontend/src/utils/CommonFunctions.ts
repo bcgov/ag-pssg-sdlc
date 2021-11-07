@@ -1,5 +1,12 @@
-import { IPaginateRequest } from 'hooks/pims-api';
+import { IPaginateParams } from 'constants/API';
 
+export interface IPaginate {
+  page: number;
+  total: number;
+  quantity: number;
+  items: any;
+  maxPages?: number;
+}
 export const PAGINATION_MARGIN_PAGES = 3;
 export const PAGINATION_MAX_PAGES = 9;
 
@@ -11,19 +18,19 @@ export const PAGINATION_MAX_PAGES = 9;
  * @param {number} [quantity]
  * @param {(string | string[])} [sort]
  * @param {T} [filter]
- * @returns {IPaginateRequest<T>}
+ * @returns {IPaginateParams}
  */
 export const toFilteredApiPaginateParams = <T extends object = {}>(
   page: number,
   quantity?: number,
   sort?: string | string[],
   filter?: T,
-): IPaginateRequest<T> => {
-  const apiPaginateParams = {
+): IPaginateParams => {
+  const apiPaginateParams: IPaginateParams = {
     page: page + 1,
     quantity: quantity,
     sort: sort,
     ...filter,
   };
-  return apiPaginateParams as IPaginateRequest<T>;
+  return apiPaginateParams;
 };

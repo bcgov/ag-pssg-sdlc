@@ -14,24 +14,15 @@ const Wrapper = styled('div')`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  margin-left: 0.5rem;
+  justify-items: center;
 `;
 
-interface Props {
-  active?: boolean;
-}
-
-const Down = styled(IoMdArrowDropdown)<Props>`
-  color: ${props => (props.active ? variables.activeColor : undefined)};
-  width: 1.6rem;
-  height: 1.6rem;
+const DescIcon = styled(IoMdArrowDropdown)`
+  color: ${variables.activeColor};
 `;
 
-const Up = styled(IoMdArrowDropup)<Props>`
-  color: ${props => (props.active ? variables.activeColor : undefined)};
-  width: 1.6rem;
-  height: 1.6rem;
+const AscIcon = styled(IoMdArrowDropup)`
+  color: ${variables.activeColor};
 `;
 
 function ColumnSort<T extends object = {}>({ column, onSort }: IColumnSortProps<T>) {
@@ -41,13 +32,13 @@ function ColumnSort<T extends object = {}>({ column, onSort }: IColumnSortProps<
 
   return (
     <Wrapper onClick={onSort}>
-      {column.isSorted && !column.isSortedDesc && <Up active={true} />}
-      {column.isSorted && column.isSortedDesc && <Down active={true} />}
+      {column.isSorted && !column.isSortedDesc && <AscIcon />}
+      {column.isSorted && column.isSortedDesc && <DescIcon />}
 
       {!column.isSorted && (
         <>
-          <Up style={{ marginBottom: -8 }} />
-          <Down />
+          <IoMdArrowDropup style={{ marginBottom: -5 }} />
+          <IoMdArrowDropdown />
         </>
       )}
     </Wrapper>

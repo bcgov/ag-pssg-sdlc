@@ -3,20 +3,27 @@ import SearchButton from 'components/common/form/SearchButton';
 import * as Styled from 'components/common/form/styles';
 import { PropertyFilterOptions } from 'features/properties/filter';
 import { Formik } from 'formik';
-import React from 'react';
+import * as React from 'react';
 
-import { ILeaseFilter } from '../../interfaces';
+import { ILeaseAndLicenseFilter } from '../interfaces';
 
-export interface ILeaseFilterProps {
-  filter?: ILeaseFilter;
-  setFilter: (filter: ILeaseFilter) => void;
+interface ILeaseAndLicenseFilterProps {
+  isSubmitting?: boolean;
+  filter?: ILeaseAndLicenseFilter;
+  setFilter: (filter: ILeaseAndLicenseFilter) => void;
+  search: (filter: ILeaseAndLicenseFilter) => void;
 }
 
 /**
  * Filter bar for leases and license.
- * @param {ILeaseFilterProps} param0
+ * @param {ILeaseAndLicenseFilterProps} param0
  */
-export const LeaseFilter: React.FunctionComponent<ILeaseFilterProps> = ({ filter, setFilter }) => {
+export const LeaseAndLicenseFilter: React.FunctionComponent<ILeaseAndLicenseFilterProps> = ({
+  isSubmitting,
+  filter,
+  setFilter,
+  search,
+}) => {
   const resetFilter = () => {
     setFilter(defaultFilter);
   };
@@ -25,17 +32,16 @@ export const LeaseFilter: React.FunctionComponent<ILeaseFilterProps> = ({ filter
     <Formik
       enableReinitialize
       initialValues={filter ?? defaultFilter}
-      onSubmit={(values, { setSubmitting }) => {
+      onSubmit={values => {
         setFilter(values);
-        setSubmitting(false);
       }}
     >
-      {({ resetForm, isSubmitting }) => (
+      {({ values, resetForm }) => (
         <Styled.InlineForm>
           <b>Search for a Lease or License:</b>
           <PropertyFilterOptions options={options} placeholders={placeholders} />
           <Styled.InlineInput field="tenantName" label="Tenant Name" />
-          <SearchButton disabled={isSubmitting} />
+          <SearchButton disabled={isSubmitting} onClick={() => search(values)} />
           <ResetButton
             disabled={isSubmitting}
             onClick={() => {
@@ -49,10 +55,10 @@ export const LeaseFilter: React.FunctionComponent<ILeaseFilterProps> = ({ filter
   );
 };
 
-export const defaultFilter: ILeaseFilter = {
+const defaultFilter: ILeaseAndLicenseFilter = {
   pidOrPin: '',
   lFileNo: '',
-  searchBy: 'lFileNo',
+  searchBy: 'pidOrPin',
   tenantName: '',
 };
 
@@ -68,8 +74,8 @@ const options = [
 ];
 
 const placeholders = {
-  pidOrPin: 'Enter a PID or PIN',
-  lFileNo: 'Enter an LIS File Number',
+  pid: 'Enter a PID or PIN',
+  lFileNumber: 'Enter an LIS File Number',
 };
 
-export default LeaseFilter;
+export default LeaseAndLicenseFilter;

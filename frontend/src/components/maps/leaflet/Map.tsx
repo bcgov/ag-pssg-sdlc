@@ -75,10 +75,6 @@ export type LayerPopupInformation = PopupContentConfig & {
   feature: Feature;
 };
 
-type BaseLayerFile = {
-  basemaps: BaseLayer[];
-};
-
 const defaultFilterValues: IPropertyFilter = {
   searchBy: 'pid',
   pid: '',
@@ -190,7 +186,7 @@ const Map: React.FC<MapProps> = ({
 
   useEffect(() => {
     // fetch GIS base layers configuration from /public folder
-    axios.get<BaseLayerFile>('/basemaps.json')?.then(result => {
+    axios.get('/basemaps.json')?.then(result => {
       setBaseLayers(result.data?.basemaps);
       setActiveBasemap(result.data?.basemaps?.[0]);
     });

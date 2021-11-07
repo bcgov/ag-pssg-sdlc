@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import * as actionTypes from 'constants/actionTypes';
 import * as API from 'constants/API';
 import { useApiProperties } from 'hooks/pims-api';
@@ -26,7 +26,7 @@ const catchAxiosError = (
   };
   dispatch(logError(payload));
   dispatch(hideLoading());
-  throw Error(axiosError.message);
+  throw Error(axiosError.response?.data.details);
 };
 
 export const useProperties = () => {
@@ -50,13 +50,13 @@ export const useProperties = () => {
       dispatch(logRequest(actionTypes.GET_PARCELS));
       dispatch(showLoading());
       return getPropertiesPaged(propertyBounds)
-        .then(response => {
+        .then((response: AxiosResponse) => {
           dispatch(logSuccess({ name: actionTypes.GET_PARCELS }));
-          dispatch(storeProperties(response.data.items));
+          dispatch(storeProperties(response.data));
           dispatch(hideLoading());
           return Promise.resolve(response);
         })
-        .catch(axiosError => {
+        .catch((axiosError: AxiosError) => {
           dispatch(
             logError({
               name: actionTypes.GET_PARCELS,
@@ -96,7 +96,7 @@ export const useProperties = () => {
           dispatch(hideLoading());
           return property;
         })
-        .catch(axiosError => {
+        .catch((axiosError: AxiosError) => {
           dispatch(
             logError({
               name: actionTypes.GET_PARCEL_DETAIL,

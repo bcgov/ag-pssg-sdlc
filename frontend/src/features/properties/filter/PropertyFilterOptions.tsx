@@ -37,7 +37,7 @@ export const PropertyFilterOptions: React.FC<IPropertyFilterOptions &
   const desc = state.placeholders[searchBy] || '';
 
   const reset = () => {
-    setFieldValue(searchBy ? searchBy : 'pid', '');
+    setFieldValue(options ? options[0].value : 'pid', '');
   };
 
   return (

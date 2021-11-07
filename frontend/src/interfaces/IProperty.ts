@@ -17,7 +17,6 @@ import {
 import { Moment } from 'moment';
 
 import { ILease } from './ILease';
-import IPropertySurplus from './IPropertySurplus';
 
 /**
  * A property entity represents a land, building, subdivision, or other type of property.
@@ -66,7 +65,6 @@ export interface IProperty {
   projects?: IProject[];
   projectActivities?: IProjectActivity[];
   evaluations?: IPropertyEvaluation[];
-  surplusDeclaration?: IPropertySurplus;
 
   createdOn?: Date | string | Moment;
   updatedOn?: Date | string | Moment;

@@ -23,27 +23,28 @@ export const columns = ({ municipalities }: Props): ColumnWithProps<IProperty>[]
   {
     Header: 'PID',
     accessor: 'pid',
-    align: 'right',
-    width: 40,
+    align: 'left',
+    sortable: false,
   },
   {
     Header: 'PIN',
     accessor: 'pin',
-    align: 'right',
-    width: 40,
+    align: 'left',
+    sortable: false,
   },
   {
     Header: 'Civic Address',
     accessor: p => formatStreetAddress(p.address),
     align: 'left',
     minWidth: 100,
-    width: 150,
+    sortable: false,
   },
   {
     Header: 'Location',
     accessor: p => p.address.municipality,
     align: 'left',
-    width: 50,
+    minWidth: 80,
+    sortable: false,
     filter: {
       component: TypeaheadField,
       props: {
@@ -61,7 +62,8 @@ export const columns = ({ municipalities }: Props): ColumnWithProps<IProperty>[]
     accessor: 'landArea',
     Cell: NumberCell,
     align: 'right',
-    width: 20,
+    minWidth: 120,
+    sortable: false,
     filter: {
       component: Input,
       props: {

@@ -1,3 +1,4 @@
+import { AxiosError, AxiosResponse } from 'axios';
 import * as actionTypes from 'constants/actionTypes';
 import * as API from 'constants/API';
 import { useApiUsers } from 'hooks/pims-api/useApiUsers';
@@ -7,7 +8,6 @@ import { hideLoading, showLoading } from 'react-redux-loading-bar';
 import { useAppDispatch } from 'store/hooks';
 import { handleAxiosResponse } from 'utils';
 
-import { IGenericNetworkAction } from '../network/interfaces';
 import { logError, logRequest, logSuccess } from '../network/networkSlice';
 import { storeUserDetails, storeUsers, updateUser } from './usersSlice';
 
@@ -22,18 +22,16 @@ export const useUsers = () => {
    * fetch all of the users from the server based on a filter.
    * @return the filtered, paged list of users.
    */
-  const activate = useCallback(async (): Promise<
-    IUser | { payload: IGenericNetworkAction; type: string }
-  > => {
+  const activate = useCallback(async (): Promise<IUser> => {
     dispatch(logRequest(actionTypes.ADD_ACTIVATE_USER));
     dispatch(showLoading());
     return activateUser()
-      .then(response => {
+      .then((response: AxiosResponse) => {
         dispatch(logSuccess({ name: actionTypes.ADD_ACTIVATE_USER, status: response.status }));
         dispatch(hideLoading());
         return response.data;
       })
-      .catch(axiosError =>
+      .catch((axiosError: AxiosError) =>
         dispatch(
           logError({
             name: actionTypes.ADD_ACTIVATE_USER,
@@ -50,18 +48,16 @@ export const useUsers = () => {
    * @return the filtered, paged list of users.
    */
   const fetch = useCallback(
-    async (
-      params: API.IPaginateParams,
-    ): Promise<IPagedItems<IUser> | { payload: IGenericNetworkAction; type: string }> => {
+    async (params: API.IPaginateParams): Promise<IPagedItems<IUser>> => {
       dispatch(logRequest(actionTypes.GET_USERS));
       dispatch(showLoading());
       return getUsersPaged(params)
-        .then(response => {
+        .then((response: AxiosResponse) => {
           dispatch(logSuccess({ name: actionTypes.GET_USERS }));
           dispatch(storeUsers(response.data));
           return response.data;
         })
-        .catch(axiosError =>
+        .catch((axiosError: AxiosError) =>
           dispatch(
             logError({
               name: actionTypes.GET_USERS,
@@ -80,17 +76,17 @@ export const useUsers = () => {
    * @return the detailed user.
    */
   const fetchDetail = useCallback(
-    async (key: string): Promise<IUser | { payload: IGenericNetworkAction; type: string }> => {
+    async (key: string): Promise<IUser> => {
       dispatch(logRequest(actionTypes.GET_USER_DETAIL));
       dispatch(showLoading());
       return getUser(key)
-        .then(response => {
+        .then((response: AxiosResponse) => {
           dispatch(logSuccess({ name: actionTypes.GET_USER_DETAIL }));
           dispatch(storeUserDetails(response.data));
           dispatch(hideLoading());
           return response.data;
         })
-        .catch(axiosError =>
+        .catch((axiosError: AxiosError) =>
           dispatch(
             logError({
               name: actionTypes.GET_USER_DETAIL,
@@ -110,7 +106,7 @@ export const useUsers = () => {
    */
   const update = useCallback(
     async (updatedUser: IUser): Promise<IUser> => {
-      const axiosPromise = putUser(updatedUser).then(response => {
+      const axiosPromise = putUser(updatedUser).then((response: AxiosResponse) => {
         dispatch(updateUser(response.data));
         return Promise.resolve(response);
       });

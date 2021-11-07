@@ -1,9 +1,9 @@
+import { AxiosError, AxiosResponse } from 'axios';
 import * as actionTypes from 'constants/actionTypes';
 import React from 'react';
 import { hideLoading, showLoading } from 'react-redux-loading-bar';
 import { useAppDispatch } from 'store/hooks';
 
-import { IGenericNetworkAction } from '../network/interfaces';
 import { logError, logRequest, logSuccess } from '../network/networkSlice';
 import { useApiLookupCodes } from './../../../hooks/pims-api/useApiLookupCodes';
 import { ILookupCode, storeLookupCodes } from '.';
@@ -16,19 +16,17 @@ export const useLookupCodes = () => {
    * Return an action that fetches all lookup codes within PIMS.
    * @returns an action that fetches all lookup codes.
    */
-  const fetch = React.useCallback(async (): Promise<
-    ILookupCode[] | { payload: IGenericNetworkAction; type: string }
-  > => {
+  const fetch = React.useCallback(async (): Promise<ILookupCode> => {
     dispatch(logRequest(actionTypes.GET_LOOKUP_CODES));
     dispatch(showLoading());
     return getLookupCodes()
-      .then(response => {
+      .then((response: AxiosResponse) => {
         dispatch(logSuccess({ name: actionTypes.GET_LOOKUP_CODES }));
         dispatch(storeLookupCodes(response.data));
         dispatch(hideLoading());
         return response.data;
       })
-      .catch(axiosError =>
+      .catch((axiosError: AxiosError) =>
         dispatch(
           logError({
             name: actionTypes.GET_LOOKUP_CODES,

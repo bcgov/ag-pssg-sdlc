@@ -51,6 +51,3 @@ var createElementNSOrig = (global as any).document.createElementNS;
 window.scrollTo = jest.fn(); // not implemented by jsdom.
 
 jest.setTimeout(10000);
-
-// Set default tenant for unit tests
-process.env.REACT_APP_TENANT = 'MOTI';

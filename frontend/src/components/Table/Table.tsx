@@ -89,7 +89,7 @@ const getStyles = <T extends object>(
       style: {
         justifyContent: column?.align === 'right' ? 'flex-end' : 'flex-start',
         textAlign: column?.align === 'right' ? 'right' : 'left',
-        alignItems: 'center',
+        alignItems: isHeader ? 'center' : 'flex-start',
         display: isHeader && hideHeaders ? 'none' : 'flex',
         ...colSize,
       },
@@ -390,6 +390,7 @@ const Table = <T extends IIdentifiedObject, TFilter extends object = {}>(
         ) : (
           column.render('Header')
         )}
+        <span style={{ flex: '1 1 auto' }} />
         <ColumnSort
           onSort={() => {
             const next = getNextSortDirection(column);

@@ -17,5 +17,7 @@ export * from './detail/LeasePages/LeasePageForm';
 export * from './detail/LeaseStatusSummary';
 export * from './detail/StackedPidTenantFields';
 export * from './hooks/useLeaseDetail';
+export * from './index';
 export * from './interfaces';
-export * from './list/LeaseListView';
+export * from './list/LeaseAndLicenseFilter';
+export * from './list/LeaseAndLicenseListView';

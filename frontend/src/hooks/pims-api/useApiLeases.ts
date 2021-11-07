@@ -1,9 +1,9 @@
-import { ILeaseFilter } from 'features/leases/interfaces';
-import { ILease, ILeaseSearchResult, IPagedItems } from 'interfaces';
+import { ILease, IPagedItems } from 'interfaces';
 import queryString from 'query-string';
 import React from 'react';
 
-import { IPaginateRequest, useAxiosApi } from '.';
+import { ILeaseAndLicenseFilter } from './../../features/leases/interfaces';
+import { useAxiosApi } from '.';
 
 /**
  * PIMS API wrapper to centralize all AJAX requests to the lease endpoints.
@@ -14,8 +14,8 @@ export const useApiLeases = () => {
 
   return React.useMemo(
     () => ({
-      getLeases: (params: IPaginateLeases | null) =>
-        api.get<IPagedItems<ILeaseSearchResult>>(
+      getLeases: (params: ILeaseAndLicenseFilter | null) =>
+        api.get<IPagedItems<ILease>>(
           `/leases/search?${params ? queryString.stringify(params) : ''}`,
         ),
       getLease: (id: number) => api.get<ILease>(`/leases/${id}`),
@@ -23,5 +23,3 @@ export const useApiLeases = () => {
     [api],
   );
 };
-
-export type IPaginateLeases = IPaginateRequest<ILeaseFilter>;

@@ -6,7 +6,6 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { withNameSpace } from 'utils/formUtils';
 
-import TenantNotes from './TenantNotes';
 import TenantOrganizationContactInfo from './TenantOrganizationContactInfo';
 import TenantPersonContactInfo from './TenantPersonContactInfo';
 
@@ -23,16 +22,15 @@ export const Tenant: React.FunctionComponent<ITenantProps> = ({ nameSpace }) => 
   const persons: IPerson[] = getIn(values, withNameSpace(nameSpace, 'persons')) ?? [];
   const organizations: IOrganization[] =
     getIn(values, withNameSpace(nameSpace, 'organizations')) ?? [];
-  const tenantNotes: string[] = getIn(values, withNameSpace(nameSpace, 'tenantNotes')) ?? [];
 
   return (
-    <FormSectionOne>
+    <StyledDetails>
       <TenantsFieldArray
         name={withNameSpace(nameSpace, 'properties')}
         render={renderProps => (
           <>
             {persons.map((person: IPerson, index) => (
-              <Styled.SpacedInlineListItem key={`person-${index}`}>
+              <Styled.SpacedInlineListItem>
                 <FormSection>
                   <TenantPersonContactInfo
                     disabled={true}
@@ -42,7 +40,7 @@ export const Tenant: React.FunctionComponent<ITenantProps> = ({ nameSpace }) => 
               </Styled.SpacedInlineListItem>
             ))}
             {organizations.map((organization: IOrganization, index) => (
-              <Styled.SpacedInlineListItem key={`organizations-${index}`}>
+              <Styled.SpacedInlineListItem>
                 <FormSection>
                   <TenantOrganizationContactInfo
                     disabled={true}
@@ -51,39 +49,12 @@ export const Tenant: React.FunctionComponent<ITenantProps> = ({ nameSpace }) => 
                 </FormSection>
               </Styled.SpacedInlineListItem>
             ))}
-            {tenantNotes.map(
-              (tenantNote: string, index) =>
-                !!tenantNote && (
-                  <Styled.SpacedInlineListItem key={`notes-${index}`}>
-                    <TenantNotes
-                      disabled={true}
-                      nameSpace={withNameSpace(nameSpace, `tenantNotes.${index}`)}
-                    ></TenantNotes>
-                  </Styled.SpacedInlineListItem>
-                ),
-            )}
           </>
         )}
       />
-    </FormSectionOne>
+    </StyledDetails>
   );
 };
-
-export const FormSectionOne = styled(FormSection)`
-  column-count: 2;
-  & > * {
-    break-inside: avoid-column;
-  }
-  column-gap: 10rem;
-  li {
-    list-style-type: none;
-    padding: 2rem 0;
-    margin: 0;
-  }
-  @media only screen and (max-width: 1500px) {
-    column-count: 1;
-  }
-`;
 
 export const TenantsFieldArray = styled(FieldArray)`
   column-count: 2;
@@ -99,6 +70,13 @@ export const TenantsFieldArray = styled(FieldArray)`
   @media only screen and (max-width: 1500px) {
     column-count: 1;
   }
+`;
+
+const StyledDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 2.5rem;
 `;
 
 export default Tenant;

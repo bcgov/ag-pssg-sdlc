@@ -1,24 +1,22 @@
 import { useKeycloak } from '@react-keycloak/web';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import * as API from 'constants/API';
 import { createMemoryHistory } from 'history';
+import renderer from 'react-test-renderer';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { ILookupCode, lookupCodesSlice } from 'store/slices/lookupCodes';
-import { tenantsSlice, useTenants } from 'store/slices/tenants';
+import { tenantsSlice } from 'store/slices/tenants';
 import { config } from 'tenants';
 import { defaultTenant } from 'tenants';
-import { cleanup, fireEvent, mockKeycloak, render } from 'utils/test-utils';
+import TestCommonWrapper from 'utils/TestCommonWrapper';
 
 import Header from './Header';
 
 jest.mock('@react-keycloak/web');
-
-jest.mock('store/slices/tenants/useTenants');
-(useTenants as any).mockImplementation(() => ({
-  getSettings: jest.fn(),
-}));
+afterEach(() => {
+  cleanup();
+});
 
 const mockStore = configureMockStore([thunk]);
 const history = createMemoryHistory();
@@ -35,41 +33,53 @@ const store = mockStore({
   [tenantsSlice.name]: { defaultTenant },
 });
 
-const setup = () => {
-  const utils = render(<Header />, { store, history });
-  return { ...utils };
-};
+const getHeader = () => (
+  <TestCommonWrapper store={store} history={history}>
+    <Header />
+  </TestCommonWrapper>
+);
 
-const mockAxios = new MockAdapter(axios);
+describe('Header tests', () => {
+  const OLD_ENV = process.env;
 
-const ORIG_ENV = process.env;
-
-describe('App Header', () => {
   beforeEach(() => {
-    process.env = { ...ORIG_ENV };
-    mockAxios.onGet('/tenants/tenant.json').reply(200, config['MOTI']);
-  });
-
-  afterEach(() => {
-    mockAxios.reset();
-    cleanup();
+    jest.resetModules();
+    process.env = {
+      ...OLD_ENV,
+      REACT_APP_TENANT: 'TEST',
+    };
   });
 
   afterAll(() => {
-    process.env = ORIG_ENV;
+    process.env = OLD_ENV;
   });
 
-  it('renders correctly', async () => {
-    mockKeycloak({ authenticated: false });
-    const { asFragment } = setup();
-    expect(asFragment()).toMatchSnapshot();
+  it('Header renders correctly', async () => {
+    (useKeycloak as jest.Mock).mockReturnValue({ keycloak: { authenticated: false } });
+    const tree = renderer.create(getHeader()).toJSON();
+    await waitFor(async () => {
+      expect(tree).toMatchSnapshot();
+    });
   });
 
-  it('renders for MOTI tenant', async () => {
+  it('Header renders for MOTI tenant', async () => {
     process.env.REACT_APP_TENANT = 'MOTI';
-    mockKeycloak({ authenticated: false });
-    const { findByText } = setup();
-    expect(await findByText(config['MOTI'].title)).toBeInTheDocument();
+    (useKeycloak as jest.Mock).mockReturnValue({ keycloak: { authenticated: false } });
+    const header = render(getHeader());
+    await waitFor(async () => {
+      const result = await header.findByText(config['MOTI'].title);
+      expect(result.innerHTML).toBe(config['MOTI'].title);
+    });
+  });
+
+  it('Header renders for CITZ tenant', async () => {
+    process.env.REACT_APP_TENANT = 'CITZ';
+    (useKeycloak as jest.Mock).mockReturnValue({ keycloak: { authenticated: false } });
+    const header = render(getHeader());
+    await waitFor(async () => {
+      const result = await header.findByText(config['CITZ'].title);
+      expect(result.innerHTML).toBe(config['CITZ'].title);
+    });
   });
 
   it('User displays default if no user name information found', async () => {
@@ -83,8 +93,11 @@ describe('App Header', () => {
       },
     });
 
-    const { findByText } = setup();
-    expect(await findByText('default')).toBeVisible();
+    const { getByText } = render(getHeader());
+    await waitFor(async () => {
+      const name = getByText('default');
+      expect(name).toBeVisible();
+    });
   });
 
   describe('UserProfile user name display', () => {
@@ -101,8 +114,11 @@ describe('App Header', () => {
         },
       });
 
-      const { findByText } = setup();
-      expect(await findByText('display name')).toBeVisible();
+      const { getByText } = render(getHeader());
+      await waitFor(async () => {
+        const name = getByText('display name');
+        expect(name).toBeVisible();
+      });
     });
 
     it('Displays first last name if no display name', async () => {
@@ -118,8 +134,11 @@ describe('App Header', () => {
         },
       });
 
-      const { findByText } = setup();
-      expect(await findByText('firstName surname')).toBeVisible();
+      const { getByText } = render(getHeader());
+      await waitFor(async () => {
+        const name = getByText('firstName surname');
+        expect(name).toBeVisible();
+      });
     });
 
     it('displays appropriate organization', async () => {
@@ -134,12 +153,11 @@ describe('App Header', () => {
           },
         },
       });
-
-      const { findByText } = setup();
-      const userLink = await findByText(/test user/i);
-      expect(userLink).toBeVisible();
-      fireEvent.click(userLink);
-      expect(await findByText(/organizationVal/i)).toBeInTheDocument();
+      const { getByText } = render(getHeader());
+      fireEvent.click(getByText(/test user/i));
+      await waitFor(async () => {
+        expect(getByText(/organizationVal/i)).toBeInTheDocument();
+      });
     });
   });
 });

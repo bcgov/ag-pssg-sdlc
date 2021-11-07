@@ -23,7 +23,6 @@ export interface ILease {
   description?: string;
   landArea?: number;
   areaUnit?: string;
-  tenantNotes: string[];
 }
 
 export interface IFormLease
@@ -46,7 +45,6 @@ export const defaultLease: ILease = {
   paymentFrequencyType: 'Annually',
   renewalCount: 0,
   motiName: 'Moti, Name, Name',
-  tenantNotes: [],
 };
 
 export const defaultFormLease: IFormLease = {
@@ -68,5 +66,4 @@ export const defaultFormLease: IFormLease = {
   paymentFrequencyType: '',
   landArea: '',
   areaUnit: '',
-  tenantNotes: [],
 };

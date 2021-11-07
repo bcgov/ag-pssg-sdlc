@@ -197,8 +197,7 @@ export const InventoryLayer: React.FC<InventoryLayerProps> = ({
     try {
       onRequestData(true);
       const tileData = await loadTile(filters[0]);
-      const validFeatures = tileData.features.filter(feature => !!feature?.geometry);
-      const data = validFeatures.map((feature: Feature) => {
+      const data = tileData.features.map((feature: Feature) => {
         //TODO: this converts all polygons to points, this should be changed to a View that returns the POINT instead of the POLYGON (psp-1859)
         return {
           ...feature,

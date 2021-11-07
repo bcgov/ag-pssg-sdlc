@@ -13,24 +13,10 @@ exports[`Manage Users Component Snapshot matches 1`] = `
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  margin-left: 0.5rem;
-}
-
-.c8 {
-  width: 1.6rem;
-  height: 1.6rem;
+  justify-items: center;
 }
 
 .c7 {
-  width: 1.6rem;
-  height: 1.6rem;
-}
-
-.c9 {
   margin-top: 0.3rem;
 }
 
@@ -350,16 +336,18 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                 class="sortable-column"
               >
                 IDIR/BCeID
+                <span
+                  style="flex: 1 1 auto;"
+                />
                 <div
                   class="c6"
                 >
                   <svg
-                    class="c7"
                     fill="currentColor"
                     height="1em"
                     stroke="currentColor"
                     stroke-width="0"
-                    style="margin-bottom: -8px;"
+                    style="margin-bottom: -5px;"
                     viewBox="0 0 512 512"
                     width="1em"
                     xmlns="http://www.w3.org/2000/svg"
@@ -369,7 +357,6 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                     />
                   </svg>
                   <svg
-                    class="c8"
                     fill="currentColor"
                     height="1em"
                     stroke="currentColor"
@@ -395,16 +382,18 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                 class="sortable-column"
               >
                 First name
+                <span
+                  style="flex: 1 1 auto;"
+                />
                 <div
                   class="c6"
                 >
                   <svg
-                    class="c7"
                     fill="currentColor"
                     height="1em"
                     stroke="currentColor"
                     stroke-width="0"
-                    style="margin-bottom: -8px;"
+                    style="margin-bottom: -5px;"
                     viewBox="0 0 512 512"
                     width="1em"
                     xmlns="http://www.w3.org/2000/svg"
@@ -414,7 +403,6 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                     />
                   </svg>
                   <svg
-                    class="c8"
                     fill="currentColor"
                     height="1em"
                     stroke="currentColor"
@@ -440,16 +428,18 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                 class="sortable-column"
               >
                 Last name
+                <span
+                  style="flex: 1 1 auto;"
+                />
                 <div
                   class="c6"
                 >
                   <svg
-                    class="c7"
                     fill="currentColor"
                     height="1em"
                     stroke="currentColor"
                     stroke-width="0"
-                    style="margin-bottom: -8px;"
+                    style="margin-bottom: -5px;"
                     viewBox="0 0 512 512"
                     width="1em"
                     xmlns="http://www.w3.org/2000/svg"
@@ -459,7 +449,6 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                     />
                   </svg>
                   <svg
-                    class="c8"
                     fill="currentColor"
                     height="1em"
                     stroke="currentColor"
@@ -485,16 +474,18 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                 class="sortable-column"
               >
                 Email
+                <span
+                  style="flex: 1 1 auto;"
+                />
                 <div
                   class="c6"
                 >
                   <svg
-                    class="c7"
                     fill="currentColor"
                     height="1em"
                     stroke="currentColor"
                     stroke-width="0"
-                    style="margin-bottom: -8px;"
+                    style="margin-bottom: -5px;"
                     viewBox="0 0 512 512"
                     width="1em"
                     xmlns="http://www.w3.org/2000/svg"
@@ -504,7 +495,6 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                     />
                   </svg>
                   <svg
-                    class="c8"
                     fill="currentColor"
                     height="1em"
                     stroke="currentColor"
@@ -530,16 +520,18 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                 class="sortable-column"
               >
                 Position
+                <span
+                  style="flex: 1 1 auto;"
+                />
                 <div
                   class="c6"
                 >
                   <svg
-                    class="c7"
                     fill="currentColor"
                     height="1em"
                     stroke="currentColor"
                     stroke-width="0"
-                    style="margin-bottom: -8px;"
+                    style="margin-bottom: -5px;"
                     viewBox="0 0 512 512"
                     width="1em"
                     xmlns="http://www.w3.org/2000/svg"
@@ -549,7 +541,6 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                     />
                   </svg>
                   <svg
-                    class="c8"
                     fill="currentColor"
                     height="1em"
                     stroke="currentColor"
@@ -575,16 +566,18 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                 class="sortable-column"
               >
                 Active
+                <span
+                  style="flex: 1 1 auto;"
+                />
                 <div
                   class="c6"
                 >
                   <svg
-                    class="c7"
                     fill="currentColor"
                     height="1em"
                     stroke="currentColor"
                     stroke-width="0"
-                    style="margin-bottom: -8px;"
+                    style="margin-bottom: -5px;"
                     viewBox="0 0 512 512"
                     width="1em"
                     xmlns="http://www.w3.org/2000/svg"
@@ -594,7 +587,6 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                     />
                   </svg>
                   <svg
-                    class="c8"
                     fill="currentColor"
                     height="1em"
                     stroke="currentColor"
@@ -620,16 +612,18 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                 class="sortable-column"
               >
                 Organization
+                <span
+                  style="flex: 1 1 auto;"
+                />
                 <div
                   class="c6"
                 >
                   <svg
-                    class="c7"
                     fill="currentColor"
                     height="1em"
                     stroke="currentColor"
                     stroke-width="0"
-                    style="margin-bottom: -8px;"
+                    style="margin-bottom: -5px;"
                     viewBox="0 0 512 512"
                     width="1em"
                     xmlns="http://www.w3.org/2000/svg"
@@ -639,7 +633,6 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                     />
                   </svg>
                   <svg
-                    class="c8"
                     fill="currentColor"
                     height="1em"
                     stroke="currentColor"
@@ -665,6 +658,9 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                 class="sortable-column"
               >
                 Roles
+                <span
+                  style="flex: 1 1 auto;"
+                />
               </div>
             </div>
             <div
@@ -677,6 +673,9 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                 class="sortable-column"
               >
                 Last Login
+                <span
+                  style="flex: 1 1 auto;"
+                />
               </div>
             </div>
             <div
@@ -689,16 +688,18 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                 class="sortable-column"
               >
                 Created On
+                <span
+                  style="flex: 1 1 auto;"
+                />
                 <div
                   class="c6"
                 >
                   <svg
-                    class="c7"
                     fill="currentColor"
                     height="1em"
                     stroke="currentColor"
                     stroke-width="0"
-                    style="margin-bottom: -8px;"
+                    style="margin-bottom: -5px;"
                     viewBox="0 0 512 512"
                     width="1em"
                     xmlns="http://www.w3.org/2000/svg"
@@ -708,7 +709,6 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                     />
                   </svg>
                   <svg
-                    class="c8"
                     fill="currentColor"
                     height="1em"
                     stroke="currentColor"
@@ -734,6 +734,9 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                 class="sortable-column"
               >
                  
+                <span
+                  style="flex: 1 1 auto;"
+                />
               </div>
             </div>
           </div>
@@ -753,7 +756,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td"
                 role="cell"
-                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title=""
               >
                 <a
@@ -765,7 +768,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td clickable"
                 role="cell"
-                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title="Click IDIR/BCeID link to view User Information page"
               >
                 testUserFirst1
@@ -773,7 +776,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td clickable"
                 role="cell"
-                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title="Click IDIR/BCeID link to view User Information page"
               >
                 testUserLast1
@@ -781,7 +784,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td clickable"
                 role="cell"
-                style="box-sizing: border-box; flex: 200 0 auto; min-width: 200px; width: 200px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 200 0 auto; min-width: 200px; width: 200px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title="Click IDIR/BCeID link to view User Information page"
               >
                 
@@ -789,7 +792,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td clickable"
                 role="cell"
-                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title="Click IDIR/BCeID link to view User Information page"
               >
                 tester position
@@ -797,7 +800,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td clickable"
                 role="cell"
-                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title="Click IDIR/BCeID link to view User Information page"
               >
                 <svg
@@ -817,7 +820,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td clickable"
                 role="cell"
-                style="box-sizing: border-box; flex: 200 0 auto; min-width: 200px; width: 200px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 200 0 auto; min-width: 200px; width: 200px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title="Click IDIR/BCeID link to view User Information page"
               >
                 HLTH
@@ -825,7 +828,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td clickable"
                 role="cell"
-                style="box-sizing: border-box; flex: 200 0 auto; min-width: 200px; width: 200px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 200 0 auto; min-width: 200px; width: 200px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title="Click IDIR/BCeID link to view User Information page"
               >
                 admin
@@ -833,7 +836,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td clickable"
                 role="cell"
-                style="box-sizing: border-box; flex: 100 0 auto; min-width: 100px; width: 100px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 100 0 auto; min-width: 100px; width: 100px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title="Click IDIR/BCeID link to view User Information page"
               >
                 
@@ -841,7 +844,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td clickable"
                 role="cell"
-                style="box-sizing: border-box; flex: 100 0 auto; min-width: 100px; width: 100px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 100 0 auto; min-width: 100px; width: 100px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title="Click IDIR/BCeID link to view User Information page"
               >
                 
@@ -849,7 +852,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td"
                 role="cell"
-                style="box-sizing: border-box; flex: 75 0 auto; min-width: 30px; width: 75px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 75 0 auto; min-width: 30px; width: 75px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title=""
               >
                 <div>
@@ -929,7 +932,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td"
                 role="cell"
-                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title=""
               >
                 <a
@@ -941,7 +944,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td clickable"
                 role="cell"
-                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title="Click IDIR/BCeID link to view User Information page"
               >
                 testUser
@@ -949,7 +952,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td clickable"
                 role="cell"
-                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title="Click IDIR/BCeID link to view User Information page"
               >
                 testUser
@@ -957,7 +960,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td clickable"
                 role="cell"
-                style="box-sizing: border-box; flex: 200 0 auto; min-width: 200px; width: 200px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 200 0 auto; min-width: 200px; width: 200px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title="Click IDIR/BCeID link to view User Information page"
               >
                 
@@ -965,7 +968,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td clickable"
                 role="cell"
-                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title="Click IDIR/BCeID link to view User Information page"
               >
                 tester
@@ -973,7 +976,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td clickable"
                 role="cell"
-                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 100 0 auto; min-width: 30px; width: 100px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title="Click IDIR/BCeID link to view User Information page"
               >
                 <svg
@@ -993,7 +996,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td clickable"
                 role="cell"
-                style="box-sizing: border-box; flex: 200 0 auto; min-width: 200px; width: 200px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 200 0 auto; min-width: 200px; width: 200px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title="Click IDIR/BCeID link to view User Information page"
               >
                 HLTH
@@ -1001,7 +1004,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td clickable"
                 role="cell"
-                style="box-sizing: border-box; flex: 200 0 auto; min-width: 200px; width: 200px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 200 0 auto; min-width: 200px; width: 200px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title="Click IDIR/BCeID link to view User Information page"
               >
                 admin
@@ -1009,7 +1012,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td clickable"
                 role="cell"
-                style="box-sizing: border-box; flex: 100 0 auto; min-width: 100px; width: 100px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 100 0 auto; min-width: 100px; width: 100px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title="Click IDIR/BCeID link to view User Information page"
               >
                 
@@ -1017,7 +1020,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td clickable"
                 role="cell"
-                style="box-sizing: border-box; flex: 100 0 auto; min-width: 100px; width: 100px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 100 0 auto; min-width: 100px; width: 100px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title="Click IDIR/BCeID link to view User Information page"
               >
                 
@@ -1025,7 +1028,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
               <div
                 class="td"
                 role="cell"
-                style="box-sizing: border-box; flex: 75 0 auto; min-width: 30px; width: 75px; justify-content: flex-start; text-align: left; align-items: center; display: flex;"
+                style="box-sizing: border-box; flex: 75 0 auto; min-width: 30px; width: 75px; justify-content: flex-start; text-align: left; align-items: flex-start; display: flex;"
                 title=""
               >
                 <div>
@@ -1155,7 +1158,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                 style="display: flex;"
               >
                 <span
-                  class="c9"
+                  class="c7"
                 >
                   Show
                 </span>
@@ -1166,7 +1169,7 @@ exports[`Manage Users Component Snapshot matches 1`] = `
                   value="10"
                 />
                 <span
-                  class="c9"
+                  class="c7"
                 >
                   Entries
                 </span>
