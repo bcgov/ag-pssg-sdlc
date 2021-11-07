@@ -1,0 +1,45 @@
+name: Release version
+
+on:
+  pull_request_target:
+    types: [closed]
+    branches: [test]
+
+jobs:
+  Release-version:
+    # this job will only run if the PR has been merged
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ssh-key: ${{ secrets.DEPLOY_KEY }} # with this we can bypass branch protection rules here (no-push). Create a deployment key if you dont have one
+          repository: sookeke/PSP
+          ref: master
+          
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      - name: get release number
+        id: version
+        run: |
+          git config user.name "github-actions"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # this just prints the new version number - will not update any files
+          NEW_VERSION=$(node build/bump-version.js --print-version)
+          echo "::set-output name=NEW_VERSION::$NEW_VERSION" 
+          # auto-increment version number upon merging pull requests
+          node build/bump-version.js --apply
+
+      - name: create a release for prep-production
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          release_name: ${{ steps.version.outputs.NEW_VERSION }}
+          tag_name: ${{ github.ref }}
+          body_path: CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ github.token }}      

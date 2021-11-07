@@ -1,0 +1,255 @@
+name: APP (React)
+
+on:
+  push:
+    branches: [master, dev, test, feature3, feature1]
+  pull_request:
+    branches: [master, dev, test, feature3, feature1]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+      working-directory: ./frontend
+      output-filename: pims-app.txt
+      IMAGE_NAME: pims-app
+      IMAGE_ID: ${{secrets.OPENSHIFT_REGISTRY}}/5b7aa5-tools/pims-app
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+           repository: sookeke/PSP
+           ref: master
+
+      - name: Extract Branch Name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+        working-directory: ${{env.working-directory}}
+
+      - run: npm run lint
+        working-directory: ${{env.working-directory}}
+
+      - run: npm run build --if-present
+        working-directory: ${{env.working-directory}}
+
+      - run: npm run coverage
+        working-directory: ${{env.working-directory}}
+
+      - name: Codecov
+        uses: codecov/codecov-action@v1.5.0
+        with:
+          # User defined upload name. Visible in Codecov UI
+          name: PIMS
+          # Repository upload token - get it from codecov.io. Required only for private repositories
+          token: ${{ secrets.CodeCov }}
+          # Path to coverage file to upload
+          file: ${{env.working-directory}}/coverage/coverage-final.json
+          # Flag upload to group coverage metrics (e.g. unittests | integration | ui,chrome)
+          flags: unittests
+          # Environment variables to tag the upload with (e.g. PYTHON | OS,PYTHON)
+          env_vars: javascript
+          # Specify whether or not CI build should fail if Codecov runs into an error during upload
+          fail_ci_if_error: true
+
+      - name: SonarQube Scan
+        id: sonar
+        uses: sonarsource/sonarqube-scan-action@master
+        if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN}}
+          SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
+          PROJECT_KEY: PIMS-APP
+          PROJECT_NAME: PIMS-APP
+        with:
+          projectBaseDir: ${{env.working-directory}}
+          args: >
+            -Dsonar.projectKey=${{env.PROJECT_KEY}}
+            -Dsonar.login=83c8083f22204c5844077eb9022080cad6f7c20f
+            -Dsonar.host.url=https://sonarqube-5b7aa5-tools.apps.silver.devops.gov.bc.ca
+            -Dsonar.projectName=${{env.PROJECT_NAME}}
+            -Dsonar.qualitygate.wait=true
+      
+      - name: Find Comment
+        if: failure() && steps.sonar.outcome == 'failure' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: peter-evans/find-comment@v1
+        id: fcs
+        with:
+          token: ${{secrets.GITHUB_TOKEN}}
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: QUALITY GATE STATUS FOR APP-REACT
+       
+      - name: Check Quality Gate and Create Comment
+        uses: peter-evans/create-or-update-comment@v1
+        if: failure() && steps.sonar.outcome == 'failure' && github.event_name == 'pull_request' && steps.fcs.outputs.comment-id == '' && github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
+          PROJECT_KEY: ${{secrets.PROJECT_KEY_APP}}
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            QUALITY GATE STATUS FOR APP-REACT: FAILED.
+            
+            [View and resolve details on][1]
+            
+            [1]: ${{env.SONAR_HOST_URL}}/dashboard?id=${{env.PROJECT_KEY}}
+          reactions: confused
+      - name: Check Quality Gate and Update Comment
+        if: failure() && steps.sonar.outcome == 'failure' && github.event_name == 'pull_request' && steps.fcs.outputs.comment-id != '' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: peter-evans/create-or-update-comment@v1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
+          PROJECT_KEY: ${{secrets.PROJECT_KEY_APP}}
+        with:
+          comment-id: ${{ steps.fcs.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            QUALITY GATE STATUS FOR ${{ env.IMAGE_NAME }}: FAILED
+            
+            [View and resolve details on][1]
+            
+            [1]: ${{env.SONAR_HOST_URL}}/dashboard?id=${{env.PROJECT_KEY}}
+          edit-mode: replace
+          reactions: eyes
+
+      - name: Authenticate and set context
+        uses: redhat-actions/oc-login@v1
+        env:
+          OPENSHIFT_USER: ${{secrets.OC_USERNAME_SA}}
+          OPENSHIFT_NAMESPACE: 3cd915-tools
+          SERVER_URL: ${{secrets.OPENSHIFT_SERVER}}
+          OPENSHIFT_REGISTRY: ${{secrets.OPENSHIFT_REGISTRY}} 
+
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+    
+      - name: Login to OpenShift Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{secrets.OPENSHIFT_REGISTRY}}
+          username: ${{ secrets.OC_USERNAME_SA }}
+          password: ${{ secrets.OPENSHIFT_TOKEN }}
+
+
+      - name: containarize app
+        if: success()
+        run: |
+            docker build . -t ${{ env.IMAGE_NAME }}
+        working-directory: ${{env.working-directory}}
+      - name: Scan for Vulnerability
+        id: scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.IMAGE_NAME }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          output: ${{env.output-filename}}
+      - if: failure() && steps.scan.outcome == 'failure'
+        name: Upload artifact
+        id: artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{env.IMAGE_NAME}}_scan_report
+          path: ./${{env.output-filename}}
+          retention-days: 4
+
+      - if: always() && steps.scan.outcome == 'failure'
+        name: Get comment body
+        id: get-comment-body
+        run: |
+          if [ -s ${{env.output-filename}} ]; then
+          body="$(cat ${{env.output-filename}})" 
+          body="${body//'%'/'%25'}"
+          body="${body//$'\n'/'%0A'}"
+          body="${body//$'\r'/'%0D'}" 
+          echo "::set-output name=body::$body" 
+          fi  
+               
+      - if: always() && github.event_name == 'pull_request'
+        name: Find Comment 
+        id: fc
+        uses: peter-evans/find-comment@v1
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: ${{secrets.OPENSHIFT_REGISTRY}}/${{env.IMAGE_NAME}} vulnerability report 
+
+      - if: always() && steps.fc.outputs.comment-id == ''  && steps.get-comment-body.outcome != 'failure'
+        name: Comment on PR
+        env:
+          GITHUB_TOKEN: "${{secrets.PAT}}" 
+        run: |
+          if [ -s ${{env.output-filename}} ]; then
+          commentPR () {
+            gh pr comment $PRNUM -b "${1}"
+          }
+          PRNUM=${{ github.event.pull_request.number }}
+          PRBODY=$(cat ${{env.output-filename}})
+          INDENTED='## ${{secrets.OPENSHIFT_REGISTRY}}/${{env.IMAGE_NAME}} vulnerability report
+          ```'${PRBODY}'```';
+            commentPR "$INDENTED"
+          else
+            echo "No vulnerability detected in this image"
+          fi  
+      - name: Update PR Comment
+        if: github.event_name == 'pull_request' && steps.fc.outputs.comment-id != ''
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## ${{secrets.OPENSHIFT_REGISTRY}}/${{env.image-name}}:${{env.tag}} vulnerability report
+            ``` echo "${{ steps.get-comment-body.outputs.body }}"```
+          edit-mode: replace
+          reactions: confused  
+      - name: push to container registry   
+        if: success() && github.event_name == 'push' # if nothing failed
+        run: |
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')        
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')       
+          RELEASE_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)        
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION="${RELEASE_VERSION}_master" ;          
+          echo VERSION=$VERSION
+          
+          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
+          
+      - name: Notify dedicated teams channel
+        if: success() && github.event_name == 'push'
+        uses: jdcargile/ms-teams-notification@v1.3
+        with:
+          github-token: ${{ github.token }} # this will use the runner's token.
+          ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
+          notification-summary: "A new ${{ env.IMAGE_NAME }} image published"
+          notification-color: 28a745 
+          timezone: America/Los_Angeles
+      - name: Notify dedicated teams channel
+        if: failure() && github.event_name == 'push'
+        uses: jdcargile/ms-teams-notification@v1.3
+        with:
+          github-token: ${{ github.token }} # this will use the runner's token.
+          ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
+          notification-summary: "${{ env.IMAGE_NAME }} CI failing" 
+          notification-color: dc3545 
+          timezone: America/Los_Angeles 

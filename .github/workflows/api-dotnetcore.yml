@@ -1,0 +1,291 @@
+name: API (.NET 5)
+
+on:
+  push:
+    branches: [master, dev, test]
+  pull_request:
+    branches: [master, dev, test]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./backend
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      output-filename: api.txt
+      IMAGE_NAME: pims-api
+      IMAGE_ID: ${{secrets.OPENSHIFT_REGISTRY}}/5b7aa5-tools/pims-api
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: sookeke/PSP
+          ref: master
+
+      - name: Extract Branch Name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      - name: Setup .NET 5
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.300
+    
+      - name: Authenticate and set context
+        uses: redhat-actions/oc-login@v1
+        env:
+          OPENSHIFT_USER: ${{secrets.OC_USERNAME_SA}}
+          OPENSHIFT_NAMESPACE: 5b7aa5-tools
+          SERVER_URL: ${{secrets.OPENSHIFT_SERVER}}
+          OPENSHIFT_REGISTRY: ${{secrets.OPENSHIFT_REGISTRY}} 
+
+        with:
+          openshift_server_url: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+    
+      - name: Login to OpenShift Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{secrets.OPENSHIFT_REGISTRY}}
+          username: ${{ secrets.OC_USERNAME_SA }}
+          password: ${{ secrets.OPENSHIFT_TOKEN }}
+
+      - name: Install dependencies
+        run: dotnet restore
+        working-directory: ${{env.working-directory}}
+
+      - name: Install coverlet for code coverage
+        run: dotnet tool install -g coverlet.console --version 1.7.2
+        working-directory: ${{env.working-directory}}
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+        working-directory: ${{env.working-directory}}
+
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
+        working-directory: ${{env.working-directory}}
+
+        # For future reference, if we have N test projects the flow of events would be:
+        #
+        # **Pre-conditions:**
+        # - All projects export their individual coverage percents in JSON and OpenCover format
+        # - There's no way to merge OpenCover xmls together (that I could find)
+        # - Common folder "../TestResults" is  git ignored so nothing gets in source control
+        #
+        # **Steps:**
+        #
+        # - Test-project 1
+        #   - generate coverage files (without merging)
+        #   - copy results to common folder "../TestResults"
+        # - Test-project 2
+        #   - generate coverage files merging with previous `coverage.json`
+        #   - the previous `coverage.opencoverage.xml` is ignored
+        #   - copy results to common folder "../TestResults"
+        # ...
+        # - Test-project N
+        #   - generate coverage files merging with previous `coverage.json`
+        #   - the previous `coverage.opencoverage.xml` is ignored
+        #   - copy results to common folder "../TestResults"
+        #
+        # The final `coverage.opencover.xml` is the one we want
+      - name: Generate code coverage
+        working-directory: ${{env.working-directory}}/tests/unit
+        run: |
+          mkdir -p TestResults
+          rm -rf api/TestResults
+          rm -rf dal/TestResults
+          cd api
+          dotnet test --collect:"XPlat Code Coverage" --settings coverlet.runsettings --no-restore
+          mv TestResults/*/* ../TestResults/
+          cd ..
+          cd dal
+          dotnet test --collect:"XPlat Code Coverage" --settings coverlet.runsettings --no-restore
+          mv TestResults/*/* ../TestResults/
+          cd ..
+          head TestResults/coverage.opencover.xml
+
+      - name: Codecov
+        uses: codecov/codecov-action@v1.5.0
+        with:
+          # User defined upload name. Visible in Codecov UI
+          name: PIMS
+          # Repository upload token - get it from codecov.io. Required only for private repositories
+          token: ${{ secrets.CodeCov }}
+          # Path to coverage file to upload
+          file: ${{env.working-directory}}/tests/unit/TestResults/coverage.opencover.xml
+          # Flag upload to group coverage metrics (e.g. unittests | integration | ui,chrome)
+          flags: unittests
+          # Environment variables to tag the upload with (e.g. PYTHON | OS,PYTHON)
+          env_vars: C#
+          # Specify whether or not CI build should fail if Codecov runs into an error during upload
+          fail_ci_if_error: true
+
+      - name: SonarScanner for .NET 5 with pull request decoration support
+        id: sonar
+        uses: highbyte/sonarscan-dotnet@2.0
+        if: github.event_name == 'push' 
+        env:
+          SONAR_TOKEN: f5f11ab3c73f7376b6ee039c1a3fba2db58de0a5
+        with:
+          dotnetBuildArguments: ${{env.working-directory}}
+          dotnetTestArguments: ${{env.working-directory}} --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+          # Optional extra command arguments the the SonarScanner 'begin' command
+          sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx" -d:sonar.qualitygate.wait=true
+          # The key of the SonarQube project
+          sonarProjectKey: PIMS-API
+          # The name of the SonarQube project
+          sonarProjectName: PIMS-API
+          # The SonarQube server URL. For SonarCloud, skip this setting.
+          sonarHostname: ${{secrets.SONAR_URL}}
+          
+      - name: Find Comment
+        if: failure() && steps.sonar.outcome == 'failure' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: peter-evans/find-comment@v1
+        id: fcs
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: QUALITY GATE STATUS FOR .NET 5
+          
+      - name: Check Quality Gate and Create Comment
+        if: failure() && steps.sonar.outcome == 'failure' && github.event_name == 'pull_request' && steps.fcs.outputs.comment-id == ''
+        uses: peter-evans/create-or-update-comment@v1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
+          PROJECT_KEY: ${{secrets.PROJECT_KEY_API}}
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            QUALITY GATE STATUS FOR .NET 5: FAILED.
+            
+            [View and resolve details on][1]
+            
+            [1]: ${{env.SONAR_HOST_URL}}/dashboard?id=${{env.PROJECT_KEY}}
+          reactions: confused
+      - name: Check Quality Gate and Update Comment
+        if: failure() && steps.sonar.outcome == 'failure' && github.event_name == 'pull_request' && steps.fcs.outputs.comment-id != '' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: peter-evans/create-or-update-comment@v1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
+          PROJECT_KEY: ${{secrets.PROJECT_KEY_APP}}
+        with:
+          comment-id: ${{ steps.fcs.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            QUALITY GATE STATUS FOR .NET 5: FAILED.
+            
+            [View and resolve details on][1]
+            
+            [1]: ${{env.SONAR_HOST_URL}}/dashboard?id=${{env.PROJECT_KEY}}
+          edit-mode: replace
+          reactions: eyes
+          
+      - name: containarize app
+        if: success()
+        run: |
+            docker build . -t ${{ env.IMAGE_NAME }}
+        working-directory: ${{env.working-directory}}
+      - name: Scan for Vulnerability
+        id: scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.IMAGE_NAME }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          output: ${{env.output-filename}}
+      - if: failure() && steps.scan.outcome == 'failure'
+        name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{env.IMAGE_NAME}}_scan_report
+          path: ./${{env.output-filename}}
+          retention-days: 3
+      - if: steps.scan.outcome == 'failure'
+        name: Get comment body
+        id: get-comment-body
+        run: |
+          if [ -s ${{env.output-filename}} ]; then
+          body="$(cat ${{env.output-filename}})" 
+          body="${body//'%'/'%25'}"
+          body="${body//$'\n'/'%0A'}"
+          body="${body//$'\r'/'%0D'}" 
+          echo "::set-output name=body::$body" 
+          fi            
+      - name: Find Comment
+        if: always() && github.event_name == 'pull_request'
+        uses: peter-evans/find-comment@v1
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: ${{secrets.OPENSHIFT_REGISTRY}}/${{env.image-name}}:${{env.tag}} vulnerability report 
+      - name: Comment on PR
+        if: steps.fc.outputs.comment-id == ''  && steps.get-comment-body.outcome != 'failure'
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        run: |
+          if [ -s ${{env.output-filename}} ]; then
+          commentPR () {
+            gh pr comment $PRNUM -b "${1}"
+          }
+          PRNUM=${{ github.event.pull_request.number }}
+          PRBODY=$(cat ${{env.output-filename}})
+          INDENTED='## ${{secrets.OPENSHIFT_REGISTRY}}/${{env.image-name}}:${{env.tag}} vulnerability report
+          ```'${PRBODY}'```';
+            commentPR "$INDENTED"
+          else
+            echo "No vulnerability detected in this image"
+          fi  
+      - name: Update PR Comment
+        if: github.event_name == 'pull_request' && steps.fc.outputs.comment-id != ''
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ## ${{secrets.OPENSHIFT_REGISTRY}}/${{env.image-name}}:${{env.tag}} vulnerability report
+            ``` echo "${{ steps.get-comment-body.outputs.body }}"```
+          edit-mode: replace
+          reactions: confused  
+      - name: push to container registry   
+        if: success() && github.event_name == 'push' # if nothing failed
+        run: |
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')        
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')       
+                
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "test" ] && RELEASE_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)  
+          [ "$VERSION" == "master" ] &&  VERSION="${RELEASE_VERSION}_master"   
+          [ "$VERSION" == "dev" ] && VERSION=latest           
+          echo VERSION=$VERSION
+          
+          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
+          
+      - name: Notify dedicated teams channel
+        if: success() && github.event_name == 'push'
+        uses: jdcargile/ms-teams-notification@v1.3
+        with:
+          github-token: ${{ github.token }} # this will use the runner's token.
+          ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
+          notification-summary: A new pims-api image is publish
+          notification-color: 28a745 
+          timezone: America/Denver
+      - name: Notify dedicated teams channel
+        if: failure() && github.event_name == 'push'
+        uses: jdcargile/ms-teams-notification@v1.3
+        with:
+          github-token: ${{ github.token }} # this will use the runner's token.
+          ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
+          notification-summary: pims-api CI failed 
+          notification-color: dc3545 
+          timezone: America/Denver    
