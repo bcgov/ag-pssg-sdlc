@@ -23,8 +23,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-           repository: bcgov/PSP
-           ref: master
+           repository: sookeke/PSP
+           ref: secops
 
       - name: Extract Branch Name
         shell: bash

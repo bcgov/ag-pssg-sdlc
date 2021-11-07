@@ -14,8 +14,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ssh-key: ${{ secrets.DEPLOY_KEY }} # with this we can bypass branch protection rules here (no-push). Create a deployment key if you dont have one
-          repository: bcgov/PSP
-          ref: master
+          repository: sookeke/PSP
+          ref: secops
           
       - uses: actions/setup-node@v2
         with:
