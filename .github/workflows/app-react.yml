@@ -180,17 +180,19 @@ jobs:
           body="${body//$'\n'/'%0A'}"
           body="${body//$'\r'/'%0D'}" 
           echo "::set-output name=body::$body" 
-          fi            
-      - name: Find Comment       
-        if: always() && github.event_name == 'pull_request'
-        uses: peter-evans/find-comment@v1
+          fi  
+               
+      - if: always() && github.event_name == 'pull_request'
+        name: Find Comment 
         id: fc
+        uses: peter-evans/find-comment@v1
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
           body-includes: ${{secrets.OPENSHIFT_REGISTRY}}/${{env.image-name}}:${{env.tag}} vulnerability report 
-      - name: Comment on PR
-        if: steps.fc.outputs.comment-id == ''  && steps.get-comment-body.outcome != 'failure'
+
+      - if: steps.fc.outputs.comment-id == ''  && steps.get-comment-body.outcome != 'failure'
+        name: Comment on PR
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: |
