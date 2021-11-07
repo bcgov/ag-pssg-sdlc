@@ -167,12 +167,12 @@ jobs:
         id: artifact
         uses: actions/upload-artifact@v2
         with:
-          name: ${{env.image-name}}_scan_report
+          name: ${{env.IMAGE_NAME}}_scan_report
           path: ./${{env.output-filename}}
           retention-days: 3
       - name: Get comment body
         id: get-comment-body
-        if: steps.artifact.outcome == 'success'
+        if: steps.scan.outcome == 'failure'
         run: |
           if [ -s ${{env.output-filename}} ]; then
           body="$(cat ${{env.output-filename}})" 
@@ -181,10 +181,10 @@ jobs:
           body="${body//$'\r'/'%0D'}" 
           echo "::set-output name=body::$body" 
           fi            
-      - name: Find Comment
-        id: fc
+      - name: Find Comment       
+        if: always() && github.event_name == 'pull_request'
         uses: peter-evans/find-comment@v1
-        if: github.event_name == 'pull_request'
+        id: fc
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
