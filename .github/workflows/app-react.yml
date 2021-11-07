@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
            repository: sookeke/PSP
-           ref: test
+           ref: master
 
       - name: Extract Branch Name
         shell: bash
