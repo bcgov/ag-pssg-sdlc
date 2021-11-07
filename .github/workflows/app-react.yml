@@ -164,6 +164,7 @@ jobs:
           output: ${{env.output-filename}}
       - if: failure() && steps.scan.outcome == 'failure'
         name: Upload artifact
+        id: artifact
         uses: actions/upload-artifact@v2
         with:
           name: ${{env.image-name}}_scan_report
@@ -181,9 +182,9 @@ jobs:
           echo "::set-output name=body::$body" 
           fi            
       - name: Find Comment
-        if: github.event_name == 'pull_request'
-        uses: peter-evans/find-comment@v1
         id: fc
+        uses: peter-evans/find-comment@v1
+        if: github.event_name == 'pull_request'
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
