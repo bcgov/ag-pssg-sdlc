@@ -207,9 +207,9 @@ jobs:
           name: ${{env.IMAGE_NAME}}_scan_report
           path: ./${{env.output-filename}}
           retention-days: 3
-      - name: Get comment body
+      - if: steps.scan.outcome == 'failure'
+        name: Get comment body
         id: get-comment-body
-        if: steps.scan.outcome == 'failure'
         run: |
           if [ -s ${{env.output-filename}} ]; then
           body="$(cat ${{env.output-filename}})" 
