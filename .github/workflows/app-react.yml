@@ -241,15 +241,15 @@ jobs:
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: A new pims-api image is publish
+          notification-summary: A new pims-app image published
           notification-color: 28a745 
-          timezone: America/Denver
+          timezone: America/Los_Angeles
       - name: Notify dedicated teams channel
         if: failure() && github.event_name == 'push'
         uses: jdcargile/ms-teams-notification@v1.3
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: pims-api CI failed 
+          notification-summary: pims-app CI failing 
           notification-color: dc3545 
-          timezone: America/Denver 
+          timezone: America/Los_Angeles 
