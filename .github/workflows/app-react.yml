@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
            repository: sookeke/PSP
-           ref: secops
+           ref: master
 
       - name: Extract Branch Name
         shell: bash
@@ -118,7 +118,7 @@ jobs:
           comment-id: ${{ steps.fcs.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            QUALITY GATE STATUS FOR APP-REACT: FAILED.
+            QUALITY GATE STATUS FOR ${{ env.IMAGE_NAME }}: FAILED
             
             [View and resolve details on][1]
             
@@ -241,7 +241,7 @@ jobs:
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: A new pims-app image published
+          notification-summary: "A new ${{ env.IMAGE_NAME }} image published"
           notification-color: 28a745 
           timezone: America/Los_Angeles
       - name: Notify dedicated teams channel
@@ -250,6 +250,6 @@ jobs:
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: pims-app CI failing 
+          notification-summary: "${{ env.IMAGE_NAME }} CI failing" 
           notification-color: dc3545 
           timezone: America/Los_Angeles 

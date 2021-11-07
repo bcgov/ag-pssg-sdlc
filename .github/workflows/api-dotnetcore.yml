@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repository: sookeke/PSP
-          ref: secops
+          ref: master
 
       - name: Extract Branch Name
         shell: bash
