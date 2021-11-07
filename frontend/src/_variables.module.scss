@@ -1,0 +1,36 @@
+@import './colors.scss';
+@import './variables';
+
+:export {
+  mapfilterHeight: $mapfilter-height;
+  footerHeight: $footer-height;
+  headerHeight: $header-height;
+
+  primaryColor: $primary-color;
+  primaryLightColor: $primary-light-color;
+  secondaryVariantColor: $secondary-variant-color;
+  lightVariantColor: $light-variant-color;
+  darkVariantColor: $dark-variant-color;
+  textColor: $text-color;
+  formBackground: $form-background-color;
+  dropdownBackgroundColor: $dropdown-background-color;
+  accentColor: $accent-color;
+  lightAccentColor: $light-accent-color;
+  sresIconColor: $sres-icon-color;
+  dangerColor: $danger-color;
+  lightDangerColor: $light-danger-color;
+  iconLightColor: $icon-light-color;
+  activeColor: $active-color;
+  completedColor: $completed-color;
+  filterBackgroundColor: $filter-background-color;
+  slideOutBlue: $slide-out-blue;
+  disabledColor: $disabled-color;
+
+  // table ui
+  tableHoverColor: $table-hover-color;
+  tableHeaderBgColor: $table-header-bg-color;
+  tableHeaderBorderColor: $table-header-border-color;
+  tableColumnBorderColor: $table-column-border-color;
+  tableEvenRowBgColor: $table-even-row-bg-color;
+  tableOddRowBgColor: $table-odd-row-bg-color;
+}
