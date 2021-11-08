@@ -3,7 +3,7 @@ name: Release version
 on:
   pull_request_target:
     types: [closed]
-    branches: [test]
+    branches: [dev, test]
 
 jobs:
   Release-version:
@@ -33,8 +33,9 @@ jobs:
           # create commit
           git add -A
           git commit -m "chore: bump version to v${NEW_VERSION}"
-          git push origin dev
-      - name: create a release for prep-production
+          git push
+      - if: github.ref == 'refs/heads/test'
+        name: create a release for prep-production
         uses: actions/create-release@v1
         id: create_release
         with:
