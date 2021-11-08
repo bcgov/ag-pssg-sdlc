@@ -40,14 +40,14 @@ On every push to the source git repository on git server, the above steps are ex
 0. [Code is cloned](docs/Steps.md#source-clone) from git server and the unit-tests are run
 1. [Install Dependency](docs/Steps.md#dependency-report) Install required dependencies to build and test the app
 2. [Unit tests](docs/Steps.md#unit-tests) are executed and in parallel the code is [analyzed by Sonarqube](docs/Steps.md#code-analysis-sonarqube) for anti-patterns.
-3. [Generate and Publish code coverage] to project codecov repo (https://app.codecov.io/gh)
+3. [Generate and Publish code coverage](https://app.codecov.io/gh) to project codecov repo 
 4. A [container image is built](docs/Steps.md#build-image) in DEV environment using S2I
-5. [Scan built image] with AquaSec (https://github.com/marketplace/actions/aqua-security-trivy)
+5. [Scan built image](https://github.com/marketplace/actions/aqua-security-trivy) with AquaSec 
 6. pushed to OpenShift internal registry, and tagged with APP-NAME:[branch] for TEST and APP-NAME:latest for DEV and APP-NAME:[Release_version] for PROD
 7. Use teams webhook to notify project teams member of CI status
 
 
-## 3. Continuous Delivery
+## 2. Continuous Delivery
 
 ## ArgoCD
 
@@ -62,7 +62,7 @@ Argo CD continuously monitor the configurations stored in the Git repository and
 and deploys every manifest that is defined in the branch/repo of our application:
 
 
-## 4. PostCI - Pentesting and Performance Tests
+## 3. PostCI - Pentesting and Performance Tests
 
 Once the application is deployed, we need to ensure of our application is stable and performant and also that nobody can hack our application easily.
 
@@ -71,7 +71,7 @@ Once the application is deployed, we need to ensure of our application is stable
 11. The [pentesting is executed](docs/Steps.md#pentesting-tests-using-zap-proxy) using the web scanner [OWASP Zap Proxy](https://www.zaproxy.org) using a baseline in order to check the possible vulnerabilities, and a Zap Proxy report is uploaded to the report server repository.
 12. In parallel the [performance tests are executed](docs/Steps.md#performance-tests-using-gatling) using the load test [Gatling](https://gatling.io/) and a performance report is uploaded to the report server repository.
 
-## 5. Notifications
+## 4. Notifications
 
 Use Teams Webhook to notify project teams
 
