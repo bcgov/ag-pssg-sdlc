@@ -259,8 +259,9 @@ jobs:
           # Strip git ref prefix from version
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')       
                 
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && RELEASE_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)  
+          # tag image
+          [ "$VERSION" == "master" ] && RELEASE_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
+          echo $RELEASE_VERSION          
           [ "$VERSION" == "master" ] &&  VERSION="${RELEASE_VERSION}_master"   
           [ "$VERSION" == "dev" ] && VERSION=latest           
           echo VERSION=$VERSION
