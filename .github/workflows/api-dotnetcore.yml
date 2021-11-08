@@ -18,8 +18,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
 
       - name: Extract Branch Name
         shell: bash
@@ -255,7 +253,6 @@ jobs:
           reactions: confused  
       - name: push to container registry   
         if: success() && github.event_name == 'push' # if nothing failed
-        id: tag
         run: |
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')        
@@ -268,7 +265,7 @@ jobs:
           [ "$VERSION" == "master" ] &&  VERSION="${RELEASE_VERSION}_master"   
           [ "$VERSION" == "dev" ] && VERSION=latest           
           echo VERSION=$VERSION
-          echo "::set-output name=tag::$VERSION"
+          
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
           
@@ -278,7 +275,7 @@ jobs:
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: "A new ${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }} image published"
+          notification-summary: "A new ${{ env.IMAGE_NAME }} image published"
           notification-color: 28a745 
           timezone: America/Los_Angeles
       - name: Notify dedicated teams channel
@@ -287,6 +284,6 @@ jobs:
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: "${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }} CI failing" 
+          notification-summary: "${{ env.IMAGE_NAME }} CI failing" 
           notification-color: dc3545 
           timezone: America/Los_Angeles     
