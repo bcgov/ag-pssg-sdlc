@@ -98,7 +98,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            QUALITY GATE STATUS FOR APP-REACT: FAILED.
+            QUALITY GATE STATUS FOR ${{env.IMAGE_NAME}}: FAILED.
             
             [View and resolve details on][1]
             

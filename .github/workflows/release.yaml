@@ -3,12 +3,12 @@ name: Release version
 on:
   pull_request_target:
     types: [closed]
-    branches: [test]
+    branches: [dev, test]
 
 jobs:
   Release-version:
     # this job will only run if the PR has been merged
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true # create a release after merge to test for prep-production ready
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -30,14 +30,19 @@ jobs:
           # auto-increment version number upon merging pull requests
           node build/bump-version.js --apply
 
-      - name: create a release for prep-production
+          # create commit
+          git add -A
+          git commit -m "chore: bump version to v${NEW_VERSION}"
+          git push
+      - if: github.ref == 'refs/heads/test'
+        name: create a release for prep-production
         uses: actions/create-release@v1
         id: create_release
         with:
           draft: false
           prerelease: false
-          release_name: ${{ steps.version.outputs.NEW_VERSION }}
-          tag_name: ${{ github.ref }}
+          release_name: v${{ steps.version.outputs.NEW_VERSION }}
+          tag_name: v${{ steps.version.outputs.NEW_VERSION }}
           body_path: CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}     
