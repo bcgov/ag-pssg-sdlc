@@ -287,6 +287,6 @@ jobs:
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: "${{ env.IMAGE_NAME }} CI failing" 
+          notification-summary: "${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }} CI failing" 
           notification-color: dc3545 
           timezone: America/Los_Angeles     
