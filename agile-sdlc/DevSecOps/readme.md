@@ -11,6 +11,7 @@ DevSecOps talks about responsibility for security and moves away from the concep
 
 DevSecOps CICD pipeline using several technologies such as:
 
+- [GitHub Action Pipelines](https://github.com/features/actions)
 - [Openshift Pipelines](https://www.openshift.com/learn/topics/ci-cd)
 - [Openshift GitOps](https://www.openshift.com/blog/announcing-openshift-gitops)
 - [AquaSec Security for Kubernetes](https://github.com/marketplace/actions/aqua-security-trivy)
