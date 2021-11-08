@@ -2,9 +2,9 @@ name: APP (React)
 
 on:
   push:
-    branches: [master, dev, test, feature3, feature1]
+    branches: [master, dev, test]
   pull_request:
-    branches: [master, dev, test, feature3, feature1]
+    branches: [master, dev, test]
 
 jobs:
   build:
@@ -226,10 +226,13 @@ jobs:
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')        
           # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')       
-          RELEASE_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)        
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && VERSION="${RELEASE_VERSION}_master" ;          
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')  
+          
+          # tag image
+          [ "$VERSION" == "master" ] && RELEASE_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
+          echo $RELEASE_VERSION          
+          [ "$VERSION" == "master" ] &&  VERSION=$(echo $RELEASE_VERSION | sed -e 's/^v//')  
+          [ "$VERSION" == "dev" ] && VERSION=latest           
           echo VERSION=$VERSION
           echo "::set-output name=tag::$VERSION"
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
