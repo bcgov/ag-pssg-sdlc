@@ -5,5 +5,6 @@ DevSecOps talks about responsibility for security and moves away from the concep
 
 ## DevSecOps
 
-<img align="center" width="750" src="../../images/DevSecOps.jpg">
+<img align="center" width="1600" src="../../images/DevSecOps.jpg">
+
 
