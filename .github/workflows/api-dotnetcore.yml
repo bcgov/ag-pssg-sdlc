@@ -144,7 +144,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
-          body-includes: QUALITY GATE STATUS FOR .NET 5
+          body-includes: QUALITY GATE STATUS
           
       - name: Check Quality Gate and Create Comment
         if: failure() && steps.sonar.outcome == 'failure' && github.event_name == 'pull_request' && steps.fcs.outputs.comment-id == ''
@@ -156,7 +156,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            QUALITY GATE STATUS FOR .NET 5: FAILED.
+            QUALITY GATE STATUS FOR ${{env.IMAGE_NAME}}: FAILED.
             
             [View and resolve details on][1]
             
@@ -173,7 +173,7 @@ jobs:
           comment-id: ${{ steps.fcs.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            QUALITY GATE STATUS FOR .NET 5: FAILED.
+            QUALITY GATE STATUS FOR ${{env.IMAGE_NAME}}: FAILED.
             
             [View and resolve details on][1]
             
@@ -222,7 +222,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
-          body-includes: ${{secrets.OPENSHIFT_REGISTRY}}/${{env.image-name}}:${{env.tag}} vulnerability report 
+          body-includes: ${{secrets.OPENSHIFT_REGISTRY}}/${{env.IMAGE_NAME}} vulnerability report 
       - name: Comment on PR
         if: steps.fc.outputs.comment-id == ''  && steps.get-comment-body.outcome != 'failure'
         env:
@@ -234,7 +234,7 @@ jobs:
           }
           PRNUM=${{ github.event.pull_request.number }}
           PRBODY=$(cat ${{env.output-filename}})
-          INDENTED='## ${{secrets.OPENSHIFT_REGISTRY}}/${{env.image-name}}:${{env.tag}} vulnerability report
+          INDENTED='## ${{secrets.OPENSHIFT_REGISTRY}}/${{env.IMAGE_NAME}} vulnerability report
           ```'${PRBODY}'```';
             commentPR "$INDENTED"
           else
