@@ -1,0 +1,123 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: petclinic-build-dev
+  namespace: 5b7aa5-tools
+spec:
+  params:
+    - name: APP_SOURCE_GIT
+      type: string
+      description: The application git repository
+      default: http://{{ r_gogs_route.resources[0].spec.host }}/gogs/spring-petclinic
+    - name: APP_SOURCE_REVISION
+      type: string
+      description: The application git revision
+      default: master
+    - name: APP_MANIFESTS_GIT
+      type: string
+      description: The application manifests git repository
+      default: http://{{ r_gogs_route.resources[0].spec.host }}/gogs/spring-petclinic-config
+    - name: APP_IMAGE_TAG
+      type: string
+      default: latest
+      description: The application image tag to build
+    - name: DEV_NAMESPACE
+      type: string
+      default: devsecops-dev
+      description: The namespace for Stage environments
+    - name: APP_TESTS_GIT
+      type: string
+      description: The application test cases git repository
+      default: https://github.com/rcarrata/spring-petclinic-gatling
+  workspaces:
+  - name: workspace
+  - name: maven-settings
+  tasks:
+  - name: source-clone
+    taskRef:
+      name: git-clone
+      kind: ClusterTask
+    workspaces:
+    - name: output
+      workspace: workspace
+    params:
+    - name: url
+      value: $(params.APP_SOURCE_GIT)
+    - name: revision
+      value: $(params.APP_SOURCE_REVISION)
+    - name: depth
+      value: "0"
+    - name: subdirectory
+      value: spring-petclinic
+    - name: deleteExisting
+      value: "true"
+  - name: update-deployment
+    runAfter:
+    - git-clone
+    taskRef:
+      name: git-update-deployment
+    params:
+      - name: GIT_REPOSITORY
+        value: "$(params.APP_MANIFESTS_GIT)"
+      - name: GIT_USERNAME
+        value: gogs
+      - name: GIT_PASSWORD
+        value: gogs
+      - name: CURRENT_IMAGE
+        value: quay.io/siamaksade/spring-petclinic:latest
+      - name: NEW_IMAGE
+        value: image-registry.openshift-image-registry.svc:5000/$(context.pipelineRun.namespace)/spring-petclinic
+      - name: NEW_DIGEST
+        value: "$(tasks.build-image.results.IMAGE_DIGEST)"
+      - name: KUSTOMIZATION_PATH
+        value: environments/dev
+    workspaces:
+    - name: workspace
+      workspace: workspace
+  - name: wait-application
+    taskRef:
+      name: argocd-task-sync-and-wait
+    runAfter:
+      - update-deployment
+    params:
+      - name: application-name
+        value: dev-spring-petclinic
+  - name: perf-tests-clone
+    taskRef:
+      name: git-clone
+      kind: ClusterTask
+    workspaces:
+    - name: output
+      workspace: workspace
+    runAfter:
+      - wait-application
+    params:
+    - name: url
+      value: $(params.APP_TESTS_GIT)
+    - name: subdirectory
+      value: spring-petclinic-gatling
+    - name: deleteExisting
+      value: "true"
+  - name: pentesting-test
+    taskRef:
+      name: zap-proxy
+    runAfter:
+      - perf-tests-clone
+    params:
+      - name: APP_URL
+        value: "http://spring-petclinic.$(params.DEV_NAMESPACE).svc.cluster.local:8080"
+    workspaces:
+    - name: workspace
+      workspace: workspace
+  - name: performance-test
+    taskRef:
+      name: gatling
+    runAfter:
+      - perf-tests-clone
+    params:
+      - name: APP_URL
+        value: "http://spring-petclinic.$(params.DEV_NAMESPACE).svc.cluster.local:8080"
+    workspaces:
+    - name: simulations
+      workspace: workspace
+      subPath: spring-petclinic-gatling

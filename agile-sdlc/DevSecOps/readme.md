@@ -1,3 +1,9 @@
-## Adopting DevSecOps
+# Adopting DevSecOps
+
 The purpose and intent of DevSecOps are to build on the mindset that “everyone is responsible for security” to safely distribute security decisions at speed and scale to those who hold the highest level of context without sacrificing the safety required. – Shannon Lietz
 DevSecOps talks about responsibility for security and moves away from the concept of a dedicated security team that handles all the security requirements. It mentions that everyone is responsible for security. It also mentions moving the decision-making process to those who can use all the contextual information that they have at their disposal to make the right decision. It is not the security team that makes all the decisions, it is those who are placed in the best context to make the decision, at the end we do not want to sacrifice the safety of the system.
+
+## DevSecOps
+
+<img align="center" width="750" src="images/DevSecOps.jpg">
+
