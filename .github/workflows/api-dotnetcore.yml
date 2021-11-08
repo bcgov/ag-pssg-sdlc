@@ -265,7 +265,7 @@ jobs:
           # tag image
           [ "$VERSION" == "master" ] && RELEASE_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
           echo $RELEASE_VERSION          
-          [ "$VERSION" == "master" ] &&  VERSION="${RELEASE_VERSION}_master"   
+          [ "$VERSION" == "master" ] &&  VERSION=$(echo $RELEASE_VERSION | sed -e 's/^v//')  
           [ "$VERSION" == "dev" ] && VERSION=latest           
           echo VERSION=$VERSION
           echo "::set-output name=tag::$VERSION"
@@ -278,7 +278,7 @@ jobs:
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: "A new ${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }} image published"
+          notification-summary: "New ${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }} image published"
           notification-color: 28a745 
           timezone: America/Los_Angeles
       - name: Notify dedicated teams channel
@@ -287,6 +287,6 @@ jobs:
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: "${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }} CI failing" 
+          notification-summary: "${{ env.IMAGE_NAME }} CI failing" 
           notification-color: dc3545 
           timezone: America/Los_Angeles     
