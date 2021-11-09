@@ -238,7 +238,7 @@ jobs:
           docker push $IMAGE_ID:$VERSION
           
       - name: Notify dedicated teams channel
-        if: success() && github.event_name == 'push'
+        if: success() && github.event_name == 'push' && github.event.pusher.name != 'github-actions'
         uses: jdcargile/ms-teams-notification@v1.3
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
@@ -247,7 +247,7 @@ jobs:
           notification-color: 28a745 
           timezone: America/Los_Angeles
       - name: Notify dedicated teams channel
-        if: failure() && github.event_name == 'push'
+        if: failure() && github.event_name == 'push' && github.event.pusher.name != 'github-actions'
         uses: jdcargile/ms-teams-notification@v1.3
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
