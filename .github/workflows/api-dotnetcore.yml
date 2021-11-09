@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    if: github.event.pusher.name != 'github-actions' || github.event.pusher.name != 'tekton-pipelines-ci' # do not run this workflow for auto-release event pusher using user github-actions and image digest update from tekton-pipelines-ci
     runs-on: ubuntu-latest
     env:
       working-directory: ./backend
@@ -263,17 +264,15 @@ jobs:
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')       
                 
           # tag image
-          [ "$VERSION" == "master" ] && RELEASE_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
-          echo $RELEASE_VERSION          
+          [ "$VERSION" == "master" ] && RELEASE_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)         
           [ "$VERSION" == "master" ] &&  VERSION=$(echo $RELEASE_VERSION | sed -e 's/^v//')  
           [ "$VERSION" == "dev" ] && VERSION=latest           
-          echo VERSION=$VERSION
           echo "::set-output name=tag::$VERSION"
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
           
       - name: Notify dedicated teams channel
-        if: success() && github.event_name == 'push'
+        if: success() && github.event_name == 'push' && github.event.pusher.name != 'github-actions'
         uses: jdcargile/ms-teams-notification@v1.3
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
@@ -282,7 +281,7 @@ jobs:
           notification-color: 28a745 
           timezone: America/Los_Angeles
       - name: Notify dedicated teams channel
-        if: failure() && github.event_name == 'push'
+        if: failure() && github.event_name == 'push' && github.event.pusher.name != 'github-actions'
         uses: jdcargile/ms-teams-notification@v1.3
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
