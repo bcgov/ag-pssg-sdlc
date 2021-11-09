@@ -18,14 +18,10 @@ jobs:
       IMAGE_ID: ${{secrets.OPENSHIFT_REGISTRY}}/5b7aa5-tools/pims-api
 
     steps:
-      - name: View the information of the pusher
-        run: |
-          echo "The name of the pusher: ${{ github.event.pusher.name }}"
-          echo "The email of the pusher: ${{ github.event.pusher.email }}"
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-
+      - uses: rlespinasse/git-commit-data-action@v1.x
       - name: Extract Branch Name
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
@@ -129,7 +125,7 @@ jobs:
       - name: SonarScanner for .NET 5 with pull request decoration support
         id: sonar
         uses: highbyte/sonarscan-dotnet@2.0
-        if: github.event_name == 'push' 
+        if: github.event_name == 'push' && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
         env:
           SONAR_TOKEN: f5f11ab3c73f7376b6ee039c1a3fba2db58de0a5
         with:
@@ -189,11 +185,12 @@ jobs:
           reactions: eyes
           
       - name: containarize app
-        if: success()
+        if: success() && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
         run: |
             docker build . -t ${{ env.IMAGE_NAME }}
         working-directory: ${{env.working-directory}}
       - name: Scan for Vulnerability
+        if: env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
         id: scan
         uses: aquasecurity/trivy-action@master
         with:
@@ -259,7 +256,7 @@ jobs:
           edit-mode: replace
           reactions: confused  
       - name: push to container registry   
-        if: success() && github.event_name == 'push' # if nothing failed
+        if: success() && github.event_name == 'push' && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions' # if nothing failed
         id: tag
         run: |
           # Change all uppercase to lowercase
@@ -276,7 +273,7 @@ jobs:
           docker push $IMAGE_ID:$VERSION
           
       - name: Notify dedicated teams channel
-        if: success() && github.event_name == 'push'
+        if: success() && github.event_name == 'push' && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
         uses: jdcargile/ms-teams-notification@v1.3
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
@@ -285,7 +282,7 @@ jobs:
           notification-color: 28a745 
           timezone: America/Los_Angeles
       - name: Notify dedicated teams channel
-        if: failure() && github.event_name == 'push'
+        if: failure() && github.event_name == 'push' && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
         uses: jdcargile/ms-teams-notification@v1.3
         with:
           github-token: ${{ github.token }} # this will use the runner's token.

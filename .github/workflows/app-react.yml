@@ -21,10 +21,6 @@ jobs:
         node-version: [14.x]
 
     steps:
-      - name: View the information of the pusher
-        run: |
-          echo "The name of the pusher: ${{ github.event.pusher.name }}"
-          echo "The email of the pusher: ${{ github.event.pusher.email }}"
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0      
@@ -69,7 +65,7 @@ jobs:
       - name: SonarQube Scan
         id: sonar
         uses: sonarsource/sonarqube-scan-action@master
-        if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'}}
+        if: ${{ (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'}}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN}}
           SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
@@ -155,6 +151,7 @@ jobs:
             docker build . -t ${{ env.IMAGE_NAME }}
         working-directory: ${{env.working-directory}}
       - name: Scan for Vulnerability
+        if: env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
         id: scan
         uses: aquasecurity/trivy-action@master
         with:
