@@ -54,7 +54,7 @@ On every push to the source git repository on git server, the above steps are ex
 
 Argo CD continuously monitor the configurations stored in the Git repository and uses Kustomize to overlay environment specific configurations when deploying the application to DEV and STAGE environments.
 
-<img align="center" width="550" src="docs/pics/pipeline3.png">
+<img align="center" width="550" src="../../images/pipeline3.png">
 
 8. The ArgoCD applications syncs the manifests in our gogs git repositories, and applies the changes automatically into the namespaces defined:
 
