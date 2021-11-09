@@ -8,7 +8,6 @@ DevSecOps talks about responsibility for security and moves away from the concep
 <img align="center" width="1600" src="../../images/DevSecOps.jpg">
 
 
-
 DevSecOps CICD pipeline using several technologies such as:
 
 - [GitHub Action Pipelines](https://github.com/features/actions)
