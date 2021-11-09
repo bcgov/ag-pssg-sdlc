@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    if: github.event.pusher.name != 'pipelines-ci' # do not run this workflow for auto-release event pusher using user github-actions and image digest update from tekton-pipelines-ci
+    if: ${{ github.event.pusher.name != 'pipelines-ci' }} #github.event.pusher.name != 'pipelines-ci' # do not run this workflow for auto-release event pusher using user github-actions and image digest update from tekton-pipelines-ci
     runs-on: ubuntu-latest
     env:
       working-directory: ./backend
@@ -18,6 +18,10 @@ jobs:
       IMAGE_ID: ${{secrets.OPENSHIFT_REGISTRY}}/5b7aa5-tools/pims-api
 
     steps:
+      - name: View the information of the pusher
+        run: |
+          echo "The name of the pusher: ${{ github.event.pusher.name }}"
+          echo "The email of the pusher: ${{ github.event.pusher.email }}"
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
