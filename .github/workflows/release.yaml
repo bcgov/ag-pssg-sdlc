@@ -21,8 +21,8 @@ jobs:
       - name: get release number
         id: version
         run: |
-          git config user.name "github-actions"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "pipelines-ci"
+          git config user.email "41898282+pipelines-ci[bot]@users.noreply.gov.bc.ca"
 
           # this just prints the new version number - will not update any files
           NEW_VERSION=$(node build/bump-version.js --print-version)

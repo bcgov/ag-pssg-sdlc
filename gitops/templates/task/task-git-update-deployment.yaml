@@ -59,8 +59,8 @@ spec:
       workingDir: $(workspaces.workspace.path)
       script: |
         cd git-update-digest-workdir
-        git config user.email "tekton-pipelines-ci@redhat.com"
-        git config user.name "tekton-pipelines-ci"
+        git config user.email "pipelines-ci@gov.bc.ca"
+        git config user.name "pipelines-ci"
 
         git status
         git add $(params.KUSTOMIZATION_PATH)/kustomization.yaml
