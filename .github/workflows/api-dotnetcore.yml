@@ -124,7 +124,7 @@ jobs:
       - name: SonarScanner for .NET 5 with pull request decoration support
         id: sonar
         uses: highbyte/sonarscan-dotnet@2.0
-        if: github.event_name == 'push' 
+        if: github.event_name == 'push' && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
         env:
           SONAR_TOKEN: f5f11ab3c73f7376b6ee039c1a3fba2db58de0a5
         with:
@@ -189,6 +189,7 @@ jobs:
             docker build . -t ${{ env.IMAGE_NAME }}
         working-directory: ${{env.working-directory}}
       - name: Scan for Vulnerability
+        if: env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
         id: scan
         uses: aquasecurity/trivy-action@master
         with:

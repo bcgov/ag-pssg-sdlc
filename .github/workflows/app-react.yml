@@ -151,6 +151,7 @@ jobs:
             docker build . -t ${{ env.IMAGE_NAME }}
         working-directory: ${{env.working-directory}}
       - name: Scan for Vulnerability
+        if: env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
         id: scan
         uses: aquasecurity/trivy-action@master
         with:
