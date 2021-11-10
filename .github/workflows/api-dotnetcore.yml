@@ -223,7 +223,6 @@ jobs:
         id: fc
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
           body-includes: ${{secrets.OPENSHIFT_REGISTRY}}/${{env.IMAGE_NAME}} vulnerability report 
       - name: Comment on PR
         if: steps.fc.outputs.comment-id == ''  && steps.get-comment-body.outcome != 'failure'
@@ -243,7 +242,7 @@ jobs:
             echo "No vulnerability detected in this image"
           fi  
       - name: Update PR Comment
-        if: github.event_name == 'pull_request' && steps.fc.outputs.comment-id != ''
+        if: always() && github.event_name == 'pull_request' && steps.fc.outputs.comment-id != ''
         uses: peter-evans/create-or-update-comment@v1
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}

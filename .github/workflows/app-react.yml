@@ -194,7 +194,7 @@ jobs:
       - if: always() && steps.fc.outputs.comment-id == ''  && steps.get-comment-body.outcome != 'failure' && github.event_name == 'pull_request'
         name: Comment on PR
         env:
-          GITHUB_TOKEN: "${{secrets.PAT}}" 
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: |
           if [ -s ${{env.output-filename}} ]; then
           commentPR () {
@@ -209,7 +209,7 @@ jobs:
             echo "No vulnerability detected in this image"
           fi  
       - name: Update PR Comment
-        if: github.event_name == 'pull_request' && steps.fc.outputs.comment-id != ''
+        if: always() && github.event_name == 'pull_request' && steps.fc.outputs.comment-id != ''
         uses: peter-evans/create-or-update-comment@v1
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
