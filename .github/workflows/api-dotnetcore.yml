@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-    if: ${{ github.event.pusher.name != 'pipelines-ci' }} #github.event.pusher.name != 'pipelines-ci' # do not run this workflow for auto-release event pusher using user github-actions and image digest update from tekton-pipelines-ci
     runs-on: ubuntu-latest
     env:
       working-directory: ./backend
