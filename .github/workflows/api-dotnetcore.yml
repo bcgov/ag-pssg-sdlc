@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-
+      - uses: rlespinasse/git-commit-data-action@v1.x
       - name: Extract Branch Name
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
@@ -124,7 +124,7 @@ jobs:
       - name: SonarScanner for .NET 5 with pull request decoration support
         id: sonar
         uses: highbyte/sonarscan-dotnet@2.0
-        if: github.event_name == 'push' 
+        if: github.event_name == 'push' && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
         env:
           SONAR_TOKEN: f5f11ab3c73f7376b6ee039c1a3fba2db58de0a5
         with:
@@ -184,7 +184,7 @@ jobs:
           reactions: eyes
           
       - name: containarize app
-        if: success()
+        if: success() 
         run: |
             docker build . -t ${{ env.IMAGE_NAME }}
         working-directory: ${{env.working-directory}}
@@ -223,7 +223,6 @@ jobs:
         id: fc
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
           body-includes: ${{secrets.OPENSHIFT_REGISTRY}}/${{env.IMAGE_NAME}} vulnerability report 
       - name: Comment on PR
         if: steps.fc.outputs.comment-id == ''  && steps.get-comment-body.outcome != 'failure'
@@ -243,7 +242,7 @@ jobs:
             echo "No vulnerability detected in this image"
           fi  
       - name: Update PR Comment
-        if: github.event_name == 'pull_request' && steps.fc.outputs.comment-id != ''
+        if: always() && github.event_name == 'pull_request' && steps.fc.outputs.comment-id != ''
         uses: peter-evans/create-or-update-comment@v1
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
@@ -254,7 +253,7 @@ jobs:
           edit-mode: replace
           reactions: confused  
       - name: push to container registry   
-        if: success() && github.event_name == 'push' # if nothing failed
+        if: success() && github.event_name == 'push' && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions' # if nothing failed. dont push when event is github bot
         id: tag
         run: |
           # Change all uppercase to lowercase
@@ -263,17 +262,16 @@ jobs:
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')       
                 
           # tag image
-          [ "$VERSION" == "master" ] && RELEASE_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
-          echo $RELEASE_VERSION          
+
+          [ "$VERSION" == "master" ] && RELEASE_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)         
           [ "$VERSION" == "master" ] &&  VERSION=$(echo $RELEASE_VERSION | sed -e 's/^v//')  
           [ "$VERSION" == "dev" ] && VERSION=latest           
-          echo VERSION=$VERSION
           echo "::set-output name=tag::$VERSION"
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
           
       - name: Notify dedicated teams channel
-        if: success() && github.event_name == 'push'
+        if: success() && github.event_name == 'push' && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
         uses: jdcargile/ms-teams-notification@v1.3
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
@@ -282,11 +280,11 @@ jobs:
           notification-color: 28a745 
           timezone: America/Los_Angeles
       - name: Notify dedicated teams channel
-        if: failure() && github.event_name == 'push'
+        if: failure() && github.event_name == 'push' && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
         uses: jdcargile/ms-teams-notification@v1.3
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: "${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }} CI failing" 
+          notification-summary: "${{ env.IMAGE_NAME }} CI failing" 
           notification-color: dc3545 
           timezone: America/Los_Angeles     
