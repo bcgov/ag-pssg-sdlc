@@ -65,7 +65,7 @@ jobs:
       - name: SonarQube Scan
         id: sonar
         uses: sonarsource/sonarqube-scan-action@master
-        if: ${{ (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'}}
+        if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN}}
           SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
@@ -146,7 +146,7 @@ jobs:
 
 
       - name: containarize app
-        if: success() && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
+        if: success()
         run: |
             docker build . -t ${{ env.IMAGE_NAME }}
         working-directory: ${{env.working-directory}}
@@ -221,7 +221,7 @@ jobs:
           edit-mode: replace
           reactions: confused  
       - name: push to container registry   
-        if: success() && github.event_name == 'push'  && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions' # if nothing failed
+        if: success() && github.event_name == 'push'  && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions' # if nothing failed. dont push when event is github bot
         id: tag
         run: |
           # Change all uppercase to lowercase

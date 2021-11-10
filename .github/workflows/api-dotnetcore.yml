@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-    if: ${{ github.event.pusher.name != 'pipelines-ci' }} #github.event.pusher.name != 'pipelines-ci' # do not run this workflow for auto-release event pusher using user github-actions and image digest update from tekton-pipelines-ci
     runs-on: ubuntu-latest
     env:
       working-directory: ./backend
@@ -185,7 +184,7 @@ jobs:
           reactions: eyes
           
       - name: containarize app
-        if: success() && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
+        if: success() 
         run: |
             docker build . -t ${{ env.IMAGE_NAME }}
         working-directory: ${{env.working-directory}}
@@ -256,7 +255,7 @@ jobs:
           edit-mode: replace
           reactions: confused  
       - name: push to container registry   
-        if: success() && github.event_name == 'push' && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions' # if nothing failed
+        if: success() && github.event_name == 'push' && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions' # if nothing failed. dont push when event is github bot
         id: tag
         run: |
           # Change all uppercase to lowercase
