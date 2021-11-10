@@ -194,7 +194,7 @@ jobs:
       - if: always() && steps.fc.outputs.comment-id == ''  && steps.get-comment-body.outcome != 'failure' && github.event_name == 'pull_request'
         name: Comment on PR
         env:
-          GITHUB_TOKEN: "${{secrets.PAT}}" 
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: |
           if [ -s ${{env.output-filename}} ]; then
           commentPR () {
