@@ -125,7 +125,7 @@ jobs:
       - name: SonarScanner for .NET 5 with pull request decoration support
         id: sonar
         uses: highbyte/sonarscan-dotnet@2.0
-        if: github.event_name == 'push' && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
+        if: github.event_name == 'push' 
         env:
           SONAR_TOKEN: f5f11ab3c73f7376b6ee039c1a3fba2db58de0a5
         with:
@@ -185,12 +185,11 @@ jobs:
           reactions: eyes
           
       - name: containarize app
-        if: success() && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
+        if: success() 
         run: |
             docker build . -t ${{ env.IMAGE_NAME }}
         working-directory: ${{env.working-directory}}
       - name: Scan for Vulnerability
-        if: env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
         id: scan
         uses: aquasecurity/trivy-action@master
         with:
@@ -256,7 +255,7 @@ jobs:
           edit-mode: replace
           reactions: confused  
       - name: push to container registry   
-        if: success() && github.event_name == 'push' && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions' # if nothing failed
+        if: success() && github.event_name == 'push' && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions' # if nothing failed. dont push when event is github bot
         id: tag
         run: |
           # Change all uppercase to lowercase
