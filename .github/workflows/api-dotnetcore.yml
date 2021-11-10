@@ -223,7 +223,6 @@ jobs:
         id: fc
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
           body-includes: ${{secrets.OPENSHIFT_REGISTRY}}/${{env.IMAGE_NAME}} vulnerability report 
       - name: Comment on PR
         if: steps.fc.outputs.comment-id == ''  && steps.get-comment-body.outcome != 'failure'
