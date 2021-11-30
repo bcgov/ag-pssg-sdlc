@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: ./backend
+      manifest-directory: ./k8s
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       output-filename: api.txt
       IMAGE_NAME: pims-api
@@ -216,7 +217,14 @@ jobs:
           body="${body//$'\n'/'%0A'}"
           body="${body//$'\r'/'%0D'}" 
           echo "::set-output name=body::$body" 
-          fi            
+          fi  
+
+      - name: Install Datree
+        run: curl https://get.datree.io | /bin/bash
+        
+      - name: Scan for policy compliance
+        run: datree test *.yaml --ignore-missing-schemas
+        working-directory: ${{env.manifest-directory}}          
       - name: Find Comment
         if: always() && github.event_name == 'pull_request'
         uses: peter-evans/find-comment@v1
@@ -242,7 +250,7 @@ jobs:
             echo "No vulnerability detected in this image"
           fi  
       - name: Update PR Comment
-        if: github.event_name == 'pull_request' && steps.fc.outputs.comment-id != ''
+        if: always() && github.event_name == 'pull_request' && steps.fc.outputs.comment-id != ''
         uses: peter-evans/create-or-update-comment@v1
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}

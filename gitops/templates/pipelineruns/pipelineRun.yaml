@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: quarkus-deploy-dev
+  namespace: 5b7aa5-tools
+spec:
+  params:
+    - name: APP_SOURCE_GIT
+      value: 'https://github.com/sookeke/quarkus-and-github-actions.git'
+    - name: APP_SOURCE_REVISION
+      value: master
+    - name: APP_CONFIG_GIT
+      value: 'https://github.com/bcgov-c/ministry-gitops-jag.git'
+    - name: APP_TESTS_GIT
+      value: 'https://github.com/sookeke/spring-petclinic-gatling'
+    - name: APP_IMAGE
+      value: quarkus-demo
+    - name: APP_IMAGE_TAG
+      value: latest
+  pipelineRef:
+    name: quarkus-deploy-dev
+  serviceAccountName: pipeline
+  workspaces:
+    - name: workspace
+      persistentVolumeClaim:
+        claimName: quarkus-build-workspace
+    - name: quarkus-settings
+      persistentVolumeClaim:
+        claimName: quarkus-build-workspace

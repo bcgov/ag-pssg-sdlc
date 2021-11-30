@@ -1,0 +1,39 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: github-listener-interceptor
+  namespace: 5b7aa5-tools
+spec:
+  serviceAccountName: tekton-github-triggers
+  triggers:
+  - name: github-listener
+    interceptors:
+    - github:
+        secretRef:
+          secretName: github-trigger-secret
+          secretKey: secretToken
+        eventTypes:
+        - push
+    - cel:
+        filter: "body.ref == 'refs/heads/main'"
+    bindings:
+    - ref: trigger-binding-quarkus-deploy-dev
+    template:
+      ref: trigger-template-quarkus-deploy-dev
+---
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: github-listener-interceptor
+  labels:
+    app.kubernetes.io/managed-by: EventListener
+    app.kubernetes.io/part-of: Triggers
+    eventlistener: github-listener-interceptor
+spec:
+  port:
+    targetPort: 8080
+  to:
+    kind: "Service"
+    name: el-github-listener-interceptor
+    weight: 100

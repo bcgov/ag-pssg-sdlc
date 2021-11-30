@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: petclinic-build-workspace
+  name: quarkus-build-workspace
   namespace: 5b7aa5-tools
 spec:
   resources:

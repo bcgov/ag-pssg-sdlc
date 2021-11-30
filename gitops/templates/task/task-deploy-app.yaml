@@ -1,0 +1,72 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: deploy-app
+  namespace: 5b7aa5-tools
+spec:
+  params:
+    - description: The name of deployment
+      name: DEPLOYMENT_NAME
+      type: string
+    - description: 'The current image repo/image:tag in the manifests for the deployment'
+      name: CURRENT_IMAGE
+      type: string
+    - description: The new image repo/image to be deployed
+      name: NEW_IMAGE_NAME
+      type: string
+    - default: ''
+      description: The new image tag to be deployed
+      name: NEW_IMAGE_TAG
+      type: string
+    - default: ''
+      description: The digest of the new image to get deployed
+      name: NEW_IMAGE_DIGEST
+      type: string
+    - description: The namespace for the deployment
+      name: NAMESPACE
+      type: string
+    - description: >-
+        The subdirectory in configs git repo for the kustomize overlay to be
+        applied
+      name: KUSTOMIZE_OVERLAY_DIR
+      type: string
+  steps:
+    - image: 'image-registry.openshift-image-registry.svc:5000/openshift/cli'
+      name: apply-manifests
+      resources: {}
+      script: >
+        find $(workspaces.source.path)
+
+
+        echo "########################"  
+
+        echo "## kustomization.yaml ##"
+
+        echo "########################"
+
+        cat
+        $(workspaces.source.path)/$(params.KUSTOMIZE_OVERLAY_DIR)/kustomization.yaml
+
+        echo "######## DRY RUN #######"
+
+        oc apply -k $(params.KUSTOMIZE_OVERLAY_DIR) --dry-run=client -o yaml -n
+        $(params.NAMESPACE)
+
+        echo "########################"
+
+        oc apply -k $(params.KUSTOMIZE_OVERLAY_DIR) -n $(params.NAMESPACE)
+
+        oc rollout status deploy/$(params.DEPLOYMENT_NAME) -n
+        $(params.NAMESPACE)
+
+        echo "Done deploying $(params.DEPLOYMENT_NAME)"
+
+
+        #ROUTE=$(oc get route $(params.DEPLOYMENT_NAME) -n $(params.NAMESPACE)
+        #--template='{{ .spec.host }}')
+
+        #echo "http://${ROUTE}/
+      workingDir: $(workspaces.source.path)
+  workspaces:
+    - description: The workspace consisting of maven project.
+      name: source
