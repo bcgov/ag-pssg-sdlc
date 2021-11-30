@@ -1,9 +1,9 @@
+import * as CommonStyled from 'components/common/styles';
 import * as React from 'react';
 import { Breadcrumb } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 import { ILeasePage } from './LeaseContainer';
-import * as Styled from './styles';
 
 interface ILeaseAndLicenseBreadCrumbProps {
   leaseId?: number;
@@ -21,19 +21,22 @@ export const LeaseBreadCrumb: React.FunctionComponent<ILeaseAndLicenseBreadCrumb
   onClickManagement,
 }) => {
   return (
-    <Styled.LeaseBreadcrumb>
+    <CommonStyled.Breadcrumb>
       <Breadcrumb.Item onClick={onClickManagement}>Management</Breadcrumb.Item>
       <Breadcrumb.Item linkAs={Link} linkProps={{ to: '/lease/list' }}>
-        Lease & License Search
+        Lease &amp; License Search
       </Breadcrumb.Item>
-      <Breadcrumb.Item
-        active
-        linkAs={Link}
-        linkProps={{ to: `/lease/${leaseId}?leasePage=${leasePage?.title}` }}
-      >
-        {leasePage?.title}
-      </Breadcrumb.Item>
-    </Styled.LeaseBreadcrumb>
+      {/* Render link only if leaseId is available */}
+      {leaseId && (
+        <Breadcrumb.Item
+          active
+          linkAs={Link}
+          linkProps={{ to: `/lease/${leaseId}?leasePage=${leasePage?.title}` }}
+        >
+          {leasePage?.title}
+        </Breadcrumb.Item>
+      )}
+    </CommonStyled.Breadcrumb>
   );
 };
 

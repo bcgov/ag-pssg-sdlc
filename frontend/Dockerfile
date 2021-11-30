@@ -1,4 +1,4 @@
-FROM node:14-slim as node
+FROM node:16-slim as node
 
 # install build toolchain
 RUN apt-get update \
@@ -12,7 +12,7 @@ ENTRYPOINT ["dumb-init", "--"]
 WORKDIR /usr/app
 
 # install a specific NPM version
-RUN npm install -g npm@8.1.3
+RUN npm install -g npm@6.14.14
 
 COPY package*.json ./
 

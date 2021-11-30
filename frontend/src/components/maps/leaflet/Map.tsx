@@ -75,6 +75,10 @@ export type LayerPopupInformation = PopupContentConfig & {
   feature: Feature;
 };
 
+type BaseLayerFile = {
+  basemaps: BaseLayer[];
+};
+
 const defaultFilterValues: IPropertyFilter = {
   searchBy: 'pid',
   pid: '',
@@ -83,7 +87,7 @@ const defaultFilterValues: IPropertyFilter = {
   location: '',
 };
 
-const whitelistedFilterKeys = ['PID', 'PIN', 'ADDRESS', 'LOCATION'];
+const whitelistedFilterKeys = ['PID', 'PIN', 'STREET_ADDRESS_1', 'LOCATION'];
 
 /**
  * Converts the map filter to a geo search filter.
@@ -91,8 +95,8 @@ const whitelistedFilterKeys = ['PID', 'PIN', 'ADDRESS', 'LOCATION'];
  */
 const getQueryParams = (filter: IPropertyFilter): IGeoSearchParams => {
   return {
-    PID: filter.pid ? +filter.pid?.replace(/-/g, '') : undefined,
-    PIN: filter.pin ? +filter.pin?.replace(/-/g, '') : undefined,
+    PID: filter.pid ? filter.pid?.replace(/-/g, '') : undefined,
+    PIN: filter.pin ? filter.pin?.replace(/-/g, '') : undefined,
     STREET_ADDRESS_1: filter.address,
   };
 };
@@ -186,7 +190,7 @@ const Map: React.FC<MapProps> = ({
 
   useEffect(() => {
     // fetch GIS base layers configuration from /public folder
-    axios.get('/basemaps.json')?.then(result => {
+    axios.get<BaseLayerFile>('/basemaps.json')?.then(result => {
       setBaseLayers(result.data?.basemaps);
       setActiveBasemap(result.data?.basemaps?.[0]);
     });
