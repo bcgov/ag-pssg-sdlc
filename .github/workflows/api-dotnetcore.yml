@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: ./backend
+      manifest-directory: ./k8s
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       output-filename: api.txt
       IMAGE_NAME: pims-api
@@ -216,7 +217,14 @@ jobs:
           body="${body//$'\n'/'%0A'}"
           body="${body//$'\r'/'%0D'}" 
           echo "::set-output name=body::$body" 
-          fi            
+          fi  
+
+      - name: Install Datree
+        run: curl https://get.datree.io | /bin/bash
+        
+      - name: Scan for policy compliance
+        run: datree test *.yaml --ignore-missing-schemas
+        working-directory: ${{env.manifest-directory}}          
       - name: Find Comment
         if: always() && github.event_name == 'pull_request'
         uses: peter-evans/find-comment@v1
@@ -262,7 +270,6 @@ jobs:
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')       
                 
           # tag image
-
           [ "$VERSION" == "master" ] && RELEASE_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)         
           [ "$VERSION" == "master" ] &&  VERSION=$(echo $RELEASE_VERSION | sed -e 's/^v//')  
           [ "$VERSION" == "dev" ] && VERSION=latest           

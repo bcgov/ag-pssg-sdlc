@@ -1,0 +1,43 @@
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: tekton-github-triggers
+  namespace: 5b7aa5-tools
+secrets:
+- name: github-trigger-secret
+---
+
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: tekton-triggers-github-binding
+  namespace: 5b7aa5-tools
+subjects:
+- kind: ServiceAccount
+  name: tekton-github-triggers
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tekton-github-triggers
+---
+
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: tekton-github-triggers
+  namespace: 5b7aa5-tools
+rules:
+# Permissions for every EventListener deployment to function
+# EventListeners need to be able to fetch all namespaced resources
+- apiGroups: ["triggers.tekton.dev"]
+  resources: ["eventlisteners", "triggerbindings", "triggertemplates", "triggers"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+# configmaps is needed for updating logging config
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch"]
+# Permissions to create resources in associated TriggerTemplates
+- apiGroups: ["tekton.dev"]
+  resources: ["pipelineruns", "pipelineresources", "taskruns"]
+  verbs: ["create"]
+
