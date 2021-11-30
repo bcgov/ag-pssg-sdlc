@@ -215,7 +215,7 @@ jobs:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            ## ${{secrets.OPENSHIFT_REGISTRY}}/${{env.image-name}}:${{env.tag}} vulnerability report
+            ## ${{secrets.OPENSHIFT_REGISTRY}}/${{env.IMAGE_NAME}}:${{env.tag}} vulnerability report
             ``` echo "${{ steps.get-comment-body.outputs.body }}"```
           edit-mode: replace
           reactions: confused  
