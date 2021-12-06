@@ -1,4 +1,5 @@
 import userEvent from '@testing-library/user-event';
+import { Claims } from 'constants/index';
 import { useApiLeases } from 'hooks/pims-api/useApiLeases';
 import { ILeaseSearchResult } from 'interfaces';
 import { lookupCodesSlice } from 'store/slices/lookupCodes';
@@ -11,6 +12,7 @@ const storeState = {
   [lookupCodesSlice.name]: { lookupCodes: [] },
 };
 
+jest.mock('@react-keycloak/web');
 jest.mock('hooks/pims-api/useApiLeases');
 const getLeases = jest.fn();
 (useApiLeases as jest.Mock).mockReturnValue({
@@ -19,7 +21,7 @@ const getLeases = jest.fn();
 
 // render component under test
 const setup = (renderOptions: RenderOptions = { store: storeState }) => {
-  const utils = render(<LeaseListView />, { ...renderOptions });
+  const utils = render(<LeaseListView />, { ...renderOptions, claims: [Claims.LEASE_VIEW] });
   const searchButton = utils.getByTestId('search');
   return { searchButton, ...utils };
 };
@@ -69,15 +71,15 @@ describe('Lease and License List View', () => {
     ]);
     const { container, searchButton, findByText } = setup();
 
-    fillInput(container, 'searchBy', 'pidOrPin', 'select');
-    fillInput(container, 'pidOrPin', '123');
+    fillInput(container, 'searchBy', 'pinOrPid', 'select');
+    fillInput(container, 'pinOrPid', '123');
     await act(async () => userEvent.click(searchButton));
 
     expect(getLeases).toHaveBeenCalledWith(
       expect.objectContaining<ILeaseFilter>({
         lFileNo: '',
-        pidOrPin: '123',
-        searchBy: 'pidOrPin',
+        pinOrPid: '123',
+        searchBy: 'pinOrPid',
         tenantName: '',
         programs: [],
       }),
@@ -104,7 +106,7 @@ describe('Lease and License List View', () => {
     expect(getLeases).toHaveBeenCalledWith(
       expect.objectContaining({
         lFileNo: '123',
-        pidOrPin: '',
+        pinOrPid: '',
         searchBy: 'lFileNo',
         tenantName: '',
       }),
@@ -125,15 +127,15 @@ describe('Lease and License List View', () => {
     ]);
     const { container, searchButton, findByText } = setup();
 
-    fillInput(container, 'searchBy', 'pidOrPin', 'select');
+    fillInput(container, 'searchBy', 'pinOrPid', 'select');
     fillInput(container, 'tenantName', 'Chester');
     await act(async () => userEvent.click(searchButton));
 
     expect(getLeases).toHaveBeenCalledWith(
       expect.objectContaining<ILeaseFilter>({
         lFileNo: '',
-        pidOrPin: '',
-        searchBy: 'pidOrPin',
+        pinOrPid: '',
+        searchBy: 'pinOrPid',
         tenantName: 'Chester',
         programs: [],
       }),
@@ -146,15 +148,15 @@ describe('Lease and License List View', () => {
     setupMockSearch();
     const { container, searchButton, findAllByText } = setup();
 
-    fillInput(container, 'searchBy', 'pidOrPin', 'select');
-    fillInput(container, 'pidOrPin', 'foo-bar-baz');
+    fillInput(container, 'searchBy', 'pinOrPid', 'select');
+    fillInput(container, 'pinOrPid', 'foo-bar-baz');
     await act(async () => userEvent.click(searchButton));
 
     expect(getLeases).toHaveBeenCalledWith(
       expect.objectContaining<ILeaseFilter>({
         lFileNo: '',
-        pidOrPin: 'foo-bar-baz',
-        searchBy: 'pidOrPin',
+        pinOrPid: 'foo-bar-baz',
+        searchBy: 'pinOrPid',
         tenantName: '',
         programs: [],
       }),
@@ -168,15 +170,15 @@ describe('Lease and License List View', () => {
     getLeases.mockRejectedValue(new Error('network error'));
     const { container, searchButton, findAllByText } = setup();
 
-    fillInput(container, 'searchBy', 'pidOrPin', 'select');
-    fillInput(container, 'pidOrPin', '123');
+    fillInput(container, 'searchBy', 'pinOrPid', 'select');
+    fillInput(container, 'pinOrPid', '123');
     await act(async () => userEvent.click(searchButton));
 
     expect(getLeases).toHaveBeenCalledWith(
       expect.objectContaining<ILeaseFilter>({
         lFileNo: '',
-        pidOrPin: '123',
-        searchBy: 'pidOrPin',
+        pinOrPid: '123',
+        searchBy: 'pinOrPid',
         tenantName: '',
         programs: [],
       }),
