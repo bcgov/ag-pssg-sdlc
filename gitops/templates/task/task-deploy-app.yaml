@@ -46,6 +46,7 @@ spec:
 
         cat
         $(workspaces.source.path)/$(params.KUSTOMIZE_OVERLAY_DIR)/kustomization.yaml
+<<<<<<< HEAD
         
         # Cancel all previous deployments
 #
@@ -71,6 +72,8 @@ spec:
             echo "\n*** Reached the timeout for canceling previous deployments ***\n"
             exit 1
           fi
+=======
+>>>>>>> 9c6781f2e32df2ce3f533db6364ee99121acc1f1
 
         echo "######## DRY RUN #######"
 
@@ -81,7 +84,11 @@ spec:
 
         oc apply -k $(params.KUSTOMIZE_OVERLAY_DIR) -n $(params.NAMESPACE)
 
+<<<<<<< HEAD
         oc rollout status deploy/$(params.DEPLOYMENT_NAME) --watch -n
+=======
+        oc rollout status deploy/$(params.DEPLOYMENT_NAME) -n
+>>>>>>> 9c6781f2e32df2ce3f533db6364ee99121acc1f1
         $(params.NAMESPACE)
 
         echo "Done deploying $(params.DEPLOYMENT_NAME)"
