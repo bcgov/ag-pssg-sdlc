@@ -44,12 +44,10 @@ spec:
 
         echo "########################"
 
-        cat
-        $(workspaces.source.path)/$(params.KUSTOMIZE_OVERLAY_DIR)/kustomization.yaml
-<<<<<<< HEAD
+        cat $(workspaces.source.path)/$(params.KUSTOMIZE_OVERLAY_DIR)/kustomization.yaml
         
         # Cancel all previous deployments
-#
+
         OC_CANCEL_ALL_PREV_DEPLOY="oc -n $(params.NAMESPACE) rollout cancel deploy/$(params.DEPLOYMENT_NAME) || true"
         
         echo "canceling previous deployments..."
@@ -66,30 +64,22 @@ spec:
               # No pending or running replica controllers so exit the while loop
               break 2
             fi
-            count=$(( $count + 1 ))
+            count=$(( ${count} + 1 ))
           done
-          if [ $count -gt $timeout ]; then
+          if [ ${count} -gt ${timeout} ]; then
             echo "\n*** Reached the timeout for canceling previous deployments ***\n"
             exit 1
           fi
-=======
->>>>>>> 9c6781f2e32df2ce3f533db6364ee99121acc1f1
 
         echo "######## DRY RUN #######"
 
-        oc apply -k $(params.KUSTOMIZE_OVERLAY_DIR) --dry-run=client -o yaml -n
-        $(params.NAMESPACE)
+        oc apply -k $(params.KUSTOMIZE_OVERLAY_DIR) --dry-run=client -o yaml -n $(params.NAMESPACE)
 
         echo "########################"
 
         oc apply -k $(params.KUSTOMIZE_OVERLAY_DIR) -n $(params.NAMESPACE)
 
-<<<<<<< HEAD
-        oc rollout status deploy/$(params.DEPLOYMENT_NAME) --watch -n
-=======
-        oc rollout status deploy/$(params.DEPLOYMENT_NAME) -n
->>>>>>> 9c6781f2e32df2ce3f533db6364ee99121acc1f1
-        $(params.NAMESPACE)
+        oc rollout status deploy/$(params.DEPLOYMENT_NAME) --watch -n $(params.NAMESPACE)
 
         echo "Done deploying $(params.DEPLOYMENT_NAME)"
 
