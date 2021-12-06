@@ -26,7 +26,7 @@ parameters:
     displayName: "OpenShift Project Namespace"
     description: "The namespace of the OpenShift project containing the application."
     required: true
-    value: "3cd915"
+    value: "5b7aa5"
   - name: ENV_NAME
     displayName: "Environment name"
     description: "The name for this environment [dev, test, prod, tools]"
@@ -62,7 +62,7 @@ parameters:
     displayName: "Keycloak SSO realm"
     description: "Keycloak SSO realm, used by the frontend login."
     required: true
-    value: 72x8v9rw
+    value: PIMS
   - name: KEYCLOAK_CONFIG_FILE_NAME
     displayName: "keycloak.json Config File Name"
     description: "The name of the configuration file to be used for keycloak.json."
