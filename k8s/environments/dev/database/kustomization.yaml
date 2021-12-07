@@ -13,7 +13,7 @@ secretGenerator:
 - name: pims-database
   env: database.env.txt
   type: Opaque
-  options:
+  generatorOptions:
     disableNameSuffixHash: true
 images:
 - name: image-registry.apps.silver.devops.gov.bc.ca/5b7aa5-tools/pims-database
