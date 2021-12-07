@@ -11,7 +11,7 @@ bases:
   #behavior: replace
 secretGenerator:
 - name: pims-database
-  env:
+  envs:
   - database.env.txt
   type: Opaque
 images:
