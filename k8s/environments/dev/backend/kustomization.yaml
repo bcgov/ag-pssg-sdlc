@@ -7,12 +7,20 @@ bases:
 #namespace: fbca9a-dev
 
 
+generatorOptions:
+  disableNameSuffixHash: true
   #namespace: example
   #behavior: replace
 configMapGenerator:
 - files:
   - configs/application.properties
   name: pims-api-sso
+  
+secretGenerator:
+- name: pims-api-sso
+  env: pims-api.env.txt
+  type: Opaque
+
 images:
 - name: image-registry.apps.silver.devops.gov.bc.ca/5b7aa5-tools/pims-api
   newName: image-registry.apps.silver.devops.gov.bc.ca/5b7aa5-tools/pims-api
