@@ -44,23 +44,6 @@ items:
         storage: 5Gi
     storageClassName: netapp-file-backup
 - apiVersion: v1
-  kind: Secret
-  metadata:
-    annotations:
-      description: Database passwords
-    labels:
-      app: pims
-      env: dev
-      name: pims-database
-      role: database
-    name: pims-database
-    namespace: 5b7aa5-dev
-  stringData:
-    DB_PASSWORD: $(params.DB_PASSWORD)
-    DB_USER: admin
-    MSSQL_SA_PASSWORD: $(params.MSSQL_SA_PASSWORD)
-  type: Opaque
-- apiVersion: v1
   kind: Service
   metadata:
     annotations:
