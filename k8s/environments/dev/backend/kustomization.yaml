@@ -11,10 +11,10 @@ generatorOptions:
   disableNameSuffixHash: true
   #namespace: example
   #behavior: replace
-configMapGenerator:
-- files:
-  - configs/application.properties
-  name: pims-api-sso
+#configMapGenerator:
+#- files:
+#  - configs/application.properties
+  #name: pims-api-sso
   
 secretGenerator:
 - name: pims-api-sso
