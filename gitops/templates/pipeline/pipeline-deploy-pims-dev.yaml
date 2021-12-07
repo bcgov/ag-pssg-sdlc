@@ -1,0 +1,80 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: quarkus-deploy-dev
+  namespace: 5b7aa5-tools
+spec:
+  params:
+    - default: 'https://github.com/bcgov/ag-pssg-sdlc.git'
+      description: The application git repository
+      name: APP_SOURCE_GIT
+      type: string
+    - default: main
+      description: The application git revision
+      name: APP_SOURCE_REVISION
+      type: string
+    - default: quarkus-demo
+      description: The application image to build
+      name: APP_IMAGE
+      type: string
+    - default: latest
+      description: The application image tag to build
+      name: APP_IMAGE_TAG
+      type: string
+  tasks:
+    - name: source-clone
+      params:
+        - name: url
+          value: $(params.APP_SOURCE_GIT)
+        - name: revision
+          value: $(params.APP_SOURCE_REVISION)
+        - name: depth
+          value: '0'
+        - name: subdirectory
+          value: k8s
+        - name: deleteExisting
+          value: 'true'
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: workspace
+    - name: deploy-pims-api-dev
+      params:
+        - name: ENV_NAME
+          value: dev
+        - name: IMAGE_TAG
+          value: latest
+        - name: CONNECTION_STRINGS_PIMS
+          value: Server=pims-database,1433;User ID=admin;Database=pims
+        - name: KEYCLOAK_AUTHORITY
+          value: https://sso-dev-5b7aa5-dev.apps.silver.devops.gov.bc.ca/auth/realms/PIMS
+        - name: KEYCLOAK_ADMIN_AUTHORITY
+          value: https://sso-dev-5b7aa5-dev.apps.silver.devops.gov
+        - name: KEYCLOAK_SERVICE_ACCOUNT_SECRET
+          value: ee7d21ac-84a4-477a-950c-4c72d019fd95          
+        - name: DB_PASSWORD
+          value: WSpmqqNJMqo__1Ab!
+        - name: DB_USER
+          value: admin
+        - name: MSSQL_SA_PASSWORD
+          value: v6lA2_MAgYNtu7R9H6ClN_1aB!
+        - name: IMAGE_TAG
+          value: from CI
+        - name: NAMESPACE
+          value: 5b7aa5-dev
+        - name: KUSTOMIZE_OVERLAY_DIR
+          value: k8s/environments/dev/backend
+      runAfter:
+        - source-clone
+      taskRef:
+        kind: Task
+        name: deploy-pims-api
+      workspaces:
+        - name: source
+          subPath: k8s
+          workspace: workspace
+  workspaces:
+    - name: workspace
+    - name: pims-settings

@@ -1,0 +1,177 @@
+items:
+- annotations:
+    description: pims Database storage volume
+    pv.kubernetes.io/bind-completed: "yes"
+    pv.kubernetes.io/bound-by-controller: "yes"
+    volume.beta.kubernetes.io/storage-provisioner: csi.trident.netapp.io
+  apiVersion: v1
+  finalizers:
+  - kubernetes.io/pvc-protection
+  kind: PersistentVolumeClaim
+  metadata:
+    labels:
+      app: pims
+      env: dev
+      name: pims-database
+      role: database
+    name: pims-database
+    namespace: 5b7aa5-dev
+  resourceVersion: "250191500"
+  selfLink: /api/v1/namespaces/5b7aa5-dev/persistentvolumeclaims/pims-database
+  spec:
+    accessModes:
+    - ReadWriteMany
+    resources:
+      requests:
+        storage: 5Gi
+    storageClassName: netapp-file-standard
+    volumeMode: Filesystem
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    labels:
+      app: pims
+      env: dev
+      name: pims-database-backup
+      role: backup
+    name: pims-database-backup
+    namespace: 5b7aa5-dev
+  spec:
+    accessModes:
+    - ReadWriteMany
+    resources:
+      requests:
+        storage: 5Gi
+    storageClassName: netapp-file-backup
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    annotations:
+      description: Database passwords
+    labels:
+      app: pims
+      env: dev
+      name: pims-database
+      role: database
+    name: pims-database
+    namespace: 5b7aa5-dev
+  stringData:
+    DB_PASSWORD: $(params.DB_PASSWORD)
+    DB_USER: admin
+    MSSQL_SA_PASSWORD: $(params.MSSQL_SA_PASSWORD)
+  type: Opaque
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes the database server
+    labels:
+      app: pims
+      env: dev
+      name: pims-database
+      role: database
+    name: pims-database
+    namespace: 5b7aa5-dev
+  spec:
+    ports:
+    - name: 1433-tcp
+      port: 1433
+      protocol: TCP
+      targetPort: 1433
+    selector:
+      name: pims-database
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Defines how to deploy the database server
+    labels:
+      app: pims
+      env: dev
+      name: pims-database
+      role: database
+    name: pims-database
+    namespace: 5b7aa5-dev
+  spec:
+    recreateParams:
+      mid: {}
+      post: {}
+      pre: {}
+    replicas: 1
+    selector:
+      name: pims-database
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          app: pims
+          env: dev
+          name: pims-database
+          role: database
+        name: pims-database
+      spec:
+        containers:
+        - env:
+          - name: ACCEPT_EULA
+            value: "Y"
+          - name: MSSQL_PID
+            value: Developer
+          - name: TZ
+            value: America/Los_Angeles
+          - name: MSSQL_SA_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: MSSQL_SA_PASSWORD
+                name: pims-database
+          - name: DB_NAME
+            value: pims
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                key: DB_USER
+                name: pims-database
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: DB_PASSWORD
+                name: pims-database
+          image: ""
+          name: pims-database
+          ports:
+          - containerPort: 1433
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 750m
+              memory: 4Gi
+            requests:
+              cpu: 100m
+              memory: 500Mi
+          volumeMounts:
+          - mountPath: /var/opt/mssql
+            name: mssql-data
+          - mountPath: /backups
+            name: backup
+        volumes:
+        - name: mssql-data
+          persistentVolumeClaim:
+            claimName: pims-database
+        - name: backup
+          persistentVolumeClaim:
+            claimName: pims-database-backup
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - pims-database
+        from:
+          kind: ImageStreamTag
+          name: pims-database:latest
+          namespace: 5b7aa5-tools
+      type: ImageChange
+kind: List
+metadata: {}

@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+bases:
+- ../../../application/backend  
+
+#namespace: fbca9a-dev
+
+
+  #namespace: example
+  #behavior: replace
+configMapGenerator:
+- files:
+  - configs/application.properties
+  name: pims-api-sso
+images:
+- name: image-registry.apps.silver.devops.gov.bc.ca/5b7aa5-tools/pims-api
+  newName: image-registry.apps.silver.devops.gov.bc.ca/5b7aa5-tools/pims-api
+  newTag: latest #CI build_number
