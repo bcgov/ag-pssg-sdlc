@@ -1,0 +1,329 @@
+apiVersion: v1
+items:
+- apiVersion: networking.k8s.io/v1
+  kind: NetworkPolicy
+  metadata:
+    name: pod-from-pod-permit-pims-api-database
+    namespace: 5b7aa5-dev
+  spec:
+    ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: pims
+            env: dev
+            role: api
+    podSelector:
+      matchLabels:
+        app: pims
+        env: dev
+        role: database
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes and load balances the application pods.
+    labels:
+      app: pims
+      env: dev
+      name: pims-api
+      role: api
+    name: pims-api
+    namespace: 5b7aa5-dev
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 3000
+      protocol: TCP
+      targetPort: 3000
+    selector:
+      app: pims
+      env: dev
+      role: api
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    annotations:
+      description: Keycloak SSO client secrets
+    labels:
+      app: pims
+      env: dev
+      name: pims-api-sso
+      role: api
+    name: pims-api-sso
+    namespace: 5b7aa5-dev
+  stringData:
+    KEYCLOAK_SECRET: '{SECRET} # This isn''t currently a required value for the api
+      configuration.'
+    KEYCLOAK_SERVICE_ACCOUNT_SECRET: ee7d21ac-84a4-477a-950c-4c72d019fd95
+  type: Opaque
+- apiVersion: v1
+  data:
+    KEYCLOAK_ADMIN_AUTHORITY: $(params.KEYCLOAK_ADMIN_AUTHORITY)
+    KEYCLOAK_AUDIENCE: pims-api
+    KEYCLOAK_AUTHORITY: $(params.KEYCLOAK_AUTHORITY)
+  kind: ConfigMap
+  metadata:
+    annotations:
+      description: Keycloak SSO client configuration
+    labels:
+      app: pims
+      env: dev
+      name: pims-api-sso
+      role: api
+    name: pims-api-sso
+    namespace: 5b7aa5-dev
+  type: Opaque
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    annotations:
+      description: CHES client secrets
+    labels:
+      app: pims
+      env: dev
+      name: pims-api-ches
+      role: api
+    name: pims-api-ches
+    namespace: 5b7aa5-dev
+  stringData:
+    CHES_PASSWORD: '{SECRET}'
+    CHES_USERNAME: '{SECRET}'
+  type: Opaque
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    annotations:
+      description: LTSA client secrets
+    labels:
+      app: pims
+      env: dev
+      name: pims-api-ltsa
+      role: api
+    name: pims-api-ltsa
+    namespace: 5b7aa5-dev
+  stringData:
+    INTEGRATOR_PASSWORD: '{SECRET}'
+    INTEGRATOR_USERNAME: '{SECRET}'
+    MY_LTSA_PASSWORD: '{SECRET}'
+    MY_LTSA_USERNAME: '{SECRET}'
+  type: Opaque
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    annotations:
+      description: Geocoder client secrets
+    labels:
+      app: pims
+      env: dev
+      name: pims-api-geocoder
+      role: api
+    name: pims-api-geocoder
+    namespace: 5b7aa5-dev
+  stringData:
+    GEOCODER_KEY: '{SECRET}'
+  type: Opaque
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    annotations:
+      description: Elastic search password
+    labels:
+      app: pims
+      env: dev
+      name: pims-api-elasticsearch
+      role: api
+    name: pims-api-elasticsearch
+    namespace: 5b7aa5-dev
+  stringData:
+    ELASTIC_PASSWORD: '{SECRET}'
+  type: Opaque
+- apiVersion: v1
+  data:
+    CONNECTION_STRINGS_PIMS: Server=pims-database,1433;User ID=admin;Database=pims
+  kind: ConfigMap
+  metadata:
+    annotations:
+      description: Database client configuration
+    labels:
+      app: pims
+      env: dev
+      name: pims-api-database
+      role: api
+    name: pims-api-database
+    namespace: 5b7aa5-dev
+  type: Opaque
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Defines how to deploy pims-api
+    labels:
+      app: pims
+      env: dev
+      name: pims-api
+      role: api
+    name: pims-api
+    namespace: 5b7aa5-dev
+  spec:
+    replicas: 1
+    selector:
+      app: pims
+      env: dev
+      role: api
+    strategy:
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          app: pims
+          env: dev
+          name: pims-api
+          role: api
+        name: pims-api
+      spec:
+        containers:
+        - env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          - name: ASPNETCORE_URLS
+            value: http://*:8080
+          - name: HealthChecks__LivePath
+            value: /health/live
+          - name: HealthChecks__ReadyPath
+            value: /health/ready
+          - name: TZ
+            value: America/Los_Angeles
+          - name: ConnectionStrings__PIMS
+            valueFrom:
+              configMapKeyRef:
+                key: CONNECTION_STRINGS_PIMS
+                name: pims-api-database
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                key: DB_USER
+                name: pims-database
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: DB_PASSWORD
+                name: pims-database
+          - name: Keycloak__Audience
+            valueFrom:
+              configMapKeyRef:
+                key: KEYCLOAK_AUDIENCE
+                name: pims-api-sso
+          - name: Keycloak__Authority
+            valueFrom:
+              configMapKeyRef:
+                key: KEYCLOAK_AUTHORITY
+                name: pims-api-sso
+          - name: Keycloak__Admin__Authority
+            valueFrom:
+              configMapKeyRef:
+                key: KEYCLOAK_ADMIN_AUTHORITY
+                name: pims-api-sso
+          - name: Keycloak__Secret
+            valueFrom:
+              secretKeyRef:
+                key: KEYCLOAK_SECRET
+                name: pims-api-sso
+          - name: Keycloak__ServiceAccount__Secret
+            valueFrom:
+              secretKeyRef:
+                key: KEYCLOAK_SERVICE_ACCOUNT_SECRET
+                name: pims-api-sso
+          - name: Ches__Username
+            valueFrom:
+              secretKeyRef:
+                key: CHES_USERNAME
+                name: pims-api-ches
+          - name: Ches__Password
+            valueFrom:
+              secretKeyRef:
+                key: CHES_PASSWORD
+                name: pims-api-ches
+          - name: Ltsa__MyLtsaUsername
+            valueFrom:
+              secretKeyRef:
+                key: MY_LTSA_USERNAME
+                name: pims-api-ltsa
+          - name: Ltsa__MyLtsaUserPassword
+            valueFrom:
+              secretKeyRef:
+                key: MY_LTSA_PASSWORD
+                name: pims-api-ltsa
+          - name: Ltsa__IntegratorUsername
+            valueFrom:
+              secretKeyRef:
+                key: INTEGRATOR_USERNAME
+                name: pims-api-ltsa
+          - name: Ltsa__integratorPassword
+            valueFrom:
+              secretKeyRef:
+                key: INTEGRATOR_PASSWORD
+                name: pims-api-ltsa
+          - name: Geocoder__Key
+            valueFrom:
+              secretKeyRef:
+                key: GEOCODER_KEY
+                name: pims-api-geocoder
+          - name: ElasticConfiguration__Password
+            valueFrom:
+              secretKeyRef:
+                key: ELASTIC_PASSWORD
+                name: pims-api-elasticsearch
+          image: ""
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health/live
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 1
+            periodSeconds: 60
+            successThreshold: 1
+            timeoutSeconds: 30
+          name: pims-api
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health/ready
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 1
+            periodSeconds: 60
+            successThreshold: 1
+            timeoutSeconds: 30
+          resources:
+            limits:
+              cpu: 100m
+              memory: 2Gi
+            requests:
+              cpu: 100m
+              memory: 500Mi
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - pims-api
+        from:
+          kind: ImageStreamTag
+          name: pims-api:latest
+          namespace: 5b7aa5-tools
+      type: ImageChange
+kind: List
+metadata: {}

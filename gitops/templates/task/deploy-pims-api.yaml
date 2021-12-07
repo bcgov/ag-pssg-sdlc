@@ -1,0 +1,114 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: deploy-pims-api
+  namespace: 5b7aa5-tools
+spec:
+  params:
+    - description: The name of deployment
+      name: DEPLOYMENT_NAME
+      type: string
+    - description: 'The current image repo/image:tag in the manifests for the deployment'
+      name: CURRENT_IMAGE
+      type: string
+    - description: The new image repo/image to be deployed
+      name: NEW_IMAGE_NAME
+      type: string
+    - default: ''
+      description: The new image tag to be deployed
+      name: NEW_IMAGE_TAG
+      type: string
+    - default: ''
+      description: The digest of the new image to get deployed
+      name: NEW_IMAGE_DIGEST
+      type: string
+    - description: The namespace for the deployment
+      name: NAMESPACE
+      type: string
+    - description: >-
+        The subdirectory in configs git repo for the kustomize overlay to be
+        applied
+      name: KUSTOMIZE_DATABASE_DIR
+      type: string
+    - description: >-
+        The subdirectory in configs git repo for the kustomize overlay to be
+        applied
+      name: KUSTOMIZE_BACKEND_DIR
+      type: string
+    - description: >-
+        The subdirectory in configs git repo for the kustomize overlay to be
+        applied
+      name: KUSTOMIZE_FRONTEND_DIR
+      type: string
+  steps:
+    - image: 'image-registry.openshift-image-registry.svc:5000/openshift/cli'
+      name: apply-database-manifests
+      resources: {}
+      script: >
+        find $(workspaces.source.path)
+
+
+        echo "########################"  
+
+        echo "## kustomization.yaml ##"
+
+        echo "########################"
+
+        cat $(workspaces.source.path)/$(params.KUSTOMIZE_DATABASE_DIR)/mssql-deploy.yaml
+        
+        # Cancel all previous deployments
+
+        OC_CANCEL_ALL_PREV_DEPLOY="oc -n $(params.NAMESPACE) rollout cancel deploy/$(params.DEPLOYMENT_NAME) || true"
+        
+        echo "canceling previous deployments..."
+        eval "${OC_CANCEL_ALL_PREV_DEPLOY}"
+        count=1
+        timeout=10
+        
+          # Check previous deployment statuses before moving onto new deploying
+          while [ $count -le $timeout ]; do
+            sleep 1
+            PENDINGS="$(oc -n $(params.NAMESPACE)rollout history deploy/$(params.DEPLOYMENT_NAME) | awk '{print $2}' | grep -c Pending || true)"
+            RUNNINGS="$(oc -n $(params.NAMESPACE) rollout history deploy/$(params.DEPLOYMENT_NAME) | awk '{print $2}' | grep -c Running || true)"
+            if [ "${PENDINGS}" == 0 ] && [ "${RUNNINGS}" == 0 ]; then
+              # No pending or running replica controllers so exit the while loop
+              break 2
+            fi
+            count=$(( ${count} + 1 ))
+          done
+          if [ ${count} -gt ${timeout} ]; then
+            echo "\n*** Reached the timeout for canceling previous deployments ***\n"
+            exit 1
+          fi
+
+        echo "######## DRY RUN #######"
+
+        oc process oc apply -k $(params.KUSTOMIZE_OVERLAY_DIR) --dry-run=client -o yaml -n $(params.NAMESPACE)
+
+        echo "########################"
+
+        oc apply -k $(params.KUSTOMIZE_OVERLAY_DIR) -n $(params.NAMESPACE)
+
+        oc rollout status deploy/$(params.DEPLOYMENT_NAME) --watch -n $(params.NAMESPACE)
+
+        echo "Done deploying $(params.DEPLOYMENT_NAME)"
+
+
+        #ROUTE=$(oc get route $(params.DEPLOYMENT_NAME) -n $(params.NAMESPACE)
+        #--template='{{ .spec.host }}')
+
+        #echo "http://${ROUTE}/
+      workingDir: $(workspaces.source.path)
+    - image: 'image-registry.openshift-image-registry.svc:5000/openshift/cli'
+      name: apply-backend-manifest
+      resources: {}
+      script: >
+      workingDir: $(workspaces.source.path)
+    - image: 'image-registry.openshift-image-registry.svc:5000/openshift/cli'
+      name: apply-frontend-manifest
+      resources: {}
+      script: >
+      workingDir: $(workspaces.source.path)
+  workspaces:
+    - description: The workspace consisting of maven project.
+      name: source
