@@ -217,7 +217,13 @@ jobs:
             ## ${{secrets.OPENSHIFT_REGISTRY}}/${{env.IMAGE_NAME}}:${{env.tag}} vulnerability report
             ``` echo "${{ steps.get-comment-body.outputs.body }}"```
           edit-mode: replace
-          reactions: confused  
+          reactions: confused
+      - name: Install Datree
+        run: curl https://get.datree.io | /bin/bash
+        
+      - name: Scan for policy compliance
+        if: success()
+        run: datree test k8s/application/frontend/*.yaml --ignore-missing-schemas          
       - name: push to container registry   
         if: success() && github.event_name == 'push'  && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions' # if nothing failed. dont push when event is github bot
         id: tag
@@ -260,13 +266,16 @@ jobs:
         if: success() && steps.tag.outcome != 'success' && github.event_name == 'push'
         id: updateconfig
         run: |
-           # cd k8s
+            BRANCH=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+            [ "$BRANCH" == "master" ] && TARGET='k8s/environments/prod'         
+            [ "$BRANCH" == "test" ] &&  TARGET='k8s/environments/test'  
+            [ "$BRANCH" == "dev" ] && TARGET='k8s/environments/dev' 
+            cd TARGET 
            # kustomize edit set image quarkus-demo=$DOCKER_IMAGE_NAME && kustomize build .
            # remove old kustomization file
              rm -f kustomization.yaml
              sed "s/IMAGE_TAG/'${{ steps.tag.outputs.tag }}'/g" kustomize.yaml.template > kustomization.yaml
-             cat kustomization.yaml    
-        working-directory: ${{env.manifest_directory}}
+             cat kustomization.yaml
 
       - name: Commit files
         if: success() && steps.updateconfig.outcome != 'success' && github.event_name == 'push'
