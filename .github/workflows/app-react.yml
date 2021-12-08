@@ -284,7 +284,7 @@ jobs:
             git pull
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
-            git commit -am "Update k8s backend resources (image version)"
+            git commit -am "Update k8s frontend resources (image version)"
       - name: Push changes
         if: success() && steps.commitChange.outcome == 'success' && github.event_name == 'push'
         uses: ad-m/github-push-action@master
