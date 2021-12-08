@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: ./backend
-      manifest-directory: ./k8s
+      manifest-directory: ./k8s/application/backend
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       output-filename: api.txt
       IMAGE_NAME: pims-api
@@ -223,8 +223,10 @@ jobs:
         run: curl https://get.datree.io | /bin/bash
         
       - name: Scan for policy compliance
-        run: datree test *.yaml --ignore-missing-schemas
-        working-directory: ${{env.manifest-directory}}          
+        run: |
+            for i in $(find ./ -type f -regex '.*\.\(yaml\|yml\)$' ! -path '*/environment/*' ! -path '*/.github/*'); do
+                datree test "$i" --ignore-missing-schemas
+            done          
       - name: Find Comment
         if: always() && github.event_name == 'pull_request'
         uses: peter-evans/find-comment@v1
@@ -267,12 +269,14 @@ jobs:
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')        
           # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')       
-                
+          BRANCH=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          #ImageTAG Convention IMAGE_NAME:[branch]-[CI#]
+          
           # tag image
-          [ "$VERSION" == "master" ] && RELEASE_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)         
-          [ "$VERSION" == "master" ] &&  VERSION=$(echo $RELEASE_VERSION | sed -e 's/^v//')  
-          [ "$VERSION" == "dev" ] && VERSION=latest           
+          #[ "$VERSION" == "master" ] && VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)         
+          #[ "$VERSION" == "master" ] &&  VERSION=$(echo $RELEASE_VERSION | sed -e 's/^v//')  
+          #[ "$VERSION" == "dev" ] && VERSION=latest    
+          VERSION=$(echo $BRANCH:$GITHUB_RUN_NUMBER)
           echo "::set-output name=tag::$VERSION"
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
@@ -294,4 +298,31 @@ jobs:
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
           notification-summary: "${{ env.IMAGE_NAME }} CI failing" 
           notification-color: dc3545 
-          timezone: America/Los_Angeles     
+          timezone: America/Los_Angeles    
+
+      - name: Update Kubernetes resources
+        if: success() && steps.tag.outcome != 'success' && github.event_name == 'push'
+        id: updateconfig
+        run: |
+           # cd k8s
+           # kustomize edit set image quarkus-demo=$DOCKER_IMAGE_NAME && kustomize build .
+           # remove old kustomization file
+             rm -f kustomization.yaml
+             sed "s/IMAGE_TAG/'${{ steps.tag.outputs.tag }}'/g" kustomize.yaml.template > kustomization.yaml
+             cat kustomization.yaml    
+        working-directory: ${{env.manifest_directory}}
+
+      - name: Commit files
+        if: success() && steps.updateconfig.outcome != 'success' && github.event_name == 'push'
+        id: commitChange
+        run: |
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git commit -am "Update k8s backend resources (image version)"
+      - name: Push changes
+        if: success() && steps.commitChange.outcome != 'success' && github.event_name == 'push'
+        uses: ad-m/github-push-action@master
+        with:
+        #repository: bcgov-c/ministry-gitops-jag
+        #github_token: ${{ secrets.GH_PAT }} 
+          github_token: ${{ secrets.GITHUB_TOKEN }}        

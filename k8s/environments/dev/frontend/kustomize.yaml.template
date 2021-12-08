@@ -3,28 +3,18 @@ kind: Kustomization
 
 bases:
 - ../../../application/backend  
-
 #namespace: fbca9a-dev
 
-generatorOptions:
-  disableNameSuffixHash: true
+patchesStrategicMerge:
+- replica_count.yaml
+- resource_limits.yaml
   #namespace: example
   #behavior: replace
 configMapGenerator:
 - files:
   - configs/application.properties
   name: pims-api-sso
-
-
-
-  #namespace: example
-  #behavior: replace
-secretGenerator:
-- name: pims-api-sso
-  env: pims-api.env.txt
-  type: Opaque
-
 images:
 - name: image-registry.apps.silver.devops.gov.bc.ca/5b7aa5-tools/pims-api
   newName: image-registry.apps.silver.devops.gov.bc.ca/5b7aa5-tools/pims-api
-  newTag: latest #CI build_number
+  newTag: IMAGE_TAG #CI build_number

@@ -8,15 +8,36 @@ spec:
     - description: The name of deployment
       name: DEPLOYMENT_NAME
       type: string
+    - description: The name of deployment
+      name: DEPLOYMENT_NAME_API
+      type: string
+    - description: The name of deployment
+      name: DEPLOYMENT_NAME_APP
+      type: string
+    - description: The name of deployment
+      name: IMAGE_TAG 
+      type: string
+    - description: The name of deployment
+      name: CONNECTION_STRINGS_PIMS 
+      type: string
+    - description: The name of deployment
+      name: DB_PASSWORD 
+      type: string
+    - description: The name of deployment
+      name: DB_USER 
+      type: string
+    - description: The name of deployment
+      name: MSSQL_SA_PASSWORD
+      type: string
     - description: 'The current image repo/image:tag in the manifests for the deployment'
-      name: CURRENT_IMAGE
+      name: KEYCLOAK_AUTHORITY
       type: string
     - description: The new image repo/image to be deployed
-      name: NEW_IMAGE_NAME
+      name: KEYCLOAK_ADMIN_AUTHORITY
       type: string
     - default: ''
       description: The new image tag to be deployed
-      name: NEW_IMAGE_TAG
+      name: KEYCLOAK_SERVICE_ACCOUNT_SECRET
       type: string
     - default: ''
       description: The digest of the new image to get deployed
@@ -47,6 +68,11 @@ spec:
       script: >
         find $(workspaces.source.path)
 
+        echo \
+        "DB_PASSWORD=WSpmqqNJMqo__1Ab!
+        DB_USER=admin
+        MSSQL_SA_PASSWORD=v6lA2_MAgYNtu7R9H6ClN_1aB!" >> ./$(params.KUSTOMIZE_DATABASE_DIR)/database.env.txt
+
 
         echo "########################"  
 
@@ -54,7 +80,7 @@ spec:
 
         echo "########################"
 
-        cat $(workspaces.source.path)/$(params.KUSTOMIZE_DATABASE_DIR)/mssql-deploy.yaml
+        cat $(workspaces.source.path)/$(params.KUSTOMIZE_DATABASE_DIR)/kustomization.yaml
         
         # Cancel all previous deployments
 
@@ -83,11 +109,11 @@ spec:
 
         echo "######## DRY RUN #######"
 
-        oc process oc apply -k $(params.KUSTOMIZE_OVERLAY_DIR) --dry-run=client -o yaml -n $(params.NAMESPACE)
+        oc apply -k $(params.KUSTOMIZE_DATABASE_DIR) --dry-run=client -o yaml -n $(params.NAMESPACE)
 
         echo "########################"
 
-        oc apply -k $(params.KUSTOMIZE_OVERLAY_DIR) -n $(params.NAMESPACE)
+        oc apply -k $(params.KUSTOMIZE_DATABASE_DIR) -n $(params.NAMESPACE)
 
         oc rollout status deploy/$(params.DEPLOYMENT_NAME) --watch -n $(params.NAMESPACE)
 
@@ -103,6 +129,74 @@ spec:
       name: apply-backend-manifest
       resources: {}
       script: >
+        echo \
+
+        "KEYCLOAK_SERVICE_ACCOUNT_SECRET=$(params.KEYCLOAK_SERVICE_ACCOUNT_SECRET)
+
+        KEYCLOAK_SECRET=sample" >>
+        $(workspaces.source.path)/$(params.KUSTOMIZE_BACKEND_DIR)/pims-api.env.txt
+
+
+
+        echo "########################"  
+
+        echo "## kustomization.yaml ##"
+
+        echo "########################"
+
+        cat
+        $(workspaces.source.path)/$(params.KUSTOMIZE_BACKEND_DIR)/kustomization.yaml
+
+
+        cat
+        $(workspaces.source.path)/$(params.KUSTOMIZE_BACKEND_DIR)/database.env.txt
+
+        # Cancel all previous deployments
+
+        OC_CANCEL_ALL_PREV_DEPLOY="oc -n $(params.NAMESPACE) rollout cancel
+        dc/$(params.DEPLOYMENT_NAME_API) || true"
+
+        echo "canceling previous deployments..." 
+
+        #eval "${OC_CANCEL_ALL_PREV_DEPLOY}" 
+
+        count=1 
+
+        timeout=10
+
+          # Check previous deployment statuses before moving onto new deploying
+          while [ $count -le $timeout ]; do
+            sleep 1
+            PENDINGS="$(oc -n $(params.NAMESPACE)rollout history dc/$(params.DEPLOYMENT_NAME_API) | awk '{print $2}' | grep -c Pending || true)"
+            RUNNINGS="$(oc -n $(params.NAMESPACE) rollout history dc/$(params.DEPLOYMENT_NAME_API) | awk '{print $2}' | grep -c Running || true)"
+            if [ "${PENDINGS}" == 0 ] && [ "${RUNNINGS}" == 0 ]; then
+              # No pending or running replica controllers so exit the while loop
+              break 2
+            fi
+            count=$(( ${count} + 1 ))
+          done
+          if [ ${count} -gt ${timeout} ]; then
+            echo "\n*** Reached the timeout for canceling previous deployments ***\n"
+            exit 1
+          fi
+
+        ls -A $(workspaces.source.path)/$(params.KUSTOMIZE_BACKEND_DIR)/
+
+
+        echo "######## DRY RUN #######"
+
+        oc apply -k $(params.KUSTOMIZE_BACKEND_DIR) --dry-run=client -o yaml -n
+        $(params.NAMESPACE)
+
+        echo "########################"
+
+        oc apply -k $(params.KUSTOMIZE_BACKEND_DIR) -n $(params.NAMESPACE)
+
+        oc rollout status dc/$(params.DEPLOYMENT_NAME_API) --watch -n
+        $(params.NAMESPACE)
+
+        echo "Done deploying $(params.DEPLOYMENT_NAME_API)"
+        
       workingDir: $(workspaces.source.path)
     - image: 'image-registry.openshift-image-registry.svc:5000/openshift/cli'
       name: apply-frontend-manifest
