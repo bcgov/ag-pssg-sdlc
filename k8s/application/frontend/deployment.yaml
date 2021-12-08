@@ -1,0 +1,204 @@
+apiVersion: v1
+items:
+- apiVersion: networking.k8s.io/v1
+  kind: NetworkPolicy
+  metadata:
+    name: pod-from-pod-permit-pims-api-app
+    namespace: 5b7aa5-dev
+  spec:
+    ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: pims
+            env: dev
+            role: app
+    podSelector:
+      matchLabels:
+        app: pims
+        env: dev
+        role: api
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes and load balances the application pods.
+    labels:
+      app: pims
+      env: dev
+      name: pims-app
+      role: app
+    name: pims-app
+    namespace: 5b7aa5-dev
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 3000
+      protocol: TCP
+      targetPort: 3000
+    selector:
+      app: pims
+      env: dev
+      name: pims-app
+      role: app
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: v1
+  data:
+    keycloak.json: '{ "realm": "PIMS", "auth-server-url": "https://sso-dev-5b7aa5-dev.apps.silver.devops.gov.bc.ca/auth",
+      "ssl-required": "external", "resource": "pims-app", "public-client": true, "confidential-port":
+      0 }'
+  kind: ConfigMap
+  metadata:
+    annotations:
+      description: Keycloak client JSON configuration
+    labels:
+      app: pims
+      env: dev
+      name: pims-app-sso
+      role: app
+    name: pims-app-sso
+    namespace: 5b7aa5-dev
+  type: Opaque
+- apiVersion: v1
+  data:
+    tenant.json: '{ "id": "MOTI", "title": "Property Information Management System",
+      "colour": "#003366", "logo": { "favicon": "/tenants/MOTI/favicon.ico", "image":
+      "/tenants/MOTI/PIMS-logo.png", "imageWithText": "/tenants/MOTI/PIMS-logo-with-text.png"
+      }, "login": { "title": "TRAN Property Information Management System (PIMS)",
+      "heading": "PIMS enables you to view highways and properties owned by the Ministry
+      of Transportation and Infrastructure", "body": "WARNING: Not all data included
+      within has been vetted for accuracy and completeness. Please use caution when
+      proceeding and confirm data before relying on it.", "backgroundImage": "/tenants/MOTI/background-image.webp"
+      } }'
+  kind: ConfigMap
+  metadata:
+    annotations:
+      description: Tenant configuration settings
+    labels:
+      app: pims
+      env: dev
+      name: pims-app-tenant
+      role: app
+    name: pims-app-tenant
+    namespace: 5b7aa5-dev
+  type: Opaque
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Defines how to deploy pims-app
+    labels:
+      app: pims
+      env: dev
+      name: pims-app
+      role: app
+    name: pims-app
+    namespace: 5b7aa5-dev
+  spec:
+    replicas: 2
+    selector:
+      app: pims
+      env: dev
+      name: pims-app
+      role: app
+    strategy:
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          app: pims
+          env: dev
+          name: pims-app
+          role: app
+        name: pims-app
+      spec:
+        containers:
+        - env:
+          - name: API_URL
+            value: ""
+          - name: API_SERVICE_NAME
+            value: pims-api
+          - name: API_PATH
+            value: /api
+          - name: RealIpFrom
+            value: 172.51.0.0/16
+          - name: TZ
+            value: America/Los_Angeles
+          image: ""
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /nginx_status
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 60
+          name: pims-app
+          ports:
+          - containerPort: 3000
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /nginx_status
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 60
+          resources:
+            limits:
+              cpu: "1"
+              memory: 2Gi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          volumeMounts:
+          - mountPath: /usr/app/public/keycloak.json
+            name: pims-app-keycloak
+            subPath: keycloak.json
+          - mountPath: /usr/app/public//tenants/tenant.json
+            name: pims-app-tenant
+            subPath: tenant.json
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            items:
+            - key: keycloak.json
+              path: keycloak.json
+            name: pims-app-sso
+          name: pims-app-keycloak
+        - configMap:
+            items:
+            - key: tenant.json
+              path: tenant.json
+            name: pims-app-tenant
+          name: pims-app-tenant
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - pims-app
+        from:
+          kind: ImageStreamTag
+          name: pims-app:latest
+          namespace: 5b7aa5-tools
+      type: ImageChange
+kind: List
+metadata: {}

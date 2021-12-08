@@ -33,32 +33,15 @@ items:
   spec:
     ports:
     - name: 8080-tcp
-      port: 3000
+      port: 8080
       protocol: TCP
-      targetPort: 3000
+      targetPort: 8080
     selector:
       app: pims
       env: dev
       role: api
     sessionAffinity: None
     type: ClusterIP
-- apiVersion: v1
-  kind: Secret
-  metadata:
-    annotations:
-      description: Keycloak SSO client secrets
-    labels:
-      app: pims
-      env: dev
-      name: pims-api-sso
-      role: api
-    name: pims-api-sso
-    namespace: 5b7aa5-dev
-  stringData:
-    KEYCLOAK_SECRET: '{SECRET} # This isn''t currently a required value for the api
-      configuration.'
-    KEYCLOAK_SERVICE_ACCOUNT_SECRET: ee7d21ac-84a4-477a-950c-4c72d019fd95
-  type: Opaque
 - apiVersion: v1
   data:
     KEYCLOAK_ADMIN_AUTHORITY: $(params.KEYCLOAK_ADMIN_AUTHORITY)
