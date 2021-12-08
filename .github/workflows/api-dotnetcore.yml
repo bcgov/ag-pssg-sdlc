@@ -298,8 +298,7 @@ jobs:
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
           notification-summary: "${{ env.IMAGE_NAME }} CI failing" 
           notification-color: dc3545 
-          timezone: America/Los_Angeles    
-
+          timezone: America/Los_Angeles
       - name: Update Kubernetes resources
         if: success() && steps.tag.outcome != 'success' && github.event_name == 'push'
         id: updateconfig
@@ -309,12 +308,11 @@ jobs:
             [ "$BRANCH" == "test" ] &&  TARGET='k8s/environments/test'  
             [ "$BRANCH" == "dev" ] && TARGET='k8s/environments/dev' 
             cd TARGET 
-           # kustomize edit set image quarkus-demo=$DOCKER_IMAGE_NAME && kustomize build .
-           # remove old kustomization file
+              #kustomize edit set image quarkus-demo=$DOCKER_IMAGE_NAME && kustomize build 
+              #remove old kustomization file
              rm -f kustomization.yaml
              sed "s/IMAGE_TAG/'${{ steps.tag.outputs.tag }}'/g" kustomize.yaml.template > kustomization.yaml
-             cat kustomization.yaml
-
+            cat kustomization.yaml
       - name: Commit files
         if: success() && steps.updateconfig.outcome != 'success' && github.event_name == 'push'
         id: commitChange
