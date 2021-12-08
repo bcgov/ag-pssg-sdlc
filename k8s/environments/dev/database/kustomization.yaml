@@ -6,16 +6,15 @@ bases:
 
 #namespace: fbca9a-dev
 
+generatorOptions:
+  disableNameSuffixHash: true
 
   #namespace: example
   #behavior: replace
 secretGenerator:
 - name: pims-database
-  envs:
-    - database.env
+  env: database.env.txt
   type: Opaque
-  options:
-    disableNameSuffixHash: true
   
 images:
 - name: image-registry.apps.silver.devops.gov.bc.ca/5b7aa5-tools/pims-database
