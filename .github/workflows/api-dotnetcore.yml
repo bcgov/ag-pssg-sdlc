@@ -304,7 +304,7 @@ jobs:
         if: success() && steps.tag.outcome != 'success' && github.event_name == 'push'
         id: updateconfig
         run: |
-           # cd k8s
+           # cd k8sgi 
            # kustomize edit set image quarkus-demo=$DOCKER_IMAGE_NAME && kustomize build .
            # remove old kustomization file
              rm -f kustomization.yaml
