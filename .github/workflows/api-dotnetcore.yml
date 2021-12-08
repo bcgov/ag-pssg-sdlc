@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: ./backend
-      manifest-directory: ./k8s/application/backend
+      manifest-directory: ./k8s/environments/dev/backend
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       output-filename: api.txt
       IMAGE_NAME: pims-api
@@ -223,10 +223,10 @@ jobs:
         run: curl https://get.datree.io | /bin/bash
         
       - name: Scan for policy compliance
-        run: |
-            for i in $(find ./ -type f -regex '.*\.\(yaml\|yml\)$' ! -path '*/environment/*' ! -path '*/.github/*'); do
-                datree test "$i" --ignore-missing-schemas
-            done          
+        run: datree test k8s/application/backend/*.yaml --ignore-missing-schemas
+            #for i in $(find ./ -type f -regex '.*\.\(yaml\|yml\)$' ! -path '*/environment/*' ! -path '*/.github/*'); do
+                #datree test k8s/application/backend/*.yaml --ignore-missing-schemas
+            #done          
       - name: Find Comment
         if: always() && github.event_name == 'pull_request'
         uses: peter-evans/find-comment@v1
@@ -304,13 +304,16 @@ jobs:
         if: success() && steps.tag.outcome != 'success' && github.event_name == 'push'
         id: updateconfig
         run: |
-           # cd k8sgi 
+            BRANCH=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+            [ "$BRANCH" == "master" ] && TARGET='k8s/environments/prod'         
+            [ "$BRANCH" == "test" ] &&  TARGET='k8s/environments/test'  
+            [ "$BRANCH" == "dev" ] && TARGET='k8s/environments/dev' 
+            cd TARGET 
            # kustomize edit set image quarkus-demo=$DOCKER_IMAGE_NAME && kustomize build .
            # remove old kustomization file
              rm -f kustomization.yaml
              sed "s/IMAGE_TAG/'${{ steps.tag.outputs.tag }}'/g" kustomize.yaml.template > kustomization.yaml
-             cat kustomization.yaml    
-        working-directory: ${{env.manifest_directory}}
+             cat kustomization.yaml
 
       - name: Commit files
         if: success() && steps.updateconfig.outcome != 'success' && github.event_name == 'push'
