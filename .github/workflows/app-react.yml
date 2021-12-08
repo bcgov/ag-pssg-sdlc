@@ -281,6 +281,7 @@ jobs:
         if: success() && steps.updateconfig.outcome == 'success' && github.event_name == 'push'
         id: commitChange
         run: |
+            git pull
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
             git commit -am "Update k8s backend resources (image version)"
