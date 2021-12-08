@@ -334,9 +334,8 @@ objects:
       resources:
         requests:
           storage: "${SONAR_VOLUME_CAPACITY}"
-  - apiVersion: v1
+  - apiVersion: networking.k8s.io/v1
     kind: NetworkSecurityPolicy
-    apiVersion: security.devops.gov.bc.ca/v1alpha1
     metadata:
       name: pod-to-pod-permit-${NAME}-${SOURCE_ROLE}-${DESTINATION_ROLE}
     spec:

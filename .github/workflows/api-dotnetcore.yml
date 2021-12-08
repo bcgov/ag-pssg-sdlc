@@ -276,7 +276,7 @@ jobs:
           #[ "$VERSION" == "master" ] && VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)         
           #[ "$VERSION" == "master" ] &&  VERSION=$(echo $RELEASE_VERSION | sed -e 's/^v//')  
           #[ "$VERSION" == "dev" ] && VERSION=latest    
-          VERSION=$(echo $BRANCH:$GITHUB_RUN_NUMBER)
+          VERSION=$(echo $BRANCH-$GITHUB_RUN_NUMBER)
           echo "::set-output name=tag::$VERSION"
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
