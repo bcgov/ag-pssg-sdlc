@@ -304,9 +304,9 @@ jobs:
         id: updateconfig
         run: |
             BRANCH=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-            [ "$BRANCH" == "master" ] && TARGET='k8s/environments/prod'         
-            [ "$BRANCH" == "test" ] &&  TARGET='k8s/environments/test'  
-            [ "$BRANCH" == "dev" ] && TARGET='k8s/environments/dev' 
+            [ "$BRANCH" == "master" ] && TARGET='k8s/environments/prod/backend'         
+            [ "$BRANCH" == "test" ] &&  TARGET='k8s/environments/test/backend'  
+            [ "$BRANCH" == "dev" ] && TARGET='k8s/environments/dev/backend' 
             cd $TARGET 
               #kustomize edit set image quarkus-demo=$DOCKER_IMAGE_NAME && kustomize build 
               #remove old kustomization file
