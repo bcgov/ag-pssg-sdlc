@@ -19,6 +19,7 @@ configMapGenerator:
 
   #namespace: example
   #behavior: replace
+
 secretGenerator:
 - name: pims-api-sso
   env: pims-api.env.txt
