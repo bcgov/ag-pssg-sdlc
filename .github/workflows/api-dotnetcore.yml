@@ -307,7 +307,7 @@ jobs:
             [ "$BRANCH" == "master" ] && TARGET='k8s/environments/prod'         
             [ "$BRANCH" == "test" ] &&  TARGET='k8s/environments/test'  
             [ "$BRANCH" == "dev" ] && TARGET='k8s/environments/dev' 
-            cd TARGET 
+            cd $TARGET 
               #kustomize edit set image quarkus-demo=$DOCKER_IMAGE_NAME && kustomize build 
               #remove old kustomization file
              rm -f kustomization.yaml
