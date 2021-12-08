@@ -44,9 +44,9 @@ items:
     type: ClusterIP
 - apiVersion: v1
   data:
-    KEYCLOAK_ADMIN_AUTHORITY: $(params.KEYCLOAK_ADMIN_AUTHORITY)
+    KEYCLOAK_ADMIN_AUTHORITY: https://sso-dev-5b7aa5-dev.apps.silver.devops.gov
     KEYCLOAK_AUDIENCE: pims-api
-    KEYCLOAK_AUTHORITY: $(params.KEYCLOAK_AUTHORITY)
+    KEYCLOAK_AUTHORITY: https://sso-dev-5b7aa5-dev.apps.silver.devops.gov.bc.ca/auth/realms/PIMS
   kind: ConfigMap
   metadata:
     annotations:

@@ -6,16 +6,20 @@ bases:
 
 #namespace: fbca9a-dev
 
-
 generatorOptions:
   disableNameSuffixHash: true
   #namespace: example
   #behavior: replace
-#configMapGenerator:
-#- files:
-#  - configs/application.properties
-  #name: pims-api-sso
-  
+configMapGenerator:
+- files:
+  - configs/application.properties
+  name: pims-api-sso
+
+
+
+  #namespace: example
+  #behavior: replace
+
 secretGenerator:
 - name: pims-api-sso
   env: pims-api.env.txt
