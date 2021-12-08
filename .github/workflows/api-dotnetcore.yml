@@ -54,7 +54,8 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
         working-directory: ${{env.working-directory}}
-
+      - name: Install Datree
+        run: curl https://get.datree.io | /bin/bash
       - name: Install coverlet for code coverage
         run: dotnet tool install -g coverlet.console --version 1.7.2
         working-directory: ${{env.working-directory}}
@@ -217,11 +218,7 @@ jobs:
           body="${body//$'\n'/'%0A'}"
           body="${body//$'\r'/'%0D'}" 
           echo "::set-output name=body::$body" 
-          fi  
-
-      - name: Install Datree
-        run: curl https://get.datree.io | /bin/bash
-        
+          fi         
       - name: Scan for policy compliance
         run: datree test k8s/application/backend/deploy.api.yaml --ignore-missing-schemas
             #for i in $(find ./ -type f -regex '.*\.\(yaml\|yml\)$' ! -path '*/environment/*' ! -path '*/.github/*'); do
