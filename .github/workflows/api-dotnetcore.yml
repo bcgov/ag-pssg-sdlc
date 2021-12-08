@@ -223,7 +223,7 @@ jobs:
         run: curl https://get.datree.io | /bin/bash
         
       - name: Scan for policy compliance
-        run: datree test k8s/application/backend/*.yaml --ignore-missing-schemas
+        run: datree test k8s/application/backend/deploy.api.yaml --ignore-missing-schemas
             #for i in $(find ./ -type f -regex '.*\.\(yaml\|yml\)$' ! -path '*/environment/*' ! -path '*/.github/*'); do
                 #datree test k8s/application/backend/*.yaml --ignore-missing-schemas
             #done          
@@ -313,6 +313,7 @@ jobs:
              rm -f kustomization.yaml
              sed "s/IMAGE_TAG/'${{ steps.tag.outputs.tag }}'/g" kustomize.yaml.template > kustomization.yaml
             cat kustomization.yaml
+
       - name: Commit files
         if: success() && steps.updateconfig.outcome != 'success' && github.event_name == 'push'
         id: commitChange

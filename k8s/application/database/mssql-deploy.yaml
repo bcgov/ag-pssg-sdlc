@@ -1,3 +1,4 @@
+apiVersion: v1
 items:
 - annotations:
     description: pims Database storage volume
@@ -5,8 +6,6 @@ items:
     pv.kubernetes.io/bound-by-controller: "yes"
     volume.beta.kubernetes.io/storage-provisioner: csi.trident.netapp.io
   apiVersion: v1
-  finalizers:
-  - kubernetes.io/pvc-protection
   kind: PersistentVolumeClaim
   metadata:
     labels:
@@ -16,7 +15,6 @@ items:
       role: database
     name: pims-database
     namespace: 5b7aa5-dev
-  resourceVersion: "250191500"
   selfLink: /api/v1/namespaces/5b7aa5-dev/persistentvolumeclaims/pims-database
   spec:
     accessModes:
