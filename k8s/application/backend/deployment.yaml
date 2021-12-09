@@ -265,7 +265,7 @@ items:
               secretKeyRef:
                 key: ELASTIC_PASSWORD
                 name: pims-api-elasticsearch
-          image: ""
+          image: pims-api
           livenessProbe:
             failureThreshold: 3
             httpGet:
@@ -297,16 +297,5 @@ items:
             requests:
               cpu: 100m
               memory: 500Mi
-    triggers:
-    - type: ConfigChange
-    - imageChangeParams:
-        automatic: true
-        containerNames:
-        - pims-api
-        from:
-          kind: ImageStreamTag
-          name: pims-api:latest
-          namespace: 5b7aa5-tools
-      type: ImageChange
 kind: List
 metadata: {}
