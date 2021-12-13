@@ -54,9 +54,9 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
         working-directory: ${{env.working-directory}}
-      #- name: Install Datree
-      #  id: datree
-       # run: curl https://get.datree.io | /bin/bash
+      - name: Install Datree
+        id: datree
+        run: curl https://get.datree.io | /bin/bash
       - name: Install coverlet for code coverage
         run: dotnet tool install -g coverlet.console --version 1.7.2
         working-directory: ${{env.working-directory}}
@@ -223,9 +223,9 @@ jobs:
       - name: Scan for policy compliance
         if: steps.datree.outcome == 'success'
         run: datree test k8s/application/backend/deploy.api.yaml --ignore-missing-schemas
-            #for i in $(find ./ -type f -regex '.*\.\(yaml\|yml\)$' ! -path '*/environment/*' ! -path '*/.github/*'); do
-                #datree test k8s/application/backend/*.yaml --ignore-missing-schemas
-            #done          
+            for i in $(find ./ -type f -regex '.*\.\(yaml\|yml\)$' ! -path '*/environment/*' ! -path '*/.github/*'); do
+                datree test "$i" --ignore-missing-schemas
+            done          
       - name: Find Comment
         if: always() && github.event_name == 'pull_request'
         uses: peter-evans/find-comment@v1
