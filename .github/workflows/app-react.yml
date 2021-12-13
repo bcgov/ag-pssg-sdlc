@@ -218,13 +218,16 @@ jobs:
             ``` echo "${{ steps.get-comment-body.outputs.body }}"```
           edit-mode: replace
           reactions: confused
-      #- name: Install Datree
-       # id: datree
-       # run: curl https://get.datree.io | /bin/bash
+      - name: Install Datree
+        id: datree
+        run: curl https://get.datree.io | /bin/bash
         
       - name: Scan for policy compliance
         if: success() && steps.datree.outcome == 'success'
-        run: datree test k8s/application/frontend/deploy.app.yaml --ignore-missing-schemas          
+        run: |
+         for i in $(find ./ -type f -regex '.*\.\(yaml\|yml\)$' ! -path '*/environment/*' ! -path '*/.github/*'); do
+            datree test "$i" --ignore-missing-schemas
+          done 
       - name: push to container registry   
         if: success() && github.event_name == 'push'  && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions' # if nothing failed. dont push when event is github bot
         id: tag
