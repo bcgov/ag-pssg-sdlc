@@ -48,10 +48,7 @@ spec:
      - default: v6lA2_MAgYNtu7R9H6ClN_1aB!
       description: The application image tag to build
       name: MSSQL_SA_PASSWORD
-      type: string      
-      
-      
-      
+      type: string    
   tasks:
     - name: source-clone
       params:
