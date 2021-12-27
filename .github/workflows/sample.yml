@@ -18,4 +18,4 @@ jobs:
     steps:
       - name: Extract Branch Name
         shell: bash
-        run: echo "$IMAGE_NAME"
+        run: docker image ls
