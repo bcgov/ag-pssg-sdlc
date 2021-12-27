@@ -20,5 +20,5 @@ jobs:
         shell: bash
         run: |
           docker image ls
-          docker tag 1809 ${{ env.IMAGE_ID }}:latest
+          docker tag mcr.microsoft.com/windows/nanoserver ${{ env.IMAGE_ID }}:latest
           docker image ls
