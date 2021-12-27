@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     env:
       working-directory: ./backend
       manifest-directory: ./k8s/environments/dev/backend
