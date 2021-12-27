@@ -1,0 +1,21 @@
+name: test
+
+on:
+  push:
+    branches: [feature1]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./backend
+      manifest-directory: ./k8s/environments/dev/backend
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      output-filename: api.txt
+      IMAGE_NAME: pims-api
+      IMAGE_ID: ${{secrets.OPENSHIFT_REGISTRY}}/5b7aa5-tools/pims-api
+
+    steps:
+      - name: Extract Branch Name
+        shell: bash
+        run: echo "${{secrets.OC_USERNAME_SA}}"
