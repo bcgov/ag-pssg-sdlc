@@ -219,6 +219,7 @@ jobs:
           edit-mode: replace
           reactions: confused
       - name: Install Datree
+        id: datree
         run: curl https://get.datree.io | /bin/bash
         
       #- name: Scan for policy compliance

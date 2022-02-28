@@ -131,7 +131,7 @@ items:
             value: 172.51.0.0/16
           - name: TZ
             value: America/Los_Angeles
-          image: ""
+          image: pims-app
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
@@ -189,16 +189,5 @@ items:
             name: pims-app-tenant
           name: pims-app-tenant
     test: false
-    triggers:
-    - type: ConfigChange
-    - imageChangeParams:
-        automatic: true
-        containerNames:
-        - pims-app
-        from:
-          kind: ImageStreamTag
-          name: pims-app:latest
-          namespace: 5b7aa5-tools
-      type: ImageChange
 kind: List
 metadata: {}
