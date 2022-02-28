@@ -1,3 +1,15 @@
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using HealthChecks.UI.Client;
 using Mapster;
 using Microsoft.AspNetCore.Authentication;
@@ -27,24 +39,11 @@ using Pims.Api.Helpers.Routes.Constraints;
 using Pims.Core.Converters;
 using Pims.Core.Http;
 using Pims.Dal;
-using Pims.Dal.Helpers.Extensions;
 using Pims.Dal.Keycloak;
 using Pims.Geocoder;
 using Pims.Ltsa;
 using Prometheus;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Pims.Api
 {
@@ -104,7 +103,7 @@ namespace Pims.Api
             });
             services.Configure<JsonSerializerOptions>(options =>
             {
-                options.IgnoreNullValues = jsonSerializerOptions.IgnoreNullValues;
+                options.DefaultIgnoreCondition = jsonSerializerOptions.DefaultIgnoreCondition;
                 options.PropertyNameCaseInsensitive = jsonSerializerOptions.PropertyNameCaseInsensitive;
                 options.PropertyNamingPolicy = jsonSerializerOptions.PropertyNamingPolicy;
                 options.WriteIndented = jsonSerializerOptions.WriteIndented;
@@ -120,7 +119,7 @@ namespace Pims.Api
             services.AddControllers()
                 .AddJsonOptions(options =>
                 {
-                    options.JsonSerializerOptions.IgnoreNullValues = jsonSerializerOptions.IgnoreNullValues;
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = jsonSerializerOptions.DefaultIgnoreCondition;
                     options.JsonSerializerOptions.PropertyNameCaseInsensitive = jsonSerializerOptions.PropertyNameCaseInsensitive;
                     options.JsonSerializerOptions.PropertyNamingPolicy = jsonSerializerOptions.PropertyNamingPolicy;
                     options.JsonSerializerOptions.WriteIndented = jsonSerializerOptions.WriteIndented;
@@ -132,7 +131,7 @@ namespace Pims.Api
             services.AddMvcCore()
                 .AddJsonOptions(options =>
                 {
-                    options.JsonSerializerOptions.IgnoreNullValues = jsonSerializerOptions.IgnoreNullValues;
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = jsonSerializerOptions.DefaultIgnoreCondition;
                     options.JsonSerializerOptions.PropertyNameCaseInsensitive = jsonSerializerOptions.PropertyNameCaseInsensitive;
                     options.JsonSerializerOptions.PropertyNamingPolicy = jsonSerializerOptions.PropertyNamingPolicy;
                     options.JsonSerializerOptions.WriteIndented = jsonSerializerOptions.WriteIndented;
@@ -199,7 +198,8 @@ namespace Pims.Api
 
             services.AddHttpClient();
             services.AddPimsContext(this.Environment, csBuilder.ConnectionString);
-            services.AddPimsService();
+            services.AddPimsRepositories();
+            services.AddPimsServices();
             services.AddPimsKeycloakService();
             services.AddGeocoderService(this.Configuration.GetSection("Geocoder")); // TODO: Determine if a default value could be used instead.
             services.AddLtsaService(this.Configuration.GetSection("Ltsa"));
@@ -292,10 +292,7 @@ namespace Pims.Api
             if (!env.IsProduction())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseMigrationsEndPoint();
             }
-
-            app.UpdateDatabase<Startup>();
 
             var baseUrl = this.Configuration.GetValue<string>("BaseUrl");
             app.UsePathBase(baseUrl);

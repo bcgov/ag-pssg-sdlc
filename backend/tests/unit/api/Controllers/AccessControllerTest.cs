@@ -29,7 +29,7 @@ namespace PimsApi.Test.Controllers
             var helper = new TestHelper();
             var controller = helper.CreateController<AccessRequestController>(user);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
 
             var accessRequest = EntityHelper.CreateAccessRequest(11);
@@ -57,7 +57,7 @@ namespace PimsApi.Test.Controllers
             var helper = new TestHelper();
             var controller = helper.CreateController<AccessRequestController>(user);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
 
             service.Setup(m => m.AccessRequest.Get());
@@ -78,7 +78,7 @@ namespace PimsApi.Test.Controllers
             var helper = new TestHelper();
             var controller = helper.CreateController<AccessRequestController>(user);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
 
             var accessRequest = EntityHelper.CreateAccessRequest(1);
@@ -108,12 +108,12 @@ namespace PimsApi.Test.Controllers
             var helper = new TestHelper();
             var controller = helper.CreateController<AccessRequestController>(user);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
 
             var accessRequest = EntityHelper.CreateAccessRequest(1);
             var model = mapper.Map<Model.AccessRequestModel>(accessRequest);
-            service.Setup(m => m.AccessRequest.Add(It.IsAny<Entity.AccessRequest>())).Returns(accessRequest);
+            service.Setup(m => m.AccessRequest.Add(It.IsAny<Entity.PimsAccessRequest>())).Returns(accessRequest);
 
             // Act
             var result = controller.AddAccessRequest(model);
@@ -125,7 +125,7 @@ namespace PimsApi.Test.Controllers
             Assert.Equal(model.OrganizationId, actualResult.OrganizationId);
             Assert.Equal(model.RoleId, actualResult.RoleId);
             Assert.Equal(model.User.Id, actualResult.User.Id);
-            service.Verify(m => m.AccessRequest.Add(It.IsAny<Entity.AccessRequest>()), Times.Once());
+            service.Verify(m => m.AccessRequest.Add(It.IsAny<Entity.PimsAccessRequest>()), Times.Once());
         }
 
         [Fact]
@@ -136,14 +136,14 @@ namespace PimsApi.Test.Controllers
             var helper = new TestHelper();
             var controller = helper.CreateController<AccessRequestController>(user);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
-            service.Setup(m => m.AccessRequest.Add(It.IsAny<Entity.AccessRequest>()));
+            service.Setup(m => m.AccessRequest.Add(It.IsAny<Entity.PimsAccessRequest>()));
 
             // Act
             // Assert
             Assert.Throws<BadRequestException>(() => controller.AddAccessRequest(null));
-            service.Verify(m => m.AccessRequest.Add(It.IsAny<Entity.AccessRequest>()), Times.Never());
+            service.Verify(m => m.AccessRequest.Add(It.IsAny<Entity.PimsAccessRequest>()), Times.Never());
         }
 
         [Fact]
@@ -154,9 +154,9 @@ namespace PimsApi.Test.Controllers
             var helper = new TestHelper();
             var controller = helper.CreateController<AccessRequestController>(user);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
-            service.Setup(m => m.AccessRequest.Add(It.IsAny<Entity.AccessRequest>()));
+            service.Setup(m => m.AccessRequest.Add(It.IsAny<Entity.PimsAccessRequest>()));
 
             var accessRequest = new Model.AccessRequestModel()
             {
@@ -168,7 +168,7 @@ namespace PimsApi.Test.Controllers
             // Act
             // Assert
             Assert.Throws<BadRequestException>(() => controller.AddAccessRequest(model));
-            service.Verify(m => m.AccessRequest.Add(It.IsAny<Entity.AccessRequest>()), Times.Never());
+            service.Verify(m => m.AccessRequest.Add(It.IsAny<Entity.PimsAccessRequest>()), Times.Never());
         }
 
         [Fact]
@@ -179,9 +179,9 @@ namespace PimsApi.Test.Controllers
             var helper = new TestHelper();
             var controller = helper.CreateController<AccessRequestController>(user);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
-            service.Setup(m => m.AccessRequest.Add(It.IsAny<Entity.AccessRequest>()));
+            service.Setup(m => m.AccessRequest.Add(It.IsAny<Entity.PimsAccessRequest>()));
 
             var accessRequest = new Model.AccessRequestModel()
             {
@@ -193,7 +193,7 @@ namespace PimsApi.Test.Controllers
             // Act
             // Assert
             Assert.Throws<BadRequestException>(() => controller.AddAccessRequest(model));
-            service.Verify(m => m.AccessRequest.Add(It.IsAny<Entity.AccessRequest>()), Times.Never());
+            service.Verify(m => m.AccessRequest.Add(It.IsAny<Entity.PimsAccessRequest>()), Times.Never());
         }
 
         [Fact]
@@ -204,9 +204,9 @@ namespace PimsApi.Test.Controllers
             var helper = new TestHelper();
             var controller = helper.CreateController<AccessRequestController>(user);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
-            service.Setup(m => m.AccessRequest.Add(It.IsAny<Entity.AccessRequest>()));
+            service.Setup(m => m.AccessRequest.Add(It.IsAny<Entity.PimsAccessRequest>()));
 
             var accessRequest = new Model.AccessRequestModel()
             {
@@ -218,7 +218,7 @@ namespace PimsApi.Test.Controllers
             // Act
             // Assert
             Assert.Throws<BadRequestException>(() => controller.AddAccessRequest(model));
-            service.Verify(m => m.AccessRequest.Add(It.IsAny<Entity.AccessRequest>()), Times.Never());
+            service.Verify(m => m.AccessRequest.Add(It.IsAny<Entity.PimsAccessRequest>()), Times.Never());
         }
 
         [Fact]
@@ -229,9 +229,9 @@ namespace PimsApi.Test.Controllers
             var helper = new TestHelper();
             var controller = helper.CreateController<AccessRequestController>(user);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
-            service.Setup(m => m.AccessRequest.Add(It.IsAny<Entity.AccessRequest>()));
+            service.Setup(m => m.AccessRequest.Add(It.IsAny<Entity.PimsAccessRequest>()));
 
             var accessRequest = new Model.AccessRequestModel()
             {
@@ -243,7 +243,7 @@ namespace PimsApi.Test.Controllers
             // Act
             // Assert
             Assert.Throws<BadRequestException>(() => controller.AddAccessRequest(model));
-            service.Verify(m => m.AccessRequest.Add(It.IsAny<Entity.AccessRequest>()), Times.Never());
+            service.Verify(m => m.AccessRequest.Add(It.IsAny<Entity.PimsAccessRequest>()), Times.Never());
         }
         #endregion
 
@@ -256,12 +256,12 @@ namespace PimsApi.Test.Controllers
             var helper = new TestHelper();
             var controller = helper.CreateController<AccessRequestController>(user);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
 
             var accessRequest = EntityHelper.CreateAccessRequest(1);
             var model = mapper.Map<Model.AccessRequestModel>(accessRequest);
-            service.Setup(m => m.AccessRequest.Update(It.IsAny<Entity.AccessRequest>())).Returns(accessRequest);
+            service.Setup(m => m.AccessRequest.Update(It.IsAny<Entity.PimsAccessRequest>())).Returns(accessRequest);
 
             // Act
             var result = controller.UpdateAccessRequest(model.Id, model);
@@ -273,7 +273,7 @@ namespace PimsApi.Test.Controllers
             Assert.Equal(model.OrganizationId, actualResult.OrganizationId);
             Assert.Equal(model.RoleId, actualResult.RoleId);
             Assert.Equal(model.User.Id, actualResult.User.Id);
-            service.Verify(m => m.AccessRequest.Update(It.IsAny<Entity.AccessRequest>()), Times.Once());
+            service.Verify(m => m.AccessRequest.Update(It.IsAny<Entity.PimsAccessRequest>()), Times.Once());
         }
 
         [Fact]
@@ -284,14 +284,14 @@ namespace PimsApi.Test.Controllers
             var helper = new TestHelper();
             var controller = helper.CreateController<AccessRequestController>(user);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
-            service.Setup(m => m.AccessRequest.Update(It.IsAny<Entity.AccessRequest>()));
+            service.Setup(m => m.AccessRequest.Update(It.IsAny<Entity.PimsAccessRequest>()));
 
             // Act
             // Assert
             Assert.Throws<BadRequestException>(() => controller.UpdateAccessRequest(1, null));
-            service.Verify(m => m.AccessRequest.Update(It.IsAny<Entity.AccessRequest>()), Times.Never());
+            service.Verify(m => m.AccessRequest.Update(It.IsAny<Entity.PimsAccessRequest>()), Times.Never());
         }
 
         [Fact]
@@ -302,9 +302,9 @@ namespace PimsApi.Test.Controllers
             var helper = new TestHelper();
             var controller = helper.CreateController<AccessRequestController>(user);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
-            service.Setup(m => m.AccessRequest.Update(It.IsAny<Entity.AccessRequest>()));
+            service.Setup(m => m.AccessRequest.Update(It.IsAny<Entity.PimsAccessRequest>()));
 
             var accessRequest = new Model.AccessRequestModel()
             {
@@ -316,7 +316,7 @@ namespace PimsApi.Test.Controllers
             // Act
             // Assert
             Assert.Throws<BadRequestException>(() => controller.UpdateAccessRequest(model.Id, model));
-            service.Verify(m => m.AccessRequest.Update(It.IsAny<Entity.AccessRequest>()), Times.Never());
+            service.Verify(m => m.AccessRequest.Update(It.IsAny<Entity.PimsAccessRequest>()), Times.Never());
         }
 
         [Fact]
@@ -327,9 +327,9 @@ namespace PimsApi.Test.Controllers
             var helper = new TestHelper();
             var controller = helper.CreateController<AccessRequestController>(user);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
-            service.Setup(m => m.AccessRequest.Update(It.IsAny<Entity.AccessRequest>()));
+            service.Setup(m => m.AccessRequest.Update(It.IsAny<Entity.PimsAccessRequest>()));
 
             var accessRequest = new Model.AccessRequestModel()
             {
@@ -341,7 +341,7 @@ namespace PimsApi.Test.Controllers
             // Act
             // Assert
             Assert.Throws<BadRequestException>(() => controller.UpdateAccessRequest(model.Id, model));
-            service.Verify(m => m.AccessRequest.Update(It.IsAny<Entity.AccessRequest>()), Times.Never());
+            service.Verify(m => m.AccessRequest.Update(It.IsAny<Entity.PimsAccessRequest>()), Times.Never());
         }
 
         [Fact]
@@ -352,9 +352,9 @@ namespace PimsApi.Test.Controllers
             var helper = new TestHelper();
             var controller = helper.CreateController<AccessRequestController>(user);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
-            service.Setup(m => m.AccessRequest.Update(It.IsAny<Entity.AccessRequest>()));
+            service.Setup(m => m.AccessRequest.Update(It.IsAny<Entity.PimsAccessRequest>()));
 
             var accessRequest = new Model.AccessRequestModel()
             {
@@ -366,7 +366,7 @@ namespace PimsApi.Test.Controllers
             // Act
             // Assert
             Assert.Throws<BadRequestException>(() => controller.UpdateAccessRequest(model.Id, model));
-            service.Verify(m => m.AccessRequest.Update(It.IsAny<Entity.AccessRequest>()), Times.Never());
+            service.Verify(m => m.AccessRequest.Update(It.IsAny<Entity.PimsAccessRequest>()), Times.Never());
         }
 
         [Fact]
@@ -377,9 +377,9 @@ namespace PimsApi.Test.Controllers
             var helper = new TestHelper();
             var controller = helper.CreateController<AccessRequestController>(user);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
-            service.Setup(m => m.AccessRequest.Update(It.IsAny<Entity.AccessRequest>()));
+            service.Setup(m => m.AccessRequest.Update(It.IsAny<Entity.PimsAccessRequest>()));
 
             var accessRequest = new Model.AccessRequestModel()
             {
@@ -391,7 +391,7 @@ namespace PimsApi.Test.Controllers
             // Act
             // Assert
             Assert.Throws<BadRequestException>(() => controller.UpdateAccessRequest(model.Id, model));
-            service.Verify(m => m.AccessRequest.Update(It.IsAny<Entity.AccessRequest>()), Times.Never());
+            service.Verify(m => m.AccessRequest.Update(It.IsAny<Entity.PimsAccessRequest>()), Times.Never());
         }
         #endregion
         #endregion

@@ -24,7 +24,7 @@ namespace Pims.Api.Areas.Admin.Controllers
     public class UserController : ControllerBase
     {
         #region Variables
-        private readonly IPimsService _pimsService;
+        private readonly IPimsRepository _pimsService;
         private readonly IMapper _mapper;
         #endregion
 
@@ -34,7 +34,7 @@ namespace Pims.Api.Areas.Admin.Controllers
         /// </summary>
         /// <param name="pimsService"></param>
         /// <param name="mapper"></param>
-        public UserController(IPimsService pimsService, IMapper mapper)
+        public UserController(IPimsRepository pimsService, IMapper mapper)
         {
             _pimsService = pimsService;
             _mapper = mapper;
@@ -136,7 +136,7 @@ namespace Pims.Api.Areas.Admin.Controllers
         [SwaggerOperation(Tags = new[] { "admin-user" })]
         public IActionResult AddUser([FromBody] Model.UserModel model)
         {
-            var entity = _mapper.Map<Entity.User>(model);
+            var entity = _mapper.Map<Entity.PimsUser>(model);
             _pimsService.User.Add(entity);
 
             var user = _mapper.Map<Model.UserModel>(entity);
@@ -158,7 +158,7 @@ namespace Pims.Api.Areas.Admin.Controllers
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Parameter 'id' is required for route.")]
         public IActionResult UpdateUser(Guid key, [FromBody] Model.UserModel model)
         {
-            var entity = _mapper.Map<Entity.User>(model);
+            var entity = _mapper.Map<Entity.PimsUser>(model);
             _pimsService.User.Update(entity);
 
             var user = _mapper.Map<Model.UserModel>(entity);
@@ -179,7 +179,7 @@ namespace Pims.Api.Areas.Admin.Controllers
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Parameter 'key' is required for route.")]
         public IActionResult DeleteUser(Guid key, [FromBody] Model.UserModel model)
         {
-            var entity = _mapper.Map<Entity.User>(model);
+            var entity = _mapper.Map<Entity.PimsUser>(model);
             _pimsService.User.Delete(entity);
 
             return new JsonResult(model);

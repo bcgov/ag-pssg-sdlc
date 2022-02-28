@@ -1,10 +1,13 @@
 namespace Pims.Api.Areas.Lease.Models.Lease
 {
+    /// <summary>
+    /// Provides a lease-oriented address model.
+    /// </summary>
     public class AddressModel
     {
         #region Properties
         /// <summary>
-        /// get/set - The primary key to identify the property.
+        /// get/set - The primary key to identify the address.
         /// </summary>
         public long Id { get; set; }
 
@@ -73,6 +76,11 @@ namespace Pims.Api.Areas.Lease.Models.Lease
         /// get/set - The name of the province.
         /// </summary>
         public string Province { get; set; }
+
+        /// <summary>
+        /// get/set - The code name of the province.
+        /// </summary>
+        public string ProvinceCode { get; set; }
 
         /// <summary>
         /// get/set - Foreign key to country.

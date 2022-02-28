@@ -1,3 +1,4 @@
+using Pims.Api.Models;
 using Pims.Dal.Entities;
 
 namespace Pims.Api.Helpers.Extensions
@@ -12,9 +13,9 @@ namespace Pims.Api.Helpers.Extensions
         /// </summary>
         /// <param name="organization"></param>
         /// <returns></returns>
-        public static string GetOrganizationName(this Organization organization)
+        public static string GetOrganizationName(this PimsOrganization organization)
         {
-            return organization?.ParentId.HasValue ?? false ? organization?.Parent?.Name : organization?.Name;
+            return organization?.PrntOrganizationId.HasValue ?? false ? organization?.PrntOrganization?.OrganizationName : organization?.OrganizationName;
         }
 
         /// <summary>
@@ -22,9 +23,19 @@ namespace Pims.Api.Helpers.Extensions
         /// </summary>
         /// <param name="organization"></param>
         /// <returns></returns>
-        public static string GetSubOrganizationName(this Organization organization)
+        public static string GetSubOrganizationName(this PimsOrganization organization)
         {
-            return organization?.ParentId.HasValue ?? false ? organization?.Name : null;
+            return organization?.PrntOrganizationId.HasValue ?? false ? organization?.OrganizationName : null;
+        }
+
+        /// <summary>
+        /// Null coalescing method to get the type from an id.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static string GetTypeId(this TypeModel<string> type)
+        {
+            return type?.Id;
         }
     }
 }

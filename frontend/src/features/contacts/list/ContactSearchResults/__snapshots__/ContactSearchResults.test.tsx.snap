@@ -8,36 +8,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
   <div
     class="Toastify"
   />
-  .c0 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-direction: column;
-  -ms-flex-direction: column;
-  flex-direction: column;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  margin-left: 0.5rem;
-}
-
-.c2 {
-  width: 1.6rem;
-  height: 1.6rem;
-}
-
-.c1 {
-  width: 1.6rem;
-  height: 1.6rem;
-}
-
-.c3 {
+  .c3 {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -66,6 +37,35 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
   transition: all 0.3s ease-in;
 }
 
+.c0 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  margin-left: 0.5rem;
+}
+
+.c2 {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+.c1 {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
 .c4 {
   -webkit-box-pack: space-around;
   -webkit-justify-content: space-around;
@@ -76,6 +76,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
 
 <div
     class="table"
+    data-testid="contactsTable"
     role="table"
   >
     <div
@@ -84,13 +85,13 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
       <div
         class="tr"
         role="row"
-        style="display: flex; flex: 1 0 auto; min-width: 450px;"
+        style="display: flex; flex: 1 0 auto; min-width: 430px;"
       >
         <div
           class="th"
           colspan="1"
           role="columnheader"
-          style="box-sizing: border-box; flex: 20 0 auto; min-width: 30px; width: 20px; justify-content: flex-end; text-align: right; flex-wrap: wrap; align-items: center; display: flex;"
+          style="box-sizing: border-box; flex: 10 0 auto; min-width: 10px; width: 10px; justify-content: right; text-align: right; flex-wrap: wrap; align-items: center; display: flex;"
         >
           <div
             class="sortable-column"
@@ -100,7 +101,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           class="th"
           colspan="1"
           role="columnheader"
-          style="box-sizing: border-box; flex: 10 0 auto; min-width: 30px; width: 10px; justify-content: flex-end; text-align: right; flex-wrap: wrap; align-items: center; display: flex;"
+          style="box-sizing: border-box; flex: 20 0 auto; min-width: 30px; width: 20px; justify-content: right; text-align: right; flex-wrap: wrap; align-items: center; display: flex;"
         >
           <div
             class="sortable-column"
@@ -110,7 +111,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           class="th"
           colspan="1"
           role="columnheader"
-          style="box-sizing: border-box; flex: 80 0 auto; min-width: 30px; width: 80px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+          style="box-sizing: border-box; flex: 80 0 auto; min-width: 30px; width: 80px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
         >
           <div
             class="sortable-column"
@@ -155,7 +156,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           class="th"
           colspan="1"
           role="columnheader"
-          style="box-sizing: border-box; flex: 60 0 auto; min-width: 30px; width: 60px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+          style="box-sizing: border-box; flex: 60 0 auto; min-width: 30px; width: 60px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
         >
           <div
             class="sortable-column"
@@ -200,7 +201,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           class="th"
           colspan="1"
           role="columnheader"
-          style="box-sizing: border-box; flex: 60 0 auto; min-width: 30px; width: 60px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+          style="box-sizing: border-box; flex: 60 0 auto; min-width: 30px; width: 60px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
         >
           <div
             class="sortable-column"
@@ -245,7 +246,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           class="th"
           colspan="1"
           role="columnheader"
-          style="box-sizing: border-box; flex: 80 0 auto; min-width: 30px; width: 80px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+          style="box-sizing: border-box; flex: 80 0 auto; min-width: 30px; width: 80px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
         >
           <div
             class="sortable-column"
@@ -290,7 +291,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           class="th"
           colspan="1"
           role="columnheader"
-          style="box-sizing: border-box; flex: 100 0 auto; min-width: 80px; width: 100px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+          style="box-sizing: border-box; flex: 100 0 auto; min-width: 80px; width: 100px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
         >
           <div
             class="sortable-column"
@@ -302,7 +303,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           class="th"
           colspan="1"
           role="columnheader"
-          style="box-sizing: border-box; flex: 100 0 auto; min-width: 80px; width: 100px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+          style="box-sizing: border-box; flex: 100 0 auto; min-width: 80px; width: 100px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
         >
           <div
             class="sortable-column"
@@ -314,7 +315,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           class="th"
           colspan="1"
           role="columnheader"
-          style="box-sizing: border-box; flex: 70 0 auto; min-width: 50px; width: 70px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+          style="box-sizing: border-box; flex: 70 0 auto; min-width: 50px; width: 70px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
         >
           <div
             class="sortable-column"
@@ -359,7 +360,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           class="th"
           colspan="1"
           role="columnheader"
-          style="box-sizing: border-box; flex: 30 0 auto; min-width: 30px; width: 30px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+          style="box-sizing: border-box; flex: 30 0 auto; min-width: 30px; width: 30px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
         >
           <div
             class="sortable-column"
@@ -371,7 +372,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           class="th"
           colspan="1"
           role="columnheader"
-          style="box-sizing: border-box; flex: 40 0 auto; min-width: 30px; width: 40px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+          style="box-sizing: border-box; flex: 40 0 auto; min-width: 30px; width: 40px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
         >
           <div
             class="sortable-column"
@@ -391,12 +392,12 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
         <div
           class="tr"
           role="row"
-          style="display: flex; flex: 1 0 auto; min-width: 450px;"
+          style="display: flex; flex: 1 0 auto; min-width: 430px;"
         >
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 20 0 auto; min-width: 30px; width: 20px; justify-content: flex-end; text-align: right; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 10 0 auto; min-width: 10px; width: 10px; justify-content: right; text-align: right; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             <svg>
@@ -406,7 +407,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 10 0 auto; min-width: 30px; width: 10px; justify-content: flex-end; text-align: right; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 20 0 auto; min-width: 30px; width: 20px; justify-content: right; text-align: right; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             <svg
@@ -426,7 +427,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td clickable"
             role="cell"
-            style="box-sizing: border-box; flex: 80 0 auto; min-width: 30px; width: 80px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 80 0 auto; min-width: 30px; width: 80px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             <a
@@ -438,7 +439,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 60 0 auto; min-width: 30px; width: 60px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 60 0 auto; min-width: 30px; width: 60px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             last
@@ -446,7 +447,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 60 0 auto; min-width: 30px; width: 60px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 60 0 auto; min-width: 30px; width: 60px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             first
@@ -454,7 +455,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 80 0 auto; min-width: 30px; width: 80px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 80 0 auto; min-width: 30px; width: 80px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             organizationName
@@ -462,7 +463,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 100 0 auto; min-width: 80px; width: 100px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 100 0 auto; min-width: 80px; width: 100px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             email
@@ -470,7 +471,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 100 0 auto; min-width: 80px; width: 100px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 100 0 auto; min-width: 80px; width: 100px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             123 mock st
@@ -478,7 +479,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 70 0 auto; min-width: 50px; width: 70px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 70 0 auto; min-width: 50px; width: 70px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             city
@@ -486,7 +487,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 30 0 auto; min-width: 30px; width: 30px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 30 0 auto; min-width: 30px; width: 30px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             province
@@ -494,7 +495,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 40 0 auto; min-width: 30px; width: 40px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 40 0 auto; min-width: 30px; width: 40px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             <div
@@ -502,6 +503,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
             >
               <button
                 class="c5 btn btn-light"
+                title="View Contact"
                 type="button"
               >
                 <svg
@@ -514,23 +516,13 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                    d="M0 0h24v24H0z"
+                    fill="none"
                   />
-                </svg>
-              </button>
-              <button
-                class="c5 btn btn-light"
-                type="button"
-              >
-                <svg
-                  fill="currentColor"
-                  height="22"
-                  stroke="currentColor"
-                  stroke-width="0"
-                  viewBox="0 0 24 24"
-                  width="22"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
+                  <path
+                    d="M0 0h24v24H0z"
+                    fill="none"
+                  />
                   <path
                     d="M21 8V7l-3 2-3-2v1l3 2 3-2zm1-5H2C.9 3 0 3.9 0 5v14c0 1.1.9 2 2 2h20c1.1 0 1.99-.9 1.99-2L24 5c0-1.1-.9-2-2-2zM8 6c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H2v-1c0-2 4-3.1 6-3.1s6 1.1 6 3.1v1zm8-6h-8V6h8v6z"
                   />
@@ -546,12 +538,12 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
         <div
           class="tr"
           role="row"
-          style="display: flex; flex: 1 0 auto; min-width: 450px;"
+          style="display: flex; flex: 1 0 auto; min-width: 430px;"
         >
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 20 0 auto; min-width: 30px; width: 20px; justify-content: flex-end; text-align: right; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 10 0 auto; min-width: 10px; width: 10px; justify-content: right; text-align: right; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             <svg>
@@ -561,7 +553,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 10 0 auto; min-width: 30px; width: 10px; justify-content: flex-end; text-align: right; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 20 0 auto; min-width: 30px; width: 20px; justify-content: right; text-align: right; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             <svg
@@ -581,7 +573,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td clickable"
             role="cell"
-            style="box-sizing: border-box; flex: 80 0 auto; min-width: 30px; width: 80px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 80 0 auto; min-width: 30px; width: 80px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             <a
@@ -593,7 +585,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 60 0 auto; min-width: 30px; width: 60px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 60 0 auto; min-width: 30px; width: 60px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             last
@@ -601,7 +593,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 60 0 auto; min-width: 30px; width: 60px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 60 0 auto; min-width: 30px; width: 60px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             first
@@ -609,7 +601,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 80 0 auto; min-width: 30px; width: 80px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 80 0 auto; min-width: 30px; width: 80px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             organizationName
@@ -617,7 +609,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 100 0 auto; min-width: 80px; width: 100px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 100 0 auto; min-width: 80px; width: 100px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             email
@@ -625,7 +617,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 100 0 auto; min-width: 80px; width: 100px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 100 0 auto; min-width: 80px; width: 100px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             123 mock st
@@ -633,7 +625,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 70 0 auto; min-width: 50px; width: 70px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 70 0 auto; min-width: 50px; width: 70px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             city
@@ -641,7 +633,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 30 0 auto; min-width: 30px; width: 30px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 30 0 auto; min-width: 30px; width: 30px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             province
@@ -649,7 +641,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 40 0 auto; min-width: 30px; width: 40px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 40 0 auto; min-width: 30px; width: 40px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             <div
@@ -657,6 +649,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
             >
               <button
                 class="c5 btn btn-light"
+                title="View Contact"
                 type="button"
               >
                 <svg
@@ -669,23 +662,13 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                    d="M0 0h24v24H0z"
+                    fill="none"
                   />
-                </svg>
-              </button>
-              <button
-                class="c5 btn btn-light"
-                type="button"
-              >
-                <svg
-                  fill="currentColor"
-                  height="22"
-                  stroke="currentColor"
-                  stroke-width="0"
-                  viewBox="0 0 24 24"
-                  width="22"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
+                  <path
+                    d="M0 0h24v24H0z"
+                    fill="none"
+                  />
                   <path
                     d="M21 8V7l-3 2-3-2v1l3 2 3-2zm1-5H2C.9 3 0 3.9 0 5v14c0 1.1.9 2 2 2h20c1.1 0 1.99-.9 1.99-2L24 5c0-1.1-.9-2-2-2zM8 6c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H2v-1c0-2 4-3.1 6-3.1s6 1.1 6 3.1v1zm8-6h-8V6h8v6z"
                   />
@@ -701,12 +684,12 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
         <div
           class="tr"
           role="row"
-          style="display: flex; flex: 1 0 auto; min-width: 450px;"
+          style="display: flex; flex: 1 0 auto; min-width: 430px;"
         >
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 20 0 auto; min-width: 30px; width: 20px; justify-content: flex-end; text-align: right; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 10 0 auto; min-width: 10px; width: 10px; justify-content: right; text-align: right; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             <svg>
@@ -716,7 +699,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 10 0 auto; min-width: 30px; width: 10px; justify-content: flex-end; text-align: right; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 20 0 auto; min-width: 30px; width: 20px; justify-content: right; text-align: right; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             <svg
@@ -736,7 +719,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td clickable"
             role="cell"
-            style="box-sizing: border-box; flex: 80 0 auto; min-width: 30px; width: 80px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 80 0 auto; min-width: 30px; width: 80px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             <a
@@ -748,7 +731,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 60 0 auto; min-width: 30px; width: 60px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 60 0 auto; min-width: 30px; width: 60px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             last
@@ -756,7 +739,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 60 0 auto; min-width: 30px; width: 60px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 60 0 auto; min-width: 30px; width: 60px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             first
@@ -764,7 +747,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 80 0 auto; min-width: 30px; width: 80px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 80 0 auto; min-width: 30px; width: 80px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             organizationName
@@ -772,7 +755,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 100 0 auto; min-width: 80px; width: 100px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 100 0 auto; min-width: 80px; width: 100px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             email
@@ -780,7 +763,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 100 0 auto; min-width: 80px; width: 100px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 100 0 auto; min-width: 80px; width: 100px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             123 mock st
@@ -788,7 +771,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 70 0 auto; min-width: 50px; width: 70px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 70 0 auto; min-width: 50px; width: 70px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             city
@@ -796,7 +779,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 30 0 auto; min-width: 30px; width: 30px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 30 0 auto; min-width: 30px; width: 30px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             province
@@ -804,7 +787,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
           <div
             class="td"
             role="cell"
-            style="box-sizing: border-box; flex: 40 0 auto; min-width: 30px; width: 40px; justify-content: flex-start; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
+            style="box-sizing: border-box; flex: 40 0 auto; min-width: 30px; width: 40px; justify-content: left; text-align: left; flex-wrap: wrap; align-items: center; display: flex;"
             title=""
           >
             <div
@@ -812,6 +795,7 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
             >
               <button
                 class="c5 btn btn-light"
+                title="View Contact"
                 type="button"
               >
                 <svg
@@ -824,23 +808,13 @@ exports[`Contact Search Results Table matches snapshot 1`] = `
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                    d="M0 0h24v24H0z"
+                    fill="none"
                   />
-                </svg>
-              </button>
-              <button
-                class="c5 btn btn-light"
-                type="button"
-              >
-                <svg
-                  fill="currentColor"
-                  height="22"
-                  stroke="currentColor"
-                  stroke-width="0"
-                  viewBox="0 0 24 24"
-                  width="22"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
+                  <path
+                    d="M0 0h24v24H0z"
+                    fill="none"
+                  />
                   <path
                     d="M21 8V7l-3 2-3-2v1l3 2 3-2zm1-5H2C.9 3 0 3.9 0 5v14c0 1.1.9 2 2 2h20c1.1 0 1.99-.9 1.99-2L24 5c0-1.1-.9-2-2-2zM8 6c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H2v-1c0-2 4-3.1 6-3.1s6 1.1 6 3.1v1zm8-6h-8V6h8v6z"
                   />

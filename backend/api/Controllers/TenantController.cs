@@ -21,7 +21,7 @@ namespace Pims.Api.Controllers
     {
         #region Variables
         private readonly PimsOptions _pimsOptions;
-        private readonly IPimsService _pimsService;
+        private readonly IPimsRepository _pimsService;
         private readonly IMapper _mapper;
         #endregion
 
@@ -32,7 +32,7 @@ namespace Pims.Api.Controllers
         /// <param name="pimsOptions"></param>
         /// <param name="pimsService"></param>
         /// <param name="mapper"></param>
-        public TenantController(IOptionsMonitor<PimsOptions> pimsOptions, IPimsService pimsService, IMapper mapper)
+        public TenantController(IOptionsMonitor<PimsOptions> pimsOptions, IPimsRepository pimsService, IMapper mapper)
         {
             _pimsOptions = pimsOptions.CurrentValue;
             _pimsService = pimsService;
@@ -72,7 +72,7 @@ namespace Pims.Api.Controllers
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "To support standardized routes (/{code})")]
         public IActionResult UpdateTenant(string code, Model.TenantModel model)
         {
-            var tenant = _pimsService.Tenant.UpdateTenant(_mapper.Map<Entity.Tenant>(model));
+            var tenant = _pimsService.Tenant.UpdateTenant(_mapper.Map<Entity.PimsTenant>(model));
             return new JsonResult(_mapper.Map<Model.TenantModel>(tenant));
         }
         #endregion

@@ -1,8 +1,10 @@
+using System;
+using System.Collections.Generic;
+using Microsoft.Data.SqlClient;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Pims.Core.Extensions;
 using Pims.Dal.Entities;
-using System;
-using System.Linq;
 using Entity = Pims.Dal.Entities;
 
 namespace Pims.Dal.Helpers.Extensions
@@ -18,36 +20,50 @@ namespace Pims.Dal.Helpers.Extensions
         /// <param name="query"></param>
         /// <param name="filter"></param>
         /// <returns></returns>
-        private static IQueryable<Entity.Lease> GenerateCommonLeaseQuery(this IQueryable<Entity.Lease> query, Entity.Models.LeaseFilter filter)
+        private static IQueryable<Entities.PimsLease> GenerateCommonLeaseQuery(this IQueryable<Entities.PimsLease> query, Entity.Models.LeaseFilter filter)
         {
             filter.ThrowIfNull(nameof(filter));
 
-            if (!String.IsNullOrWhiteSpace(filter.TenantName)) {
-                query = query.Where(l => l.Persons.Any(person => person != null && EF.Functions.Like(person.Surname + ", " + person.FirstName + ", " + person.MiddleNames, $"%{filter.TenantName}%"))
-                || l.Organizations.Any(organization => organization != null && EF.Functions.Like(organization.Name, $"%{filter.TenantName}%")));
-            }
-
-            if (!String.IsNullOrWhiteSpace(filter.PidOrPin))
+            if (!string.IsNullOrWhiteSpace(filter.TenantName))
             {
-                var pidOrPinValue = filter.PidOrPin.Replace("-", "").Trim();
-                if (Int32.TryParse(pidOrPinValue, out int pidOrPin)) {
-                    query = query.Where(l => l.Properties.FirstOrDefault() != null && (l.Properties.FirstOrDefault().PID == pidOrPin || l.Properties.FirstOrDefault().PIN == pidOrPin));
-                }
+                query = query.Where(l => l.PimsLeaseTenants.Any(tenant => tenant.Person != null && EF.Functions.Like(tenant.Person.Surname + ", " + tenant.Person.FirstName + ", " + tenant.Person.MiddleNames, $"%{filter.TenantName}%"))
+                || l.PimsLeaseTenants.Any(tenant => tenant.Organization != null && EF.Functions.Like(tenant.Organization.OrganizationName, $"%{filter.TenantName}%")));
             }
 
-            if (!String.IsNullOrWhiteSpace(filter.LFileNo))
+            if (!string.IsNullOrWhiteSpace(filter.PinOrPid))
+            {
+                var pinOrPidValue = filter.PinOrPid.Replace("-", "").Trim().TrimStart('0');
+                query = query.Where(l => l.PimsPropertyLeases.Any(pl => pl != null && (EF.Functions.Like(pl.Property.Pid.ToString(), $"%{pinOrPidValue}%") || EF.Functions.Like(pl.Property.Pin.ToString(), $"%{pinOrPidValue}%"))));
+            }
+
+            if (!string.IsNullOrWhiteSpace(filter.LFileNo))
+            {
                 query = query.Where(l => EF.Functions.Like(l.LFileNo, $"%{filter.LFileNo}%"));
+            }
+
+            if (filter.Programs.Count > 0)
+            {
+                query = query.Where(l => filter.Programs.Any(p => p == l.LeaseProgramTypeCode));
+            }
 
             if (filter.Sort?.Any() == true)
                 query = query.OrderByProperty(filter.Sort);
             else
                 query = query.OrderBy(l => l.LFileNo);
 
-            return query.Include(l => l.Properties)
+            return query.Include(l => l.PimsPropertyLeases)
+                .ThenInclude(p => p.Property)
                 .ThenInclude(p => p.Address)
-                .Include(l => l.ProgramType)
-                .Include(l => l.Persons)
-                .Include(l => l.Organizations);
+                .Include(l => l.PimsPropertyLeases)
+                .Include(l => l.PimsPropertyImprovements)
+                .Include(l => l.LeaseProgramTypeCodeNavigation)
+                .Include(l => l.LeasePurposeTypeCodeNavigation)
+                .Include(l => l.LeaseStatusTypeCodeNavigation)
+                .Include(l => l.PimsLeaseTenants)
+                .ThenInclude(t => t.Person)
+                .Include(l => l.PimsLeaseTenants)
+                .ThenInclude(t => t.Organization)
+                .Include(p => p.PimsLeaseTerms);
         }
 
         /// <summary>
@@ -56,11 +72,11 @@ namespace Pims.Dal.Helpers.Extensions
         /// <param name="context"></param>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public static IQueryable<Entity.Lease> GenerateLeaseQuery(this PimsContext context, Entity.Models.LeaseFilter filter)
+        public static IQueryable<Entities.PimsLease> GenerateLeaseQuery(this PimsContext context, Entity.Models.LeaseFilter filter)
         {
             filter.ThrowIfNull(nameof(filter));
 
-            var query = context.Leases.AsNoTracking();
+            var query = context.PimsLeases.AsNoTracking();
 
             query = query.GenerateCommonLeaseQuery(filter);
 
@@ -68,23 +84,30 @@ namespace Pims.Dal.Helpers.Extensions
         }
 
         /// <summary>
-        /// Get the street address from the lease's first associated property.
+        /// Get the next available id from the PIMS_LEASE_ID_SEQ
         /// </summary>
-        /// <param name="lease"></param>
-        /// <returns></returns>
-        public static string GetAddress(this Pims.Dal.Entities.Lease lease)
+        /// <param name="context"></param>
+        public static Int64 GetNextLeaseSequenceValue(this PimsContext context)
         {
-            return lease?.Properties?.FirstOrDefault()?.Address?.StreetAddress1;
+            SqlParameter result = new SqlParameter("@result", System.Data.SqlDbType.BigInt)
+            {
+                Direction = System.Data.ParameterDirection.Output
+            };
+            context.Database.ExecuteSqlRaw("set @result = next value for dbo.PIMS_LEASE_ID_SEQ;", result);
+
+            return (Int64)result.Value;
         }
 
         /// <summary>
-        /// Get the pid or pin from the lease's first associated property.
+        /// Generate a new L File in format L-XXX-YYY using the lease id. Add the lease id and lfileno to the passed lease.
         /// </summary>
-        /// <param name="lease"></param>
-        /// <returns></returns>
-        public static int? GetPidOrPin(this Pims.Dal.Entities.Lease lease)
+        /// <param name="context"></param>
+        public static PimsLease GenerateLFileNo(this PimsContext context, PimsLease lease)
         {
-            return lease?.Properties?.FirstOrDefault()?.PID ?? lease?.Properties.FirstOrDefault()?.PIN;
+            Int64 leaseId = GetNextLeaseSequenceValue(context);
+            lease.LeaseId = leaseId;
+            lease.LFileNo = $"L-{lease.LeaseId.ToString().PadLeft(6, '0').Insert(3, "-")}";
+            return lease;
         }
 
         /// <summary>
@@ -92,9 +115,9 @@ namespace Pims.Dal.Helpers.Extensions
         /// </summary>
         /// <param name="lease"></param>
         /// <returns></returns>
-        public static string GetProgramName(this Pims.Dal.Entities.Lease lease)
+        public static string GetProgramName(this Pims.Dal.Entities.PimsLease lease)
         {
-            return lease?.ProgramType?.Description;
+            return lease?.LeaseProgramTypeCodeNavigation?.Description;
         }
 
         /// <summary>
@@ -102,9 +125,9 @@ namespace Pims.Dal.Helpers.Extensions
         /// </summary>
         /// <param name="lease"></param>
         /// <returns></returns>
-        public static string GetFullName(this Pims.Dal.Entities.Lease lease)
+        public static string GetFullName(this Pims.Dal.Entities.PimsLease lease)
         {
-            return lease?.TenantsManyToMany.FirstOrDefault(t => t.Person != null)?.Person?.GetFullName();
+            return lease?.PimsLeaseTenants.FirstOrDefault(t => t != null && t.Person != null)?.Person?.GetFullName();
         }
 
         /// <summary>
@@ -112,9 +135,49 @@ namespace Pims.Dal.Helpers.Extensions
         /// </summary>
         /// <param name="lease"></param>
         /// <returns></returns>
-        public static string GetMotiName(this Pims.Dal.Entities.Lease lease)
+        public static string GetMotiName(this Pims.Dal.Entities.PimsLease lease)
         {
-            return lease.MotiName?.GetFullName();
+            return lease.MotiContact;
+        }
+
+        /// <summary>
+        /// Get the active term of this lease.
+        /// </summary>
+        /// <param name="lease"></param>
+        /// <returns></returns>
+        public static PimsLeaseTerm GetCurrentTerm(this Pims.Dal.Entities.PimsLease lease)
+        {
+            return lease.PimsLeaseTerms.FirstOrDefault(term => term != null && DateTime.Now > term.TermStartDate && DateTime.Now <= term.TermExpiryDate);
+        }
+
+        /// <summary>
+        /// Get the active term start date of this lease.
+        /// </summary>
+        /// <param name="lease"></param>
+        /// <returns></returns>
+        public static DateTime? GetCurrentTermStartDate(this Pims.Dal.Entities.PimsLease lease)
+        {
+            return GetCurrentTerm(lease)?.TermStartDate;
+        }
+
+        /// <summary>
+        /// Get the active term end date of this lease.
+        /// </summary>
+        /// <param name="lease"></param>
+        /// <returns></returns>
+        public static DateTime? GetCurrentTermEndDate(this Pims.Dal.Entities.PimsLease lease)
+        {
+            return GetCurrentTerm(lease)?.TermExpiryDate;
+        }
+
+        /// <summary>
+        /// Get the tenant name from either the person or the organization
+        /// </summary>
+        /// <param name="lease"></param>
+        /// <returns></returns>
+        public static string GetTenantName(this Pims.Dal.Entities.PimsLeaseTenant lease)
+        {
+            return lease?.Person?.GetFullName() ?? lease?.Organization?.Name;
         }
 
         /// <summary>
@@ -122,17 +185,17 @@ namespace Pims.Dal.Helpers.Extensions
         /// </summary>
         /// <param name="lease"></param>
         /// <returns></returns>
-        public static DateTime? GetExpiryDate(this Pims.Dal.Entities.Lease lease)
+        public static DateTime? GetExpiryDate(this Pims.Dal.Entities.PimsLease lease)
         {
-            if(lease.OrigExpiryDate != null)
+            if (lease.OrigExpiryDate != null)
             {
-                if(lease.TermExpiryDate != null)
+                if (lease.PimsLeaseTerms != null && lease.PimsLeaseTerms.Any(t => t.TermExpiryDate > lease.OrigExpiryDate))
                 {
-                    return lease.OrigExpiryDate > lease.TermExpiryDate ? lease.OrigExpiryDate : lease.TermExpiryDate;
+                    return lease.PimsLeaseTerms.OrderByDescending(t => t.TermExpiryDate).FirstOrDefault().TermExpiryDate;
                 }
                 return lease.OrigExpiryDate;
             }
-            return lease.TermExpiryDate;
+            return lease.PimsLeaseTerms?.OrderByDescending(t => t.TermExpiryDate).FirstOrDefault()?.TermExpiryDate;
         }
     }
 }

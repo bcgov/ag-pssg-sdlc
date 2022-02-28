@@ -4,28 +4,29 @@ import { IFormLease } from 'interfaces';
 import { ILeaseImprovement } from 'interfaces/ILeaseImprovement';
 
 import Improvement from './components/Improvement/Improvement';
-import Summary from './components/Summary/Summary';
 import * as Styled from './styles';
 
-export interface IImprovementsProps {}
+export interface IImprovementsProps {
+  disabled?: boolean;
+}
 
 export const Improvements: React.FunctionComponent<IImprovementsProps> = props => {
   const { values } = useFormikContext<IFormLease>();
   const improvements: ILeaseImprovement[] = getIn(values, 'improvements') ?? [];
 
   return (
-    <Styled.ImprovementsContainer>
+    <Styled.ImprovementsContainer className="improvements">
       <FormSection>
-        <Summary disabled={true} />
-      </FormSection>
-
-      <FormSection>
-        <Styled.SectiontHeader>Description of Improvements</Styled.SectiontHeader>
+        {props.disabled && <Styled.SectionHeader>Description of Improvements</Styled.SectionHeader>}
         <FieldArray
           name="improvements"
           render={renderProps =>
             improvements.map((entry: ILeaseImprovement, index) => (
-              <Improvement {...renderProps} nameSpace={`improvements.${index}`} disabled={true} />
+              <Improvement
+                {...renderProps}
+                nameSpace={`improvements.${index}`}
+                disabled={props.disabled}
+              />
             ))
           }
         ></FieldArray>

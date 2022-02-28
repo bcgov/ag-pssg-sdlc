@@ -89,6 +89,7 @@
       display: flex;
       height: 100%;
       align-items: center;
+      justify-content: inherit;
     }
     .filter-wrapper {
       div {
@@ -122,6 +123,7 @@
   display: flex;
   flex-direction: row-reverse;
   align-content: center;
+  align-items: baseline;
   div {
     .Menu-root {
       margin-top: 0.5rem;

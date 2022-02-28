@@ -18,7 +18,7 @@ export const defaultMaskOptions = {
   thousandsSeparatorSymbol: ',',
   allowDecimal: true,
   decimalSymbol: '.',
-  decimalLimit: 0, // how many digits allowed after the decimal
+  decimalLimit: 2, // how many digits allowed after the decimal
   integerLimit: undefined, // limit length of integer numbers
   allowNegative: false,
   allowLeadingZeroes: false,
@@ -107,7 +107,10 @@ const CurrencyInput = ({
   const isValid = !error && touch && value && !disabled ? 'is-valid ' : '';
 
   return (
-    <Form.Group className={classNames(!!required ? 'required' : '', className)}>
+    <Form.Group
+      controlId={`input-${field}`}
+      className={classNames(!!required ? 'required' : '', className)}
+    >
       {!!label && (
         <Form.Label>
           {label} {!!tooltip && <TooltipIcon toolTipId={`${field}-tooltip`} toolTip={tooltip} />}
@@ -115,6 +118,7 @@ const CurrencyInput = ({
       )}
       <div className="input-tooltip-wrapper">
         <MaskedInput
+          id={`input-${field}`}
           value={value}
           mask={currencyMask}
           name={field}

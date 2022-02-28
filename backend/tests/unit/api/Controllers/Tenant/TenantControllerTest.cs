@@ -40,7 +40,7 @@ namespace Pims.Api.Test.Controllers
             mockOptions.Setup(m => m.CurrentValue).Returns(options);
             var controller = helper.CreateController<TenantController>(user, mockOptions.Object);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
             var tenant = EntityHelper.CreateTenant(1, "TEST");
             service.Setup(m => m.Tenant.GetTenant(tenant.Code)).Returns(tenant);
@@ -70,9 +70,9 @@ namespace Pims.Api.Test.Controllers
             mockOptions.Setup(m => m.CurrentValue).Returns(options);
             var controller = helper.CreateController<TenantController>(user, mockOptions.Object);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var tenant = EntityHelper.CreateTenant(1, "TEST");
-            service.Setup(m => m.Tenant.GetTenant(tenant.Code)).Returns<Entity.Tenant>(null);
+            service.Setup(m => m.Tenant.GetTenant(tenant.Code)).Returns<Entity.PimsTenant>(null);
 
             // Act
             var result = controller.Settings();
@@ -95,8 +95,8 @@ namespace Pims.Api.Test.Controllers
             mockOptions.Setup(m => m.CurrentValue).Returns(options);
             var controller = helper.CreateController<TenantController>(user, mockOptions.Object);
 
-            var service = helper.GetService<Mock<IPimsService>>();
-            service.Setup(m => m.Tenant.GetTenant(null)).Returns<Entity.Tenant>(null);
+            var service = helper.GetService<Mock<IPimsRepository>>();
+            service.Setup(m => m.Tenant.GetTenant(null)).Returns<Entity.PimsTenant>(null);
 
             // Act
             var result = controller.Settings();
@@ -116,10 +116,10 @@ namespace Pims.Api.Test.Controllers
             var helper = new TestHelper();
             var controller = helper.CreateController<TenantController>(Permissions.SystemAdmin);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
             var tenant = EntityHelper.CreateTenant(1, "TEST");
-            service.Setup(m => m.Tenant.UpdateTenant(It.IsAny<Entity.Tenant>())).Returns(tenant);
+            service.Setup(m => m.Tenant.UpdateTenant(It.IsAny<Entity.PimsTenant>())).Returns(tenant);
 
             var model = mapper.Map<Model.TenantModel>(tenant);
 
@@ -131,7 +131,7 @@ namespace Pims.Api.Test.Controllers
             var actualResult = Assert.IsType<Model.TenantModel>(actionResult.Value);
             Assert.Null(actionResult.StatusCode);
             Assert.Equal(model, actualResult, new DeepPropertyCompare());
-            service.Verify(m => m.Tenant.UpdateTenant(It.IsAny<Entity.Tenant>()), Times.Once());
+            service.Verify(m => m.Tenant.UpdateTenant(It.IsAny<Entity.PimsTenant>()), Times.Once());
         }
         #endregion
         #endregion

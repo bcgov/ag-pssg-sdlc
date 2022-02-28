@@ -1,9 +1,16 @@
+import { ProtectedComponent } from 'components/common/ProtectedComponent';
+import { IconButton } from 'components/common/styles';
+import { Claims } from 'constants/claims';
 import { useContactDetail } from 'features/contacts/hooks/useContactDetail';
 import * as React from 'react';
+import { Col } from 'react-bootstrap';
+import { MdEdit } from 'react-icons/md';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { ContactBreadcrumb } from '../..';
 import * as Styled from '../../styles';
+import OrganizationView from './Organization';
 import PersonView from './Person';
 
 interface IContactViewContainerProps {
@@ -12,12 +19,29 @@ interface IContactViewContainerProps {
 
 const ContactViewContainer: React.FunctionComponent<IContactViewContainerProps> = props => {
   const { contact } = useContactDetail(props?.match?.params?.id);
-  console.log(props?.match?.params);
+  const history = useHistory();
   return (
     <ContactLayout>
       <ContactBreadcrumb />
-      <Styled.H1>Contact</Styled.H1>
+      <Styled.RowAligned>
+        <Col>
+          <Styled.H1>Contact</Styled.H1>
+        </Col>
+        <Col md="auto" className="ml-auto">
+          <ProtectedComponent hideIfNotAuthorized claims={[Claims.CONTACT_EDIT]}>
+            <IconButton
+              title="Edit Contact"
+              variant="light"
+              onClick={() => history.push(`/contact/${props?.match?.params?.id}/edit`)}
+            >
+              <MdEdit size={22} />
+            </IconButton>
+          </ProtectedComponent>
+        </Col>
+      </Styled.RowAligned>
+
       {contact?.person && <PersonView person={contact?.person} />}
+      {contact?.organization && <OrganizationView organization={contact?.organization} />}
     </ContactLayout>
   );
 };

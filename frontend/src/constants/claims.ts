@@ -4,9 +4,11 @@
 export enum Claims {
   LEASE_VIEW = 'lease-view',
   LEASE_ADD = 'lease-add',
+  LEASE_EDIT = 'lease-edit',
+  LEASE_DELETE = 'lease-delete',
   CONTACT_EDIT = 'contact-edit',
   CONTACT_VIEW = 'contact-view',
-  CONTACT_CREATE = 'contact-create',
+  CONTACT_ADD = 'contact-add',
   PROPERTY_VIEW = 'property-view',
   PROPERTY_EDIT = 'property-edit',
   PROPERTY_ADD = 'property-add',

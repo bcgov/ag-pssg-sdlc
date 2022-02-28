@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: pims-api-deploy-dev
+  name: pims-deploy-dev
   namespace: 5b7aa5-tools
 spec:
   params:
@@ -21,37 +21,34 @@ spec:
       description: The application image tag to build
       name: APP_IMAGE_TAG
       type: string
-    - default: Server=pims-database,1433;User ID=admin;Database=pims
+    - default: 'Server=pims-database,1433;User ID=admin;Database=pims'
       description: The application image tag to build
       name: CONNECTION_STRINGS_PIMS
       type: string
-    - default: https://sso-dev-5b7aa5-dev.apps.silver.devops.gov.bc.ca/auth/realms/PIMS
+    - default: 'https://sso-dev-5b7aa5-dev.apps.silver.devops.gov.bc.ca/auth/realms/PIMS'
       description: The application image tag to build
       name: KEYCLOAK_AUTHORITY
-      type: string      
-     - default: https://sso-dev-5b7aa5-dev.apps.silver.devops.gov
+      type: string
+    - default: 'https://sso-dev-5b7aa5-dev.apps.silver.devops.gov'
       description: The application image tag to build
       name: KEYCLOAK_ADMIN_AUTHORITY
-      type: string     
-    - default: ee7d21ac-84a4-477a-950c-4c72d019fd95 
+      type: string
+    - default: ee7d21ac-84a4-477a-950c-4c72d019fd95
       description: The application image tag to build
       name: KEYCLOAK_SERVICE_ACCOUNT_SECRET
-      type: string      
-     - default: WSpmqqNJMqo__1Ab!
+      type: string
+    - default: WSpmqqNJMqo__1Ab!
       description: The application image tag to build
       name: DB_PASSWORD
       type: string
-     - default: admin
+    - default: admin
       description: The application image tag to build
       name: DB_USER
       type: string
-     - default: v6lA2_MAgYNtu7R9H6ClN_1aB!
+    - default: v6lA2_MAgYNtu7R9H6ClN_1aB!
       description: The application image tag to build
       name: MSSQL_SA_PASSWORD
-      type: string      
-      
-      
-      
+      type: string
   tasks:
     - name: source-clone
       params:
@@ -71,10 +68,14 @@ spec:
       workspaces:
         - name: output
           workspace: workspace
-    - name: deploy-pims-api-dev
+    - name: deploy-pims-dev
       params:
         - name: DEPLOYMENT_NAME
           value: pims-database
+        - name: DEPLOYMENT_NAME_API
+          value: pims-api
+        - name: DEPLOYMENT_NAME_APP
+          value: pims-app
         - name: IMAGE_TAG
           value: latest
         - name: CONNECTION_STRINGS_PIMS
@@ -84,7 +85,7 @@ spec:
         - name: KEYCLOAK_ADMIN_AUTHORITY
           value: $(params.KEYCLOAK_ADMIN_AUTHORITY)
         - name: KEYCLOAK_SERVICE_ACCOUNT_SECRET
-          value: $(params.KEYCLOAK_SERVICE_ACCOUNT_SECRET)          
+          value: $(params.KEYCLOAK_SERVICE_ACCOUNT_SECRET)
         - name: DB_PASSWORD
           value: $(params.DB_PASSWORD)
         - name: DB_USER
@@ -103,7 +104,34 @@ spec:
         - source-clone
       taskRef:
         kind: Task
-        name: deploy-pims-api
+        name: deploy-pims
+      workspaces:
+        - name: source
+          subPath: k8s
+          workspace: workspace
+    - name: pentesting-test
+      params:
+        - name: APP_URL
+          value: 'https://pims-app-5b7aa5-dev.apps.silver.devops.gov.bc.ca/'
+      runAfter:
+        - deploy-pims-dev
+      taskRef:
+        kind: Task
+        name: zap-proxy
+      workspaces:
+        - name: workspace
+          workspace: workspace
+    - name: performance-test
+      params:
+        - name: APP_URL
+          value: 'https://pims-app-5b7aa5-dev.apps.silver.devops.gov.bc.ca/'
+        - name: TEST_DIR
+          value: test
+      runAfter:
+        - pentesting-test
+      taskRef:
+        kind: Task
+        name: gatling
       workspaces:
         - name: source
           subPath: k8s

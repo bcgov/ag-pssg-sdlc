@@ -3,6 +3,7 @@ import TooltipIcon from 'components/common/TooltipIcon';
 import * as Styled from 'features/leases/detail/styles';
 import { FormControl } from 'features/leases/detail/styles';
 import { getIn, useFormikContext } from 'formik';
+import { IFormLease } from 'interfaces';
 import * as React from 'react';
 import styled from 'styled-components';
 import { prettyFormatDate } from 'utils';
@@ -21,16 +22,28 @@ export const DetailAdministration: React.FunctionComponent<IDetailAdministration
   nameSpace,
   disabled,
 }) => {
-  const { values } = useFormikContext();
+  const { values } = useFormikContext<IFormLease>();
   return (
     <li>
       <Styled.LeaseH3>Administration</Styled.LeaseH3>
       <Styled.FormGrid>
+        <Form.Label>Region:</Form.Label>
+        <LargeTextInput disabled={disabled} field={withNameSpace(nameSpace, 'region.regionName')} />
+        <br />
         <Form.Label>Program:</Form.Label>
         <LargeTextInput disabled={disabled} field={withNameSpace(nameSpace, 'programName')} />
+        {values.otherProgramType && values?.programType?.id === 'OTHER' && (
+          <LargeTextInput
+            disabled={disabled}
+            field={withNameSpace(nameSpace, 'otherProgramType')}
+          />
+        )}
         <br />
         <Form.Label>Type</Form.Label>
         <Input disabled={disabled} field={withNameSpace(nameSpace, 'type.description')} />
+        {values.otherType && values?.type?.id === 'OTHER' && (
+          <Input disabled={disabled} field={withNameSpace(nameSpace, 'otherType')} />
+        )}
         <Form.Label>Receivable To:</Form.Label>
         <Input
           disabled={disabled}
@@ -38,8 +51,14 @@ export const DetailAdministration: React.FunctionComponent<IDetailAdministration
         />
         <Form.Label>Category:</Form.Label>
         <Input disabled={disabled} field={withNameSpace(nameSpace, 'categoryType.description')} />
+        {values?.categoryType?.id === 'OTHER' && values.otherCategoryType && (
+          <Input disabled={disabled} field={withNameSpace(nameSpace, 'otherCategoryType')} />
+        )}
         <Form.Label>Purpose:</Form.Label>
         <Input disabled={disabled} field={withNameSpace(nameSpace, 'purposeType.description')} />
+        {values?.purposeType?.id === 'OTHER' && values.otherPurposeType && (
+          <Input disabled={disabled} field={withNameSpace(nameSpace, 'otherPurposeType')} />
+        )}
         <br />
         <Form.Label>
           Initiator:&nbsp;

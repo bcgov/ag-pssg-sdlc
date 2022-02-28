@@ -29,14 +29,14 @@ namespace Pims.Api.Test.Controllers.Lease
         {
             new object [] { new SModel.LeaseFilterModel() { TenantName = "test" } },
             new object [] { new SModel.LeaseFilterModel() { LFileNo = "1234" } },
-            new object [] { new SModel.LeaseFilterModel() { PidOrPin = "123" } },
+            new object [] { new SModel.LeaseFilterModel() { PinOrPid = "123" } },
         };
 
         public readonly static IEnumerable<object[]> LeaseQueryFilters = new List<object[]>()
         {
             new object [] { new Uri("http://host/api/lease/search?TenantName=test")},
             new object [] { new Uri("http://host/api/lease/search?LFileNo=1") },
-            new object [] { new Uri("http://host/api/lease/search?PidOrPin=2") },
+            new object [] { new Uri("http://host/api/lease/search?PinOrPid=2") },
         };
         #endregion
 
@@ -55,10 +55,10 @@ namespace Pims.Api.Test.Controllers.Lease
 
             var leases = new[] { EntityHelper.CreateLease(1) };
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
 
-            service.Setup(m => m.Lease.GetPage(It.IsAny<LeaseFilter>())).Returns(new Paged<Entity.Lease>(leases));
+            service.Setup(m => m.Lease.GetPage(It.IsAny<LeaseFilter>())).Returns(new Paged<Entity.PimsLease>(leases));
 
             // Act
             var result = controller.GetLeases(filter);
@@ -66,7 +66,7 @@ namespace Pims.Api.Test.Controllers.Lease
             // Assert
             var actionResult = Assert.IsType<JsonResult>(result);
             var actualResult = Assert.IsType<Models.PageModel<SModel.LeaseModel>>(actionResult.Value);
-            var expectedResult = mapper.Map<Models.PageModel<SModel.LeaseModel>>(new Paged<Entity.Lease>(leases));
+            var expectedResult = mapper.Map<Models.PageModel<SModel.LeaseModel>>(new Paged<Entity.PimsLease>(leases));
             Assert.Equal(expectedResult, actualResult, new DeepPropertyCompare());
             service.Verify(m => m.Lease.GetPage(It.IsAny<LeaseFilter>()), Times.Once());
         }
@@ -84,10 +84,10 @@ namespace Pims.Api.Test.Controllers.Lease
 
             var leases = new[] { EntityHelper.CreateLease(1) };
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
             var mapper = helper.GetService<IMapper>();
 
-            service.Setup(m => m.Lease.GetPage(It.IsAny<LeaseFilter>())).Returns(new Paged<Entity.Lease>(leases));
+            service.Setup(m => m.Lease.GetPage(It.IsAny<LeaseFilter>())).Returns(new Paged<Entity.PimsLease>(leases));
 
             // Act
             var result = controller.GetLeases();
@@ -95,7 +95,7 @@ namespace Pims.Api.Test.Controllers.Lease
             // Assert
             var actionResult = Assert.IsType<JsonResult>(result);
             var actualResult = Assert.IsType<Models.PageModel<SModel.LeaseModel>>(actionResult.Value);
-            var expectedResult = mapper.Map<Models.PageModel<SModel.LeaseModel>>(new Paged<Entity.Lease>(leases));
+            var expectedResult = mapper.Map<Models.PageModel<SModel.LeaseModel>>(new Paged<Entity.PimsLease>(leases));
             Assert.Equal(expectedResult, actualResult, new DeepPropertyCompare());
             service.Verify(m => m.Lease.GetPage(It.IsAny<LeaseFilter>()), Times.Once());
         }
@@ -112,7 +112,7 @@ namespace Pims.Api.Test.Controllers.Lease
             var request = helper.GetService<Mock<HttpRequest>>();
             request.Setup(m => m.QueryString).Returns(new QueryString("?page=0"));
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
 
             // Act
             // Assert
@@ -130,7 +130,7 @@ namespace Pims.Api.Test.Controllers.Lease
             var helper = new TestHelper();
             var controller = helper.CreateController<SearchController>(Permissions.PropertyView);
 
-            var service = helper.GetService<Mock<IPimsService>>();
+            var service = helper.GetService<Mock<IPimsRepository>>();
 
             // Act
             // Assert
