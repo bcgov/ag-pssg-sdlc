@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Modal from 'react-bootstrap/Modal';
@@ -11,7 +11,7 @@ export enum ModalSize {
   SMALL = 'modal-s',
 }
 
-interface ModalProps {
+export interface ModalProps {
   /** Optional function to control behaviour of cancel button. Default is to close the modal. */
   handleCancel?: Function;
   /** Optional function to control behaviour of ok button. Default is to reload the app. */
@@ -69,6 +69,7 @@ interface ModalProps {
   closeButton?: boolean;
   /** provide the size of the modal, default width is 50.0rem */
   size?: ModalSize;
+  className?: string;
 }
 
 /**
@@ -77,41 +78,46 @@ interface ModalProps {
  */
 const GenericModal = (props: ModalProps) => {
   const [show, setShow] = useState(true);
-  useEffect(() => {
-    if (props.display !== undefined) {
-      setShow(props.display);
-    }
-  }, [props.display]);
 
-  const emptyFunction = () => {};
-  const handleCancel = props.handleCancel ?? emptyFunction;
+  if (
+    props.display !== undefined &&
+    props.setDisplay === undefined &&
+    props.handleOk === undefined &&
+    props.handleCancel === undefined
+  ) {
+    throw Error('Modal has insufficient parameters');
+  }
+  const showState = props.display !== undefined ? props.display : show;
+  const showControl = props.setDisplay !== undefined ? props.setDisplay : setShow;
 
   const close = () => {
-    setShow(false);
-    props.setDisplay && props.setDisplay(false);
-    handleCancel();
+    if (props.handleCancel !== undefined) {
+      props.handleCancel();
+    } else {
+      showControl(false);
+    }
   };
 
-  const handleOk =
-    props.handleOk ??
-    (() => {
-      props.setDisplay && props.setDisplay(false);
-      setShow(false);
-    });
   const ok = () => {
-    props.setDisplay && props.setDisplay(false);
-    setShow(false);
-    handleOk();
+    if (props.handleOk !== undefined) {
+      props.handleOk();
+    } else {
+      showControl(false);
+    }
   };
 
   return (
     <Container>
-      <Modal show={show} onHide={close} dialogClassName={classNames(props.size)}>
+      <Modal
+        show={showState}
+        onHide={close}
+        dialogClassName={classNames(props.size, props.className)}
+      >
         <Modal.Header closeButton={props.closeButton}>
           <Modal.Title>{props.title}</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body style={{ maxHeight: '50.0rem' }}>{props.message}</Modal.Body>
+        <Modal.Body>{props.message}</Modal.Body>
 
         <Modal.Footer>
           <Button variant={props.okButtonVariant ?? 'primary'} onClick={ok}>

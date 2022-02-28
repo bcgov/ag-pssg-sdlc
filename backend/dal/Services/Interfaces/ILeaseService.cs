@@ -1,17 +1,10 @@
-using Pims.Dal.Entities.Models;
-using System.Collections.Generic;
 using Pims.Dal.Entities;
 
 namespace Pims.Dal.Services
 {
-    /// <summary>
-    /// ILeaseService interface, provides functions to interact with leases within the datasource.
-    /// </summary>
-    public interface ILeaseService : IService<Lease>
+    public interface ILeaseService
     {
-        int Count();
-        IEnumerable<Lease> Get(LeaseFilter filter);
-        Lease Get(int id);
-        Paged<Lease> GetPage(LeaseFilter filter);
+        bool IsRowVersionEqual(long leaseId, long rowVersion);
+        PimsLease GetById(long leaseId);
     }
 }

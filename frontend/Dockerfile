@@ -19,8 +19,6 @@ COPY package*.json ./
 RUN npm set progress=false \
   && npm ci
 
-RUN mkdir node_modules/.cache && chmod -R 777 node_modules/.cache
-
 COPY . .
 
 # webpack-dev-server (3000)

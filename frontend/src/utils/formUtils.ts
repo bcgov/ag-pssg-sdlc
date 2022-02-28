@@ -1,3 +1,5 @@
+import ITypeCode from 'interfaces/ITypeCode';
+
 /**
  * append the passed name and index to the existing namespace, ideal for nesting forms within formik.
  * @param nameSpace the namespace of the current formik form.
@@ -27,3 +29,29 @@ export const phoneFormatter = (phoneNumber?: string) => {
   }
   return '';
 };
+
+export function stringToNull(value: any) {
+  return emptyStringToNull(value, value);
+}
+
+export function emptyStringToNull(value: any, originalValue: any) {
+  if (typeof originalValue === 'string' && originalValue === '') {
+    return undefined;
+  }
+  return value;
+}
+
+export function stringToTypeCode<T = string>(value?: T) {
+  return !!value ? { id: value } : undefined;
+}
+
+export function typeCodeToString<T = string>(value?: ITypeCode<T>) {
+  return value?.id;
+}
+
+export function stringToBoolean(value: string | boolean): boolean {
+  if (typeof value === 'string') {
+    return value === 'true';
+  }
+  return value;
+}

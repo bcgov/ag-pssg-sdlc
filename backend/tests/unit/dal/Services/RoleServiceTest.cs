@@ -3,8 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Pims.Core.Test;
 using Pims.Dal.Entities.Models;
 using Pims.Dal.Exceptions;
+using Pims.Dal.Repositories;
 using Pims.Dal.Security;
-using Pims.Dal.Services;
+using Pims.Dal.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -30,7 +31,7 @@ namespace Pims.Dal.Test.Services
             var helper = new TestHelper();
             var user = PrincipalHelper.CreateForPermission();
 
-            var service = helper.CreateService<RoleService>(user);
+            var service = helper.CreateRepository<RoleService>(user);
 
             // Act
             // Assert
@@ -48,12 +49,12 @@ namespace Pims.Dal.Test.Services
             init.AddAndSaveChanges(role);
             int expectedCount = 1;
 
-            var service = helper.CreateService<RoleService>(user);
+            var service = helper.CreateRepository<RoleService>(user);
 
             var result = service.Get(1, 1, "Role 1");
 
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<Paged<Entity.Role>>(result);
+            Assert.IsAssignableFrom<Paged<Entity.PimsRole>>(result);
             Assert.Equal(expectedCount, result.Items.Count());
         }
 
@@ -65,17 +66,17 @@ namespace Pims.Dal.Test.Services
             var user = PrincipalHelper.CreateForPermission(Permissions.AdminRoles);
             using var init = helper.InitializeDatabase(user);
             var role = EntityHelper.CreateRole(99, "Role 1");
-            var roleKey = role.Key;
+            var roleKey = role.RoleUid;
             init.AddAndSaveChanges(role);
 
-            var service = helper.CreateService<RoleService>(user);
+            var service = helper.CreateRepository<RoleService>(user);
 
             // Act
             var result = service.Get(roleKey);
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<Pims.Dal.Entities.Role>(result);
+            Assert.IsAssignableFrom<Pims.Dal.Entities.PimsRole>(result);
             Assert.Equal("Role 1", result.Name);
         }
 
@@ -89,14 +90,14 @@ namespace Pims.Dal.Test.Services
             var role = EntityHelper.CreateRole(50, "Role 1");
             init.AddAndSaveChanges(role);
 
-            var service = helper.CreateService<RoleService>(user);
+            var service = helper.CreateRepository<RoleService>(user);
 
             // Act
             var result = service.GetByName("Role 1");
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<Pims.Dal.Entities.Role>(result);
+            Assert.IsAssignableFrom<Pims.Dal.Entities.PimsRole>(result);
             Assert.Equal("Role 1", result.Name);
         }
 
@@ -110,7 +111,7 @@ namespace Pims.Dal.Test.Services
 
             helper.CreatePimsContext(user, true).AddAndSaveChanges(role);
 
-            var service = helper.CreateService<RoleService>(user);
+            var service = helper.CreateRepository<RoleService>(user);
 
             // Act
             // Assert
@@ -130,14 +131,14 @@ namespace Pims.Dal.Test.Services
             var keycloakId = role.KeycloakGroupId;
             init.AddAndSaveChanges(role);
 
-            var service = helper.CreateService<RoleService>(user);
+            var service = helper.CreateRepository<RoleService>(user);
 
             // Act
             var result = service.GetByKeycloakId(keycloakId.Value);
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<Pims.Dal.Entities.Role>(result);
+            Assert.IsAssignableFrom<Pims.Dal.Entities.PimsRole>(result);
             Assert.Equal("Role 1", result.Name);
         }
         #endregion
@@ -152,12 +153,12 @@ namespace Pims.Dal.Test.Services
             var role = EntityHelper.CreateRole(1, id, "Role 1");
             helper.CreatePimsContext(user, true).AddAndSaveChanges(role);
 
-            var service = helper.CreateService<RoleService>(user);
+            var service = helper.CreateRepository<RoleService>(user);
 
             var updatedRole = EntityHelper.CreateRole(1, id, "Role 1");
             var newName = "Updated Role";
             updatedRole.Name = newName;
-            updatedRole.RowVersion = role.RowVersion;
+            updatedRole.ConcurrencyControlNumber = role.ConcurrencyControlNumber;
 
             // Act
             service.Update(updatedRole);
@@ -174,7 +175,7 @@ namespace Pims.Dal.Test.Services
             var user = PrincipalHelper.CreateForPermission();
             var role = EntityHelper.CreateRole(Guid.NewGuid(), "Role 1");
 
-            var service = helper.CreateService<RoleService>(user);
+            var service = helper.CreateRepository<RoleService>(user);
 
             // Act
             // Assert
@@ -189,7 +190,7 @@ namespace Pims.Dal.Test.Services
             var helper = new TestHelper();
             var user = PrincipalHelper.CreateForPermission();
 
-            var service = helper.CreateService<RoleService>(user);
+            var service = helper.CreateRepository<RoleService>(user);
 
             // Act
             // Assert
@@ -208,7 +209,7 @@ namespace Pims.Dal.Test.Services
             var role = EntityHelper.CreateRole("Delete Me");
             helper.CreatePimsContext(user, true).AddAndSaveChanges(role);
 
-            var service = helper.CreateService<RoleService>(user);
+            var service = helper.CreateRepository<RoleService>(user);
             var context = helper.GetService<PimsContext>();
 
             // Act
@@ -226,7 +227,7 @@ namespace Pims.Dal.Test.Services
             var user = PrincipalHelper.CreateForPermission();
             var role = EntityHelper.CreateRole(Guid.NewGuid(), "Role 1");
 
-            var service = helper.CreateService<RoleService>(user);
+            var service = helper.CreateRepository<RoleService>(user);
 
             // Act
             // Assert
@@ -241,7 +242,7 @@ namespace Pims.Dal.Test.Services
             var helper = new TestHelper();
             var user = PrincipalHelper.CreateForPermission();
 
-            var service = helper.CreateService<RoleService>(user);
+            var service = helper.CreateRepository<RoleService>(user);
 
             // Act
             // Assert
@@ -258,10 +259,10 @@ namespace Pims.Dal.Test.Services
             var role1 = EntityHelper.CreateRole(1, "Delete Me");
             var role2 = EntityHelper.CreateRole(2, "And Me");
             var role3 = EntityHelper.CreateRole(3, "Not Me");
-            Guid[] exclusions = new Guid[] { role3.Key };
+            Guid[] exclusions = new Guid[] { role3.RoleUid };
             helper.CreatePimsContext(user, true).AddAndSaveChanges(role1, role2);
 
-            var service = helper.CreateService<RoleService>(user);
+            var service = helper.CreateRepository<RoleService>(user);
             var context = helper.GetService<PimsContext>();
 
             // Act
@@ -279,10 +280,10 @@ namespace Pims.Dal.Test.Services
             var helper = new TestHelper();
             var user = PrincipalHelper.CreateForPermission();
             var role = EntityHelper.CreateRole(Guid.NewGuid(), "Role 1");
-            Guid[] exclusions = new Guid[] { role.Key };
+            Guid[] exclusions = new Guid[] { role.RoleUid };
 
 
-            var service = helper.CreateService<RoleService>(user);
+            var service = helper.CreateRepository<RoleService>(user);
 
             // Act
             // Assert

@@ -124,23 +124,23 @@ jobs:
           # Specify whether or not CI build should fail if Codecov runs into an error during upload
           fail_ci_if_error: true
 
-      - name: SonarScanner for .NET 5 with pull request decoration support
-        id: sonar
-        uses: highbyte/sonarscan-dotnet@2.0
-        if: github.event_name == 'push' && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
-        env:
-          SONAR_TOKEN: f5f11ab3c73f7376b6ee039c1a3fba2db58de0a5
-        with:
-          dotnetBuildArguments: ${{env.working-directory}}
-          dotnetTestArguments: ${{env.working-directory}} --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+      #- name: SonarScanner for .NET 5 with pull request decoration support
+        #id: sonar
+        #uses: highbyte/sonarscan-dotnet@2.0
+        ##if: github.event_name == 'push' && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions'
+        #env:
+         # SONAR_TOKEN: f5f11ab3c73f7376b6ee039c1a3fba2db58de0a5
+        #with:
+          #dotnetBuildArguments: ${{env.working-directory}}
+          #dotnetTestArguments: ${{env.working-directory}} --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
           # Optional extra command arguments the the SonarScanner 'begin' command
-          sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx" -d:sonar.qualitygate.wait=true
+          #sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx" -d:sonar.qualitygate.wait=true
           # The key of the SonarQube project
-          sonarProjectKey: PIMS-API
+          #sonarProjectKey: PIMS-API
           # The name of the SonarQube project
-          sonarProjectName: PIMS-API
+          #sonarProjectName: PIMS-API
           # The SonarQube server URL. For SonarCloud, skip this setting.
-          sonarHostname: ${{secrets.SONAR_URL}}
+          #sonarHostname: ${{secrets.SONAR_URL}}
           
       - name: Find Comment
         if: failure() && steps.sonar.outcome == 'failure' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
@@ -218,14 +218,16 @@ jobs:
           body="${body//'%'/'%25'}"
           body="${body//$'\n'/'%0A'}"
           body="${body//$'\r'/'%0D'}" 
-          echo "::set-output name=body::$body" 
-          fi         
-      - name: Scan for policy compliance
-        if: steps.datree.outcome == 'success'
-        run: |
-            for i in $(find ./ -type f -regex '.*\.\(yaml\|yml\)$' ! -path '*/environment/*' ! -path '*/.github/*'); do
-                datree test "$i" --ignore-missing-schemas
-            done          
+          echo "::set-output name=body::$body"  
+
+      - name: Install Datree
+        run: curl https://get.datree.io | /bin/bash
+        
+      #- name: Scan for policy compliance
+        #run: datree test k8s/application/backend/deploy.api.yaml --ignore-missing-schemas
+            #for i in $(find ./ -type f -regex '.*\.\(yaml\|yml\)$' ! -path '*/environment/*' ! -path '*/.github/*'); do
+                #datree test k8s/application/backend/*.yaml --ignore-missing-schemas
+            #done          
       - name: Find Comment
         if: always() && github.event_name == 'pull_request'
         uses: peter-evans/find-comment@v1

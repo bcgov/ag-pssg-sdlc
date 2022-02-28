@@ -1,41 +1,37 @@
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
+using System.ComponentModel.DataAnnotations.Schema;
 namespace Pims.Dal.Entities
 {
     /// <summary>
     /// LeaseStatusType class, provides an entity for the datamodel to manage a list of lease status types.
     /// </summary>
-    [MotiTable("PIMS_LEASE_STATUS_TYPE", "LSSTSY")]
-    public class LeaseStatusType : TypeEntity<string>
+    public partial class PimsLeaseStatusType : ITypeEntity<string>
     {
         #region Properties
         /// <summary>
         /// get/set - Primary key to identify lease status type.
         /// </summary>
-        [Column("LEASE_STATUS_TYPE_CODE")]
-        public override string Id { get; set; }
-
-        /// <summary>
-        /// get - Collection of leases.
-        /// </summary>
-        public ICollection<Lease> Leases { get; } = new List<Lease>();
+        [NotMapped]
+        public string Id { get => LeaseStatusTypeCode; set => LeaseStatusTypeCode = value; }
         #endregion
 
         #region Constructors
         /// <summary>
-        /// Create a new instance of a LeaseStatusType class.
-        /// </summary>
-        public LeaseStatusType() { }
-
-        /// <summary>
-        /// Create a new instance of a LeaseStatusType class.
+        /// Create a new instance of a LeaseType class.
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="description"></param>
-        public LeaseStatusType(string id, string description) : base(id, description)
+        public PimsLeaseStatusType(string id):this()
         {
+            Id = id;
         }
         #endregion
+    }
+
+    public static class PimsLeaseStatusTypes
+    {
+        public const string PAID = "PAID";
+        public const string OVERPAID = "OVERPAID";
+        public const string PARTIAL = "PARTIAL";
+        public const string UNPAID = "UNPAID";
     }
 }

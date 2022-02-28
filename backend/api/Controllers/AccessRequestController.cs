@@ -20,7 +20,7 @@ namespace Pims.Api.Controllers
     public class AccessRequestController : ControllerBase
     {
         #region Variables
-        private readonly IPimsService _pimsService;
+        private readonly IPimsRepository _pimsService;
         private readonly IMapper _mapper;
         #endregion
 
@@ -30,7 +30,7 @@ namespace Pims.Api.Controllers
         /// </summary>
         /// <param name="pimsService"></param>
         /// <param name="mapper"></param>
-        public AccessRequestController(IPimsService pimsService, IMapper mapper)
+        public AccessRequestController(IPimsRepository pimsService, IMapper mapper)
         {
             _pimsService = pimsService;
             _mapper = mapper;
@@ -83,10 +83,10 @@ namespace Pims.Api.Controllers
         {
             if (model == null || model.OrganizationId == null || model.RoleId == null) throw new BadRequestException("Invalid access request specified");
 
-            var accessRequest = _mapper.Map<Entity.AccessRequest>(model);
+            var accessRequest = _mapper.Map<Entity.PimsAccessRequest>(model);
             accessRequest = _pimsService.AccessRequest.Add(accessRequest);
 
-            return CreatedAtAction(nameof(GetAccessRequest), new { id = accessRequest.Id }, _mapper.Map<Model.AccessRequestModel>(accessRequest));
+            return CreatedAtAction(nameof(GetAccessRequest), new { id = accessRequest.AccessRequestId }, _mapper.Map<Model.AccessRequestModel>(accessRequest));
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace Pims.Api.Controllers
         {
             if (model == null || model.OrganizationId == null || model.RoleId == null) throw new BadRequestException("Invalid access request specified");
 
-            var accessRequest = _mapper.Map<Entity.AccessRequest>(model);
+            var accessRequest = _mapper.Map<Entity.PimsAccessRequest>(model);
             accessRequest = _pimsService.AccessRequest.Update(accessRequest);
             return new JsonResult(_mapper.Map<Model.AccessRequestModel>(accessRequest));
         }

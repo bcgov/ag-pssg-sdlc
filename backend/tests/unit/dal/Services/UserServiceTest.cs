@@ -2,7 +2,7 @@ using Pims.Core.Test;
 using Pims.Dal.Entities.Models;
 using Pims.Dal.Exceptions;
 using Pims.Dal.Security;
-using Pims.Dal.Services;
+using Pims.Dal.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -24,7 +24,7 @@ namespace Pims.Dal.Test.Services
             new List<object[]>
             {
                 new object[] { new UserFilter(1, 1, null, "ttester", "McTest", "Test", "test@test.com", false, null, null, "position"), 1 },
-                new object[] { new UserFilter() { BusinessIdentifier = "ttester" }, 1 },
+                new object[] { new UserFilter() { BusinessIdentifierValue = "ttester" }, 1 },
                 new object[] { new UserFilter() { IsDisabled = true }, 0 },
                 new object[] { new UserFilter() { Organization = "Test" }, 0 },
             };
@@ -40,7 +40,7 @@ namespace Pims.Dal.Test.Services
             var euser = EntityHelper.CreateUser("Tester");
             helper.CreatePimsContext(user, true).AddAndSaveChanges(euser);
 
-            var service = helper.CreateService<UserService>(user);
+            var service = helper.CreateRepository<UserService>(user);
 
             // Act
             var result = service.Count();
@@ -60,14 +60,14 @@ namespace Pims.Dal.Test.Services
             helper.CreatePimsContext(user, true).AddAndSaveChanges(euser);
             var expectedCount = 1;
 
-            var service = helper.CreateService<UserService>(user);
+            var service = helper.CreateRepository<UserService>(user);
 
             // Act
             var result = service.Get(1, 1);
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<Paged<Entity.User>>(result);
+            Assert.IsAssignableFrom<Paged<Entity.PimsUser>>(result);
             Assert.Equal(expectedCount, result.Items.Count());
         }
 
@@ -78,7 +78,7 @@ namespace Pims.Dal.Test.Services
             var helper = new TestHelper();
             var user = PrincipalHelper.CreateForPermission();
 
-            var service = helper.CreateService<UserService>(user);
+            var service = helper.CreateRepository<UserService>(user);
 
             // Act
             // Assert
@@ -96,21 +96,21 @@ namespace Pims.Dal.Test.Services
             var euser = EntityHelper.CreateUser("Tester");
             euser.Person.FirstName = "Test";
             euser.Person.Surname = "McTest";
-            euser.BusinessIdentifier = "ttester";
+            euser.BusinessIdentifierValue = "ttester";
             euser.Position = "position";
-            euser.Person.ContactMethods.Add(EntityHelper.CreateContactMethod(1, "test@test.com", euser.Person, euser.Organizations.First()));
+            euser.Person.PimsContactMethods.Add(EntityHelper.CreateContactMethod(1, "test@test.com", euser.Person, euser.GetOrganizations().First()));
             euser.IsDisabled = false;
 
             helper.CreatePimsContext(user, true).AddAndSaveChanges(euser);
 
-            var service = helper.CreateService<UserService>(user);
+            var service = helper.CreateRepository<UserService>(user);
 
             // Act
             var result = service.Get(filter);
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<Paged<Entity.User>>(result);
+            Assert.IsAssignableFrom<Paged<Entity.PimsUser>>(result);
             Assert.Equal(expectedCount, result.Items.Count);
         }
 
@@ -124,14 +124,14 @@ namespace Pims.Dal.Test.Services
             var euser = EntityHelper.CreateUser(1, key, "ttester", "Tester", "McTest");
             helper.CreatePimsContext(user, true).AddAndSaveChanges(euser);
 
-            var service = helper.CreateService<UserService>(user);
+            var service = helper.CreateRepository<UserService>(user);
 
             // Act
             var result = service.Get(key);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(key, result.KeycloakUserId);
+            Assert.Equal(key, result.GuidIdentifierValue);
         }
         #endregion
 
@@ -145,15 +145,15 @@ namespace Pims.Dal.Test.Services
             var euser = EntityHelper.CreateUser(1, Guid.NewGuid(), "ttester", "Tester", "McTest");
             helper.CreatePimsContext(user, true);
 
-            var service = helper.CreateService<UserService>(user);
+            var service = helper.CreateRepository<UserService>(user);
 
             // Act
             service.Add(euser);
-            var result = service.Get(euser.KeycloakUserId.Value);
+            var result = service.Get(euser.GuidIdentifierValue.Value);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("ttester", result.BusinessIdentifier);
+            Assert.Equal("ttester", result.BusinessIdentifierValue);
         }
 
         [Fact]
@@ -163,7 +163,7 @@ namespace Pims.Dal.Test.Services
             var helper = new TestHelper();
             var user = PrincipalHelper.CreateForPermission(Permissions.AdminUsers);
 
-            var service = helper.CreateService<UserService>(user);
+            var service = helper.CreateRepository<UserService>(user);
             var context = helper.GetService<PimsContext>();
 
             // Act
@@ -181,7 +181,7 @@ namespace Pims.Dal.Test.Services
             var helper = new TestHelper();
             var user = PrincipalHelper.CreateForPermission(Permissions.AdminUsers);
 
-            var service = helper.CreateService<UserService>(user);
+            var service = helper.CreateRepository<UserService>(user);
             var context = helper.GetService<PimsContext>();
 
             // Act
@@ -197,7 +197,7 @@ namespace Pims.Dal.Test.Services
             var user = PrincipalHelper.CreateForPermission(Permissions.AdminUsers);
             var euser = EntityHelper.CreateUser("Test");
 
-            var service = helper.CreateService<UserService>(user);
+            var service = helper.CreateRepository<UserService>(user);
             var context = helper.GetService<PimsContext>();
 
             // Act

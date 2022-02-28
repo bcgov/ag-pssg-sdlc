@@ -118,7 +118,7 @@ namespace Pims.Api.Helpers.Middleware
 
                 _logger.LogDebug(ex, "Middleware caught unhandled exception.");
             }
-            else if (ex is RowVersionMissingException)
+            else if (ex is ConcurrencyControlNumberMissingException)
             {
                 code = HttpStatusCode.BadRequest;
                 message = "Item cannot be updated without a row version.";
@@ -145,6 +145,13 @@ namespace Pims.Api.Helpers.Middleware
                 message = ex.Message;
 
                 _logger.LogError(ex, "Invalid operation or bad request details.");
+            }
+            else if (ex is UserOverrideException)
+            {
+                code = HttpStatusCode.Conflict;
+                message = ex.Message;
+
+                _logger.LogError(ex, "User override required to complete this action.");
             }
             else if (ex is ApiHttpRequestException)
             {

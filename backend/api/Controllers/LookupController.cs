@@ -1,10 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pims.Dal;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Collections.Generic;
-using System.Linq;
 using Model = Pims.Api.Models.Lookup;
 
 namespace Pims.Api.Controllers
@@ -20,7 +20,7 @@ namespace Pims.Api.Controllers
     public class LookupController : ControllerBase
     {
         #region Variables
-        private readonly IPimsService _pimsService;
+        private readonly IPimsRepository _pimsService;
         private readonly IMapper _mapper;
         #endregion
 
@@ -30,7 +30,7 @@ namespace Pims.Api.Controllers
         /// </summary>
         /// <param name="pimsService"></param>
         /// <param name="mapper"></param>
-        public LookupController(IPimsService pimsService, IMapper mapper)
+        public LookupController(IPimsRepository pimsService, IMapper mapper)
         {
             _pimsService = pimsService;
             _mapper = mapper;
@@ -90,32 +90,63 @@ namespace Pims.Api.Controllers
         [SwaggerOperation(Tags = new[] { "lookup" })]
         public IActionResult GetAll()
         {
-            var organizations = _mapper.Map<Model.OrganizationModel[]>(_pimsService.Lookup.GetOrganizations());
-            var organizationTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetOrganizationTypes());
-            var roleCodes = _mapper.Map<Model.RoleModel[]>(_pimsService.Lookup.GetRoles());
-            var provinces = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetProvinces());
-            var countries = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetCountries());
-            var regions = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetRegions());
-            var districts = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetDistricts());
-            var classificationTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetPropertyClassificationTypes());
             var areaUnitTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetPropertyAreaUnitTypes());
-            var tenureTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetPropertyTenureTypes());
+            var classificationTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetPropertyClassificationTypes());
+            var contactMethodTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetContactMethodTypes());
+            var countries = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetCountries());
+            var districts = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetDistricts());
+            var insuranceTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetInsuranceTypes());
+            var leaseCategoryTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetLeaseCategoryTypes());
+            var leaseInitiatorTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetLeaseInitiatorTypes());
+            var leasePaymentFrequencyTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetLeasePmtFreqTypes());
+            var leasePaymentMethodTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetLeasePaymentMethodTypes());
+            var leasePaymentReceivableTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetPaymentReceivableTypes());
+            var leasePaymentStatusTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetLeasePaymentStatusTypes());
+            var leaseProgramTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetLeaseProgramTypes());
+            var leasePurposeTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetLeasePurposeTypes());
+            var leaseResponsibilityTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetLeaseResponsibilityTypes());
+            var leaseStatusTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetLeaseStatusTypes());
+            var leaseTermStatusTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetLeaseTermStatusTypes());
+            var leaseTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetLeaseTypes());
+            var organizationTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetOrganizationTypes());
+            var organizations = _mapper.Map<Model.OrganizationModel[]>(_pimsService.Lookup.GetOrganizations());
+            var propertyImprovementTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetPropertyImprovementTypes());
             var propertyTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetPropertyTypes());
-            var paymentReceivableTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetPaymentReceivableTypes());
+            var provinces = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetProvinces());
+            var regions = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetRegions());
+            var roleCodes = _mapper.Map<Model.RoleModel[]>(_pimsService.Lookup.GetRoles());
+            var securtyDepositTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetSecurityDepositTypes());
+            var tenureTypes = _mapper.Map<Model.LookupModel[]>(_pimsService.Lookup.GetPropertyTenureTypes());
 
             var codes = new List<object>();
-            codes.AddRange(roleCodes);
-            codes.AddRange(organizations);
-            codes.AddRange(organizationTypes);
+            codes.AddRange(areaUnitTypes);
+            codes.AddRange(classificationTypes);
+            codes.AddRange(contactMethodTypes);
             codes.AddRange(countries);
+            codes.AddRange(districts);
+            codes.AddRange(insuranceTypes);
+            codes.AddRange(leaseCategoryTypes);
+            codes.AddRange(leaseInitiatorTypes);
+            codes.AddRange(leasePaymentFrequencyTypes);
+            codes.AddRange(leasePaymentMethodTypes);
+            codes.AddRange(leasePaymentReceivableTypes);
+            codes.AddRange(leasePaymentStatusTypes);
+            codes.AddRange(leaseProgramTypes);
+            codes.AddRange(leasePurposeTypes);
+            codes.AddRange(leaseResponsibilityTypes);
+            codes.AddRange(leaseStatusTypes);
+            codes.AddRange(leaseTermStatusTypes);
+            codes.AddRange(leaseTypes);
+            codes.AddRange(organizationTypes);
+            codes.AddRange(organizations);
+            codes.AddRange(propertyImprovementTypes);
+            codes.AddRange(propertyTypes);
             codes.AddRange(provinces);
             codes.AddRange(regions);
-            codes.AddRange(districts);
-            codes.AddRange(classificationTypes);
-            codes.AddRange(areaUnitTypes);
+            codes.AddRange(roleCodes);
+            codes.AddRange(securtyDepositTypes);
             codes.AddRange(tenureTypes);
-            codes.AddRange(propertyTypes);
-            codes.AddRange(paymentReceivableTypes);
+
             return new JsonResult(codes);
         }
         #endregion

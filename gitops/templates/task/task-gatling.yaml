@@ -1,49 +1,87 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: argocd-task-sync-and-wait
+  name: gatling
   namespace: 5b7aa5-tools
-  labels:
-    app.kubernetes.io/version: "0.1"
-  annotations:
-    tekton.dev/pipelines.minVersion: "0.12.1"
-    tekton.dev/tags: deploy
-    tekton.dev/displayName: "argocd"
 spec:
-  description: >-
-    This task syncs (deploys) an Argo CD application and waits for it to be healthy.
-
-    To do so, it requires the address of the Argo CD server and some form of
-    authentication either a username/password or an authentication token.
-
   params:
-    - name: application-name
-      description: name of the application to sync
-    - name: revision
-      description: the revision to sync to
-      default: HEAD
-    - name: flags
-      default: --
-    - name: argocd-version
-      default: v2.0.3
-  stepTemplate:
-    envFrom:
-      - configMapRef:
-          name: argocd-env-configmap  # used for server address
-      - secretRef:
-          name: argocd-env-secret  # used for authentication (username/password or auth token)
+    - default: '30'
+      description: The duration of running simulations
+      name: DURATION
+      type: string
+    - default: '10'
+      description: The number of concurrent users
+      name: CONCURRENT_USERS
+      type: string
+    - description: The application under test url
+      name: APP_URL
+      type: string
+    - default: 'http://reports-repo:8080'
+      description: >-
+        The reports repository host based on
+        https://github.com/chmouel/openshift-django-uploader
+      name: REPORTS_REPO_HOST
+      type: string
+    - default: reports
+      description: The reports repository username
+      name: REPORTS_REPO_USERNAME
+      type: string
+    - default: reports
+      description: The reports repository password
+      name: REPORTS_REPO_PASSWORD
+      type: string
+    - default: test
+      description: The test dir
+      name: TEST_DIR
+      type: string
   steps:
-    - name: login-wait
-      image: quay.io/rcarrata/argocd:$(params.argocd-version)
-      script: |
-        if [ -z $ARGOCD_AUTH_TOKEN ]; then
-          yes | argocd login $ARGOCD_SERVER --username=$ARGOCD_USERNAME --password=$ARGOCD_PASSWORD;
-        fi
-    - name: sync
-      image: quay.io/rcarrata/argocd:$(params.argocd-version)
-      script: |
-        argocd app sync $(params.application-name) --revision $(params.revision) $(params.flags)
-    - name: wait
-      image: quay.io/rcarrata/argocd:$(params.argocd-version)
-      script: |
-        argocd app wait $(params.application-name) --health $(params.flags)
+    - env:
+        - name: PIPELINERUN_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: 'metadata.labels[''tekton.dev/pipelineRun'']'
+      image: 'quay.io/siamaksade/gatling:latest'
+      name: run-tests
+      resources: {}
+      script: >
+        #!/usr/bin/env bash
+
+
+        set -x
+
+        ls -A $(workspaces.source.path)/$(params.TEST_DIR)/
+
+        cat
+        $(workspaces.source.path)/$(params.TEST_DIR)/AddVisitSimulation.scala
+
+
+        cd /opt/gatling/
+
+        ls -lhrt
+
+
+        # set simulation params
+
+        export JAVA_OPTS="-DtestDuration=$(params.CONCURRENT_USERS)
+        -DuserCount=$(params.DURATION) -Dserver=$(params.APP_URL)"
+
+
+        # run simulation
+
+
+
+        /opt/gatling/bin/gatling.sh -rd "Pims App Performance Test" -sf
+        $(workspaces.source.path)/$(params.TEST_DIR)
+
+
+        # upload results
+
+        REPORT=$(ls -td /opt/gatling/results/* | head -1)
+
+        for f in $(find $REPORT/ -type f); do
+          curl -u $(params.REPORTS_REPO_USERNAME):$(params.REPORTS_REPO_PASSWORD) -F path=$PIPELINERUN_NAME${f#/opt/gatling/results} -X POST -F file=@${f} $(params.REPORTS_REPO_HOST)/upload; echo ""
+        done
+      workingDir: $(workspaces.source.path)
+  workspaces:
+    - description: The workspace consisting of project.
+      name: source
