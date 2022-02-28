@@ -222,8 +222,8 @@ jobs:
       - name: Install Datree
         run: curl https://get.datree.io | /bin/bash
         
-      - name: Scan for policy compliance
-        run: datree test k8s/application/backend/deploy.api.yaml --ignore-missing-schemas
+      #- name: Scan for policy compliance
+        #run: datree test k8s/application/backend/deploy.api.yaml --ignore-missing-schemas
             #for i in $(find ./ -type f -regex '.*\.\(yaml\|yml\)$' ! -path '*/environment/*' ! -path '*/.github/*'); do
                 #datree test k8s/application/backend/*.yaml --ignore-missing-schemas
             #done          

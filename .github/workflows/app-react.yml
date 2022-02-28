@@ -221,9 +221,9 @@ jobs:
       - name: Install Datree
         run: curl https://get.datree.io | /bin/bash
         
-      - name: Scan for policy compliance
-        if: success()
-        run: datree test k8s/application/frontend/deploy.app.yaml --ignore-missing-schemas          
+      #- name: Scan for policy compliance
+        #if: success()
+        #run: datree test k8s/application/frontend/deploy.app.yaml --ignore-missing-schemas          
       - name: push to container registry   
         if: success() && github.event_name == 'push'  && env.GIT_COMMIT_AUTHOR_NAME != 'github-actions' # if nothing failed. dont push when event is github bot
         id: tag
