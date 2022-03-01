@@ -275,7 +275,7 @@ items:
             initialDelaySeconds: 1
             periodSeconds: 60
             successThreshold: 1
-            timeoutSeconds: 30
+            timeoutSeconds: 300
           name: pims-api
           ports:
           - containerPort: 8080
@@ -289,7 +289,7 @@ items:
             initialDelaySeconds: 1
             periodSeconds: 60
             successThreshold: 1
-            timeoutSeconds: 30
+            timeoutSeconds: 300
           resources:
             limits:
               cpu: 100m
