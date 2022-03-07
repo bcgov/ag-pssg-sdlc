@@ -25,4 +25,3 @@ images:
 - name: pims-api
   newName: image-registry.apps.silver.devops.gov.bc.ca/5b7aa5-tools/pims-api
   newTag: 'dev-246' #CI build_number
-
