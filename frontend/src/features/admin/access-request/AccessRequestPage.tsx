@@ -54,7 +54,7 @@ const AccessRequestPage = () => {
     user: {
       id: userInfo?.id,
       keycloakUserId: userInfo?.keycloakUserId,
-      businessIdentifierValue: userInfo?.username ?? userInfo?.keycloakUserId,
+      businessIdentifierValue: userInfo?.username ?? userInfo?.keycloakUserId ?? userInfo?.email,
       displayName: userInfo?.name,
       firstName: userInfo?.firstName ?? userInfo?.given_name,
       surname: userInfo?.family_name,
@@ -133,7 +133,7 @@ const AccessRequestPage = () => {
                   label="IDIR/BCeID"
                   field="user.businessIdentifierValue"
                   placeholder={initialValues?.user?.businessIdentifierValue}
-                  readOnly={true}
+                  readOnly={false}
                   type="text"
                 />
 
