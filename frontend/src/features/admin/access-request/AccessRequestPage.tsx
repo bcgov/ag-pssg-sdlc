@@ -133,7 +133,7 @@ const AccessRequestPage = () => {
                   label="IDIR/BCeID"
                   field="user.businessIdentifierValue"
                   placeholder={initialValues?.user?.businessIdentifierValue}
-                  readOnly={false}
+                  readOnly={true}
                   type="text"
                 />
 
