@@ -168,7 +168,7 @@ items:
           - mountPath: /usr/app/public/keycloak.json
             name: pims-app-keycloak
             subPath: keycloak.json
-          - mountPath: /usr/app/public//tenants/tenant.json
+          - mountPath: /usr/app/public/tenants/tenant.json
             name: pims-app-tenant
             subPath: tenant.json
         dnsPolicy: ClusterFirst
