@@ -54,9 +54,9 @@ const AccessRequestPage = () => {
     user: {
       id: userInfo?.id,
       keycloakUserId: userInfo?.keycloakUserId,
-      businessIdentifierValue: userInfo?.username,
+      businessIdentifierValue: userInfo?.username ?? userInfo?.keycloakUserId,
       displayName: userInfo?.name,
-      firstName: userInfo?.firstName,
+      firstName: userInfo?.firstName ?? userInfo?.given_name,
       surname: userInfo?.family_name,
       email: userInfo?.email,
       position: accessRequest?.user?.position ?? userInfo?.position ?? '',
